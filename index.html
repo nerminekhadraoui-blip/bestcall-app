@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BestCall — Gestion interne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- Firebase (compat SDK — pas besoin de build tool) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<style>
+:root{
+  --bg:#EFF3F1; --surface:#FFFFFF; --surface-2:#F5F8F6; --ink:#16231F; --ink-soft:#3D4A45;
+  --muted:#6B7A75; --border:#D8E0DC; --accent:#2E6F5E; --accent-ink:#FFFFFF; --accent-soft:#DCEAE4;
+  --warm:#C97B2E; --warm-soft:#F3E3CE; --danger:#B5493A; --danger-soft:#F3DAD5; --radius:3px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",-apple-system,sans-serif;font-size:14px;line-height:1.5;min-height:100vh;}
+h1,h2,h3,.brand,.nav-item,.btn,label{font-family:"Space Grotesk",sans-serif;}
+[hidden]{display:none !important;}
+::selection{background:var(--accent-soft);}
+
+/* ---- login ---- */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:34px 32px;width:100%;max-width:360px;}
+.login-card .brand-mark{font-size:22px;font-weight:700;display:block;margin-bottom:2px;}
+.login-card .brand-sub{color:var(--muted);font-size:12.5px;margin-bottom:24px;display:block;}
+.field{margin-bottom:14px;}
+label{font-size:12px;font-weight:500;color:var(--ink-soft);display:block;margin-bottom:4px;}
+input,select{font-family:"IBM Plex Sans",sans-serif;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;width:100%;}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent);}
+.btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);padding:9px 16px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;width:100%;}
+.btn-primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
+.btn-link{border:none;background:none;color:var(--accent);font-size:12.5px;padding:4px 0;text-align:left;width:auto;cursor:pointer;}
+.login-error{color:var(--danger);font-size:12.5px;margin:10px 0 0;}
+.login-msg{color:var(--accent);font-size:12.5px;margin:10px 0 0;}
+
+/* ---- app shell ---- */
+#app{display:none;}
+#app.ready{display:flex;min-height:100vh;}
+.sidebar{width:216px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh;}
+.brand{display:flex;align-items:baseline;gap:6px;padding:0 8px 20px 8px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.brand-mark{font-size:19px;font-weight:700;}
+.brand-sub{font-size:11px;color:var(--muted);font-family:"IBM Plex Sans",sans-serif;}
+nav{display:flex;flex-direction:column;gap:2px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius);cursor:pointer;font-size:13.5px;font-weight:500;color:var(--ink-soft);border-left:2px solid transparent;user-select:none;}
+.nav-item:hover{background:var(--surface-2);}
+.nav-item.active{color:var(--accent);border-left:2px solid var(--accent);background:var(--accent-soft);}
+.sidebar-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);}
+.role-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:var(--radius);background:var(--surface-2);font-size:11.5px;font-weight:500;color:var(--ink-soft);margin:8px 0;}
+.role-badge.is-admin{background:var(--accent-soft);color:var(--accent);}
+main{flex:1;min-width:0;padding:28px 36px 60px;}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap;}
+.page-head h1{font-size:21px;font-weight:600;margin:0 0 4px;}
+.page-head p{margin:0;color:var(--muted);font-size:13px;}
+.head-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.btn-sm{padding:5px 9px;font-size:12px;width:auto;}
+.btn-ghost{border-color:transparent;background:transparent;}
+.btn-ghost:hover{background:var(--surface-2);}
+.btn-danger{color:var(--danger);}
+.btn-danger:hover{border-color:var(--danger);background:var(--danger-soft);}
+.btn[disabled]{opacity:.45;cursor:not-allowed;}
+.stats{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;min-width:120px;}
+.stat .num{font-family:"Space Grotesk",sans-serif;font-size:22px;font-weight:600;line-height:1;}
+.stat .label{font-size:11.5px;color:var(--muted);margin-top:5px;}
+.search-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.search-row input[type="text"]{width:auto;min-width:220px;}
+.search-row select{width:auto;}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:auto;}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;background:var(--surface-2);font-family:"IBM Plex Sans",sans-serif;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--surface-2);}
+td.name-cell{font-weight:500;}
+td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:400;margin-top:1px;}
+.badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:500;}
+.badge-role-admin,.badge-role-direction{background:var(--accent-soft);color:var(--accent);}
+.badge-role-conseiller{background:var(--surface-2);color:var(--ink-soft);border:1px solid var(--border);}
+.badge-status-actif{background:var(--accent-soft);color:var(--accent);}
+.badge-status-inactif{background:var(--danger-soft);color:var(--danger);}
+.badge-signal{background:var(--warm-soft);color:var(--warm);}
+.row-actions{display:flex;gap:4px;justify-content:flex-end;}
+.empty-state{padding:48px 20px;text-align:center;color:var(--muted);}
+.empty-state .big{font-size:14px;color:var(--ink);font-weight:500;margin-bottom:4px;}
+#modal-overlay{position:fixed;inset:0;background:rgba(15,25,21,.42);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);width:100%;max-width:440px;max-height:88vh;overflow-y:auto;padding:22px 24px 24px;}
+.modal.modal-wide{max-width:680px;}
+.modal h2{font-size:16px;margin:0 0 3px;font-weight:600;}
+.modal .modal-sub{font-size:12.5px;color:var(--muted);margin:0 0 18px;}
+.field-row{display:flex;gap:10px;}
+.field-row .field{flex:1;}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:6px;}
+.field-error{color:var(--danger);font-size:12px;margin-top:5px;}
+.week-picker input[type="week"]{width:auto;}
+.day-off{color:var(--muted);font-style:italic;}
+.day-ferie{color:var(--warm);}
+.day-hours{font-weight:500;}
+.grid-days{display:grid;grid-template-columns:96px 1fr 1fr auto auto;gap:8px 12px;align-items:center;margin-bottom:6px;}
+.grid-days .gh{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;padding-bottom:4px;}
+.grid-days .day-name{font-size:13px;font-weight:500;}
+.grid-days .toggle{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted);white-space:nowrap;}
+.grid-days input[type="time"]{width:100%;}
+.total-line{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:13px;color:var(--ink-soft);}
+.total-line strong{color:var(--ink);}
+.salary-box{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-top:14px;}
+.salary-line{display:flex;justify-content:space-between;font-size:12.5px;padding:3px 0;}
+.salary-line.total{border-top:1px solid var(--border);margin-top:6px;padding-top:8px;font-weight:600;color:var(--accent);font-size:14px;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:var(--radius);font-size:13px;z-index:80;opacity:0;pointer-events:none;transition:opacity .18s ease, transform .18s ease;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-4px);}
+.readonly-note{display:flex;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 13px;font-size:12.5px;color:var(--muted);margin-bottom:18px;}
+.signal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px;}
+.signal-form .field-row{margin-bottom:0;}
+.own-hours{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+@media (max-width:760px){
+  #app.ready{flex-direction:column;}
+  .sidebar{width:100%;height:auto;position:relative;flex-direction:row;align-items:center;padding:14px 16px;overflow-x:auto;}
+  .brand{border-bottom:none;padding:0;margin:0 14px 0 0;}
+  nav{flex-direction:row;}
+  .sidebar-foot{display:none;}
+  main{padding:20px 16px 48px;}
+  .grid-days{grid-template-columns:70px 1fr 1fr auto auto;font-size:11.5px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="login-screen">
+  <div class="login-card">
+    <span class="brand-mark">BestCall</span>
+    <span class="brand-sub">Gestion interne</span>
+    <div class="field">
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" autocomplete="username">
+    </div>
+    <div class="field">
+      <label for="login-password">Mot de passe</label>
+      <input type="password" id="login-password" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary" id="btn-login">Se connecter</button>
+    <button class="btn-link" id="btn-forgot">Mot de passe oublié ?</button>
+    <p class="login-error" id="login-error" hidden></p>
+    <p class="login-msg" id="login-msg" hidden></p>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app">
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark">BestCall</span><span class="brand-sub">Ops</span></div>
+    <nav id="nav"></nav>
+    <div class="sidebar-foot">
+      <div class="role-badge" id="role-badge">…</div>
+      <div id="user-email" style="margin-bottom:8px;word-break:break-all;"></div>
+      <button class="btn btn-ghost btn-sm" id="btn-change-password" style="width:100%;margin-bottom:6px;">Changer mon mot de passe</button>
+      <button class="btn btn-ghost btn-sm" id="btn-logout" style="width:100%;">Déconnexion</button>
+    </div>
+  </aside>
+
+  <main>
+    <!-- ===== CONSEILLERS (admin/direction) ===== -->
+    <section id="view-conseillers" data-roles="admin,direction">
+      <div class="page-head">
+        <div><h1>Conseillers</h1><p>Comptes, rôles, statuts et taux horaires.</p></div>
+        <div class="head-actions"><button class="btn btn-primary" id="btn-add-conseiller" style="width:auto;">+ Ajouter un conseiller</button></div>
+      </div>
+      <div class="stats" id="conseiller-stats"></div>
+      <div class="search-row">
+        <input type="text" id="search-conseillers" placeholder="Rechercher un nom ou un email…">
+        <select id="filter-statut"><option value="">Tous les statuts</option><option value="actif">Actif</option><option value="inactif">Inactif</option></select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Nom</th><th>Statut</th><th>Taux/h sem.</th><th>Taux/h dim.+férié</th><th>Prime M-1</th><th>Ajouté le</th><th></th></tr></thead>
+          <tbody id="conseillers-tbody"><tr><td colspan="7"><div class="empty-state">Chargement…</div></td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== PLANNINGS (admin/direction) ===== -->
+    <section id="view-plannings" data-roles="admin,direction" hidden>
+      <div class="page-head">
+        <div><h1>Plannings</h1><p>Horaires hebdomadaires et salaire estimé par conseiller.</p></div>
+        <div class="head-actions week-picker"><input type="week" id="week-input"></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Conseiller</th><th>Lun</th><th>Mar</th><th>Mer</th><th>Jeu</th><th>Ven</th><th>Sam</th><th>Dim</th><th>Total</th><th>Salaire sem.</th><th></th></tr></thead>
+          <tbody id="plannings-tbody"><tr><td colspan="10"><div class="empty-state">Chargement…</div></td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== SIGNALEMENTS (admin/direction) ===== -->
+    <section id="view-signalements" data-roles="admin,direction" hidden>
+      <div class="page-head"><div><h1>Signalements</h1><p>Retards et absences déclarés par les conseillers.</p></div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Conseiller</th><th>Type</th><th>Date</th><th>Message</th><th>Déclaré le</th><th>Statut</th><th></th></tr></thead>
+          <tbody id="signalements-tbody"><tr><td colspan="7"><div class="empty-state">Chargement…</div></td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== MON PLANNING (conseiller) ===== -->
+    <section id="view-mon-planning" data-roles="conseiller" hidden>
+      <div class="page-head">
+        <div><h1>Mon planning</h1><p>Tes horaires et heures travaillées.</p></div>
+        <div class="head-actions week-picker"><input type="week" id="week-input-conseiller"></div>
+      </div>
+      <div class="own-hours" id="own-hours-stats"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Jour</th><th>Horaire</th><th>Heures</th></tr></thead>
+          <tbody id="mon-planning-tbody"><tr><td colspan="3"><div class="empty-state">Chargement…</div></td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== SIGNALER (conseiller) ===== -->
+    <section id="view-signaler" data-roles="conseiller" hidden>
+      <div class="page-head"><div><h1>Signaler un retard / une absence</h1><p>Marta est notifiée automatiquement par email.</p></div></div>
+      <div class="signal-card">
+        <div class="signal-form">
+          <div class="field-row">
+            <div class="field">
+              <label for="s-type">Type</label>
+              <select id="s-type"><option value="retard">Retard</option><option value="absence">Absence</option></select>
+            </div>
+            <div class="field">
+              <label for="s-date">Date concernée</label>
+              <input type="date" id="s-date">
+            </div>
+          </div>
+          <div class="field">
+            <label for="s-message">Message (raison, heure d'arrivée prévue…)</label>
+            <input type="text" id="s-message" placeholder="Ex : arrivée prévue à 10h, embouteillage">
+          </div>
+          <p class="field-error" id="signal-error" hidden></p>
+          <p class="login-msg" id="signal-msg" hidden></p>
+          <button class="btn btn-primary" id="btn-send-signal" style="width:auto;margin-top:6px;">Envoyer le signalement</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Type</th><th>Date</th><th>Message</th><th>Déclaré le</th></tr></thead>
+          <tbody id="mes-signalements-tbody"><tr><td colspan="4"><div class="empty-state">Chargement…</div></td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ===== MODAL: conseiller ===== -->
+<div id="modal-overlay" hidden>
+  <div class="modal" id="modal-conseiller" hidden>
+    <h2 id="conseiller-modal-title">Ajouter un conseiller</h2>
+    <p class="modal-sub">Un compte de connexion sera créé avec le mot de passe temporaire indiqué.</p>
+    <div class="field-row">
+      <div class="field"><label for="f-prenom">Prénom</label><input type="text" id="f-prenom"></div>
+      <div class="field"><label for="f-nom">Nom</label><input type="text" id="f-nom"></div>
+    </div>
+    <div class="field"><label for="f-email">Email (identifiant de connexion)</label><input type="email" id="f-email"></div>
+    <div class="field" id="f-password-wrap"><label for="f-password">Mot de passe temporaire</label><input type="text" id="f-password" placeholder="À communiquer au conseiller"></div>
+    <div class="field-row">
+      <div class="field"><label for="f-taux-sem">Taux/h semaine (€)</label><input type="number" step="0.01" id="f-taux-sem"></div>
+      <div class="field"><label for="f-taux-dim">Taux/h dim.+férié (€)</label><input type="number" step="0.01" id="f-taux-dim"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label for="f-prime">Prime mois précédent (€)</label><input type="number" step="0.01" id="f-prime" value="0"></div>
+      <div class="field"><label for="f-statut">Statut</label><select id="f-statut"><option value="actif">Actif</option><option value="inactif">Inactif</option></select></div>
+    </div>
+    <p class="field-error" id="conseiller-error" hidden></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" id="btn-reset-password" hidden>Envoyer lien mot de passe</button>
+      <button class="btn btn-danger btn-ghost btn-sm" id="btn-delete-conseiller" hidden>Supprimer</button>
+      <button class="btn btn-ghost btn-sm" id="btn-cancel-conseiller">Annuler</button>
+      <button class="btn btn-primary btn-sm" id="btn-save-conseiller">Enregistrer</button>
+    </div>
+  </div>
+
+  <div class="modal modal-wide" id="modal-planning" hidden>
+    <h2 id="planning-modal-title">Planning</h2>
+    <p class="modal-sub" id="planning-modal-sub"></p>
+    <div class="grid-days"><div class="gh">Jour</div><div class="gh">Début</div><div class="gh">Fin</div><div class="gh">Repos</div><div class="gh">Férié</div></div>
+    <div id="planning-grid"></div>
+    <div class="total-line"><span>Total hebdomadaire</span><strong id="planning-total">0h</strong></div>
+    <div class="salary-box" id="planning-salary"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" id="btn-cancel-planning">Fermer</button>
+      <button class="btn btn-primary btn-sm" id="btn-save-planning">Enregistrer</button>
+    </div>
+  </div>
+
+  <div class="modal" id="modal-password" hidden>
+    <h2>Changer mon mot de passe</h2>
+    <p class="modal-sub">Choisis un nouveau mot de passe pour ton compte.</p>
+    <div class="field"><label for="pw-current">Mot de passe actuel</label><input type="password" id="pw-current"></div>
+    <div class="field"><label for="pw-new">Nouveau mot de passe</label><input type="password" id="pw-new"></div>
+    <p class="field-error" id="password-error" hidden></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" id="btn-cancel-password">Annuler</button>
+      <button class="btn btn-primary btn-sm" id="btn-save-password">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="./config.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>
