@@ -4,12 +4,12 @@
 
 // Config Firebase (récupérée dans Paramètres du projet > Vos applications)
 const firebaseConfig = {
-  apiKey: "AIzaSyBHlmnw6mtj5b3qilXJXAoITS36DDjQK2E",
-  authDomain: "gestion-bestcall.firebaseapp.com",
-  projectId: "gestion-bestcall",
-  storageBucket: "gestion-bestcall.firebasestorage.app",
-  messagingSenderId: "868878446014",
-  appId: "1:868878446014:web:86f9bfaed16533c72b5def"
+  apiKey: "AIzaSyBMF2HSeLamZVyi1vbp6VoO0CjfBZS2X3E",
+  authDomain: "gestion-bestcall-84717.firebaseapp.com",
+  projectId: "gestion-bestcall-84717",
+  storageBucket: "gestion-bestcall-84717.firebasestorage.app",
+  messagingSenderId: "754708426855",
+  appId: "1:754708426855:web:d9f8ac55891f08122d24c2"
 };
 
 // Config EmailJS — à remplir une fois ton compte EmailJS créé
