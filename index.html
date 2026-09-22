@@ -142,8 +142,8 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
     <img src="./logo.png" alt="BestCall" class="login-logo">
     <span class="brand-sub" style="display:block;text-align:center;margin-bottom:20px;margin-top:-12px;">Gestion interne</span>
     <div class="field">
-      <label for="login-email">Email</label>
-      <input type="email" id="login-email" autocomplete="username">
+      <label for="login-email">Email ou code agent</label>
+      <input type="text" id="login-email" autocomplete="username">
     </div>
     <div class="field">
       <label for="login-password">Mot de passe</label>
@@ -183,8 +183,8 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Nom</th><th>Statut</th><th>Taux/h sem.</th><th>Taux/h dim.+férié</th><th>Prime M-1</th><th>Ajouté le</th><th></th></tr></thead>
-          <tbody id="conseillers-tbody"><tr><td colspan="7"><div class="empty-state">Chargement…</div></td></tr></tbody>
+          <thead><tr><th>Code</th><th>Nom</th><th>Statut</th><th>Taux/h sem.</th><th>Taux/h dim.+férié</th><th>Prime langue</th><th>Prime télétravail</th><th>Ajouté le</th><th></th></tr></thead>
+          <tbody id="conseillers-tbody"><tr><td colspan="9"><div class="empty-state">Chargement…</div></td></tr></tbody>
         </table>
       </div>
     </section>
@@ -214,6 +214,28 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
       </div>
     </section>
 
+    <!-- ===== PAIE (admin/direction) ===== -->
+    <section id="view-paie" data-roles="admin,direction" hidden>
+      <div class="page-head">
+        <div><h1>Paie</h1><p>Récapitulatif mensuel des gains par conseiller.</p></div>
+        <div class="head-actions">
+          <input type="month" id="month-input" style="width:auto;">
+          <button class="btn btn-ghost" id="btn-export-paie" style="width:auto;">Exporter en CSV</button>
+        </div>
+      </div>
+      <div class="stats" id="paie-stats"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Conseiller</th><th>H. normales</th><th>H. dim/férié</th><th>Gains horaires</th>
+            <th>Prime langue</th><th>Prime télétravail</th><th>Prime variable</th>
+            <th>Absences déduites</th><th>Total mensuel</th>
+          </tr></thead>
+          <tbody id="paie-tbody"><tr><td colspan="9"><div class="empty-state">Chargement…</div></td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
     <!-- ===== MON PLANNING (conseiller) ===== -->
     <section id="view-mon-planning" data-roles="conseiller" hidden>
       <div class="page-head">
@@ -227,6 +249,13 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
           <tbody id="mon-planning-tbody"><tr><td colspan="3"><div class="empty-state">Chargement…</div></td></tr></tbody>
         </table>
       </div>
+      <h2 style="font-size:15px;margin:26px 0 12px;">Vue annuelle (12 derniers mois)</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mois</th><th>Heures totales</th></tr></thead>
+          <tbody id="annual-view-tbody"><tr><td colspan="2"><div class="empty-state">Chargement…</div></td></tr></tbody>
+        </table>
+      </div>
     </section>
 
     <!-- ===== SIGNALER (conseiller) ===== -->
@@ -237,7 +266,12 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
           <div class="field-row">
             <div class="field">
               <label for="s-type">Type</label>
-              <select id="s-type"><option value="retard">Retard</option><option value="absence">Absence</option></select>
+              <select id="s-type">
+                <option value="retard">Retard</option>
+                <option value="absence">Absence</option>
+                <option value="maladie">Maladie</option>
+                <option value="conge">Congé</option>
+              </select>
             </div>
             <div class="field">
               <label for="s-date">Date concernée</label>
@@ -272,16 +306,21 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
       <div class="field"><label for="f-prenom">Prénom</label><input type="text" id="f-prenom"></div>
       <div class="field"><label for="f-nom">Nom</label><input type="text" id="f-nom"></div>
     </div>
+    <div class="field"><label for="f-code">Code agent (ex. Best 01)</label><input type="text" id="f-code"></div>
     <div class="field"><label for="f-email">Email (identifiant de connexion)</label><input type="email" id="f-email"></div>
     <div class="field" id="f-password-wrap"><label for="f-password">Mot de passe temporaire</label><input type="text" id="f-password" placeholder="À communiquer au conseiller"></div>
     <div class="field-row">
-      <div class="field"><label for="f-taux-sem">Taux/h semaine (€)</label><input type="number" step="0.01" id="f-taux-sem"></div>
+      <div class="field"><label for="f-taux-sem">Taux/h semaine+samedi (€)</label><input type="number" step="0.01" id="f-taux-sem"></div>
       <div class="field"><label for="f-taux-dim">Taux/h dim.+férié (€)</label><input type="number" step="0.01" id="f-taux-dim"></div>
     </div>
     <div class="field-row">
-      <div class="field"><label for="f-prime">Prime mois précédent (€)</label><input type="number" step="0.01" id="f-prime" value="0"></div>
-      <div class="field"><label for="f-statut">Statut</label><select id="f-statut"><option value="actif">Actif</option><option value="inactif">Inactif</option></select></div>
+      <div class="field"><label for="f-prime-langue">Prime langue (€/mois)</label><input type="number" step="0.01" id="f-prime-langue" value="0"></div>
+      <div class="field"><label for="f-prime-tele">Prime télétravail (€/mois)</label><input type="number" step="0.01" id="f-prime-tele" value="0"></div>
     </div>
+    <div class="field">
+      <label for="f-statut">Statut</label><select id="f-statut"><option value="actif">Actif</option><option value="inactif">Inactif</option></select>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin:-6px 0 14px;">La prime variable se saisit chaque mois dans l'onglet Paie.</p>
     <p class="field-error" id="conseiller-error" hidden></p>
     <div class="modal-actions">
       <button class="btn btn-ghost btn-sm" id="btn-reset-password" hidden>Envoyer lien mot de passe</button>
