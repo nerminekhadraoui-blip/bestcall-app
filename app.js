@@ -77,6 +77,12 @@
     toast._h = setTimeout(function () { t.classList.remove("show"); }, 2600);
   }
   function timeToMinutes(t) { if (!t) return 0; var p = t.split(":"); return (+p[0]) * 60 + (+p[1]); }
+  function durationMinutes(debut, fin) {
+    // Gère les horaires qui chevauchent minuit (ex. 15:00 -> 00:00)
+    var start = timeToMinutes(debut), end = timeToMinutes(fin);
+    if (end <= start) end += 24 * 60;
+    return end - start;
+  }
   function fmtHours(mins) { return (Math.round((mins / 60) * 10) / 10) + "h"; }
   function fmtEuros(n) { return (Math.round(n * 100) / 100).toFixed(2) + " €"; }
   function emptyPlanningJours() {
@@ -89,7 +95,7 @@
     JOURS.forEach(function (j) {
       var d = jours[j.key];
       if (!d || d.repos) return;
-      var mins = Math.max(0, timeToMinutes(d.fin) - timeToMinutes(d.debut));
+      var mins = durationMinutes(d.debut, d.fin);
       if (j.key === "dimanche" || d.ferie) minDim += mins; else minNormales += mins;
     });
     var montantNormal = (minNormales / 60) * (tauxSem || 0);
@@ -546,7 +552,7 @@
     tbody.innerHTML = JOURS.map(function (j) {
       var d = jours[j.key];
       if (!d || d.repos) return '<tr><td>' + j.label + '</td><td><span class="day-off">Repos</span></td><td>0h</td></tr>';
-      var mins = Math.max(0, timeToMinutes(d.fin) - timeToMinutes(d.debut));
+      var mins = durationMinutes(d.debut, d.fin);
       totalMin += mins;
       return '<tr><td>' + j.label + '</td><td>' + esc(d.debut) + '–' + esc(d.fin) + '</td><td>' + fmtHours(mins) + '</td></tr>';
     }).join("");
