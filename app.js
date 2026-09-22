@@ -15,12 +15,14 @@
     admin: [
       { view: "conseillers", label: "Conseillers" },
       { view: "plannings", label: "Plannings" },
-      { view: "signalements", label: "Signalements" }
+      { view: "signalements", label: "Signalements" },
+      { view: "paie", label: "Paie" }
     ],
     direction: [
       { view: "conseillers", label: "Conseillers" },
       { view: "plannings", label: "Plannings" },
-      { view: "signalements", label: "Signalements" }
+      { view: "signalements", label: "Signalements" },
+      { view: "paie", label: "Paie" }
     ],
     conseiller: [
       { view: "mon-planning", label: "Mon planning" },
@@ -50,6 +52,8 @@
     signalements: [],
     editingConseillerId: null,
     planningTarget: null,
+    moisPaie: null,
+    paieRows: [],
     unsub: {}
   };
 
@@ -85,6 +89,29 @@
   }
   function fmtHours(mins) { return (Math.round((mins / 60) * 10) / 10) + "h"; }
   function fmtEuros(n) { return (Math.round(n * 100) / 100).toFixed(2) + " €"; }
+  function slugCode(code) { return (code || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
+  var TYPE_LABELS = { retard: "Retard", absence: "Absence", maladie: "Maladie", conge: "Congé" };
+  var TYPES_DEDUCTIBLES = ["absence", "maladie", "conge"];
+  function currentMonth() {
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+  }
+  function isoWeekMonday(semaine) {
+    var parts = semaine.split("-W");
+    var year = +parts[0], week = +parts[1];
+    var simple = new Date(Date.UTC(year, 0, 1 + (week - 1) * 7));
+    var dow = simple.getUTCDay() || 7;
+    if (dow <= 4) simple.setUTCDate(simple.getUTCDate() - dow + 1);
+    else simple.setUTCDate(simple.getUTCDate() + 8 - dow);
+    return simple;
+  }
+  function dateForDayInWeek(semaine, dayIndex) {
+    var d = new Date(isoWeekMonday(semaine));
+    d.setUTCDate(d.getUTCDate() + dayIndex);
+    return d;
+  }
+  function toDateStr(d) { return d.toISOString().slice(0, 10); }
+  function monthOfDate(d) { return d.getUTCFullYear() + "-" + String(d.getUTCMonth() + 1).padStart(2, "0"); }
   function emptyPlanningJours() {
     var o = {};
     JOURS.forEach(function (j) { o[j.key] = { debut: "09:00", fin: "17:00", repos: false, ferie: false }; });
@@ -110,18 +137,35 @@
 
   // ---------- auth ----------
   $("btn-login").addEventListener("click", function () {
-    var email = $("login-email").value.trim();
+    var raw = $("login-email").value.trim();
     var pw = $("login-password").value;
     $("login-error").hidden = true;
-    if (!email || !pw) { showLoginError("Email et mot de passe requis."); return; }
-    auth.signInWithEmailAndPassword(email, pw).catch(function (e) {
-      showLoginError(translateAuthError(e));
-    });
+    if (!raw || !pw) { showLoginError("Identifiant et mot de passe requis."); return; }
+    var btn = $("btn-login");
+    btn.disabled = true;
+    var resolveEmail = raw.indexOf("@") !== -1
+      ? Promise.resolve(raw)
+      : db.collection("agentLogins").doc(slugCode(raw)).get().then(function (docSnap) {
+          if (!docSnap.exists) throw { code: "auth/user-not-found" };
+          return docSnap.data().email;
+        });
+    resolveEmail
+      .then(function (email) { return auth.signInWithEmailAndPassword(email, pw); })
+      .catch(function (e) { showLoginError(translateAuthError(e)); })
+      .finally(function () { btn.disabled = false; });
   });
   $("btn-forgot").addEventListener("click", function () {
-    var email = $("login-email").value.trim();
-    if (!email) { showLoginError("Renseigne ton email d'abord, puis clique à nouveau."); return; }
-    auth.sendPasswordResetEmail(email).then(function () {
+    var raw = $("login-email").value.trim();
+    if (!raw) { showLoginError("Renseigne ton email ou code agent d'abord, puis clique à nouveau."); return; }
+    var resolveEmail = raw.indexOf("@") !== -1
+      ? Promise.resolve(raw)
+      : db.collection("agentLogins").doc(slugCode(raw)).get().then(function (docSnap) {
+          if (!docSnap.exists) throw { code: "auth/user-not-found" };
+          return docSnap.data().email;
+        });
+    resolveEmail.then(function (email) {
+      return auth.sendPasswordResetEmail(email);
+    }).then(function () {
       showLoginMsg("Email de réinitialisation envoyé si ce compte existe.");
     }).catch(function (e) { showLoginError(translateAuthError(e)); });
   });
@@ -207,6 +251,13 @@
         state.weekValue = $("week-input").value || currentIsoWeek();
         subscribePlanningsForWeek();
       });
+      state.moisPaie = currentMonth();
+      $("month-input").value = state.moisPaie;
+      $("month-input").addEventListener("change", function () {
+        state.moisPaie = $("month-input").value || currentMonth();
+        loadPaie();
+      });
+      $("btn-export-paie").addEventListener("click", exportPaieCsv);
     } else if (state.role === "conseiller") {
       $("week-input-conseiller").value = state.weekValue;
       $("week-input-conseiller").addEventListener("change", function () {
@@ -214,6 +265,7 @@
         loadOwnPlanning();
       });
       loadOwnPlanning();
+      loadOwnAnnualView();
       subscribeMesSignalements();
     }
   }
@@ -234,6 +286,7 @@
       renderStats();
       renderConseillersTable();
       renderPlanningsTable();
+      if (state.moisPaie) loadPaie();
     }, function (err) { console.error(err); });
   }
 
@@ -258,7 +311,7 @@
     });
     var tbody = $("conseillers-tbody");
     if (rows.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="big">Aucun conseiller</div>Ajoute le premier compte avec le bouton ci-dessus.</div></td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="big">Aucun conseiller</div>Ajoute le premier compte avec le bouton ci-dessus.</div></td></tr>';
       return;
     }
     tbody.innerHTML = rows.map(function (c) {
@@ -266,11 +319,13 @@
       var statut = c.statut || "actif";
       var dateAjout = c.dateAjout ? new Date(c.dateAjout).toLocaleDateString("fr-FR") : "—";
       return '<tr>' +
+        '<td>' + esc(c.codeAgent || "—") + '</td>' +
         '<td class="name-cell">' + nomComplet + (c.email ? '<span class="email">' + esc(c.email) + '</span>' : '') + '</td>' +
         '<td><span class="badge badge-status-' + statut + '">' + (statut === "actif" ? "Actif" : "Inactif") + '</span></td>' +
         '<td>' + fmtEuros(c.tauxHoraireSemaine || 0) + '</td>' +
         '<td>' + fmtEuros(c.tauxHoraireDimancheFerie || 0) + '</td>' +
-        '<td>' + fmtEuros(c.primeM1 || 0) + '</td>' +
+        '<td>' + fmtEuros(c.primeLangue || 0) + '</td>' +
+        '<td>' + fmtEuros(c.primeTeletravail || 0) + '</td>' +
         '<td>' + dateAjout + '</td>' +
         '<td><div class="row-actions"><button class="btn btn-ghost btn-sm" data-edit="' + c._id + '">Modifier</button></div></td>' +
         '</tr>';
@@ -289,13 +344,15 @@
     $("conseiller-modal-title").textContent = c ? "Modifier le conseiller" : "Ajouter un conseiller";
     $("f-prenom").value = c ? (c.prenom || "") : "";
     $("f-nom").value = c ? (c.nom || "") : "";
+    $("f-code").value = c ? (c.codeAgent || "") : "";
     $("f-email").value = c ? (c.email || "") : "";
     $("f-email").disabled = !!c;
     $("f-password-wrap").hidden = !!c;
     $("f-password").value = "";
     $("f-taux-sem").value = c ? (c.tauxHoraireSemaine || 0) : "";
     $("f-taux-dim").value = c ? (c.tauxHoraireDimancheFerie || 0) : "";
-    $("f-prime").value = c ? (c.primeM1 || 0) : 0;
+    $("f-prime-langue").value = c ? (c.primeLangue || 0) : 0;
+    $("f-prime-tele").value = c ? (c.primeTeletravail || 0) : 0;
     $("f-statut").value = c ? (c.statut || "actif") : "actif";
     $("btn-delete-conseiller").hidden = !c;
     $("btn-reset-password").hidden = !c;
@@ -316,21 +373,29 @@
     var prenom = $("f-prenom").value.trim();
     var nom = $("f-nom").value.trim();
     var email = $("f-email").value.trim();
+    var codeAgent = $("f-code").value.trim();
     var errEl = $("conseiller-error");
     if (!prenom || !nom) { errEl.textContent = "Prénom et nom sont requis."; errEl.hidden = false; return; }
     if (!state.editingConseillerId && !email) { errEl.textContent = "Email requis pour créer le compte de connexion."; errEl.hidden = false; return; }
     var payload = {
-      prenom: prenom, nom: nom, email: email,
+      prenom: prenom, nom: nom, email: email, codeAgent: codeAgent,
       tauxHoraireSemaine: parseFloat($("f-taux-sem").value) || 0,
       tauxHoraireDimancheFerie: parseFloat($("f-taux-dim").value) || 0,
-      primeM1: parseFloat($("f-prime").value) || 0,
+      primeLangue: parseFloat($("f-prime-langue").value) || 0,
+      primeTeletravail: parseFloat($("f-prime-tele").value) || 0,
       statut: $("f-statut").value
     };
     var btn = $("btn-save-conseiller");
     btn.disabled = true;
 
+    function saveAgentLogin() {
+      if (!codeAgent || !email) return Promise.resolve();
+      return db.collection("agentLogins").doc(slugCode(codeAgent)).set({ email: email });
+    }
+
     if (state.editingConseillerId) {
       db.collection("conseillers").doc(state.editingConseillerId).update(payload)
+        .then(saveAgentLogin)
         .then(function () { toast("Conseiller mis à jour."); closeModals(); })
         .catch(function (e) { errEl.textContent = "Erreur : " + (e && e.code || e); errEl.hidden = false; })
         .finally(function () { btn.disabled = false; });
@@ -357,6 +422,7 @@
           });
         });
       })
+      .then(saveAgentLogin)
       .then(function () {
         toast("Conseiller ajouté. Communique-lui son email et mot de passe temporaire.");
         closeModals();
@@ -479,8 +545,7 @@
     $("planning-salary").innerHTML =
       '<div class="salary-line"><span>Heures normales (' + fmtHours(sal.minNormales) + ') × ' + fmtEuros(c.tauxHoraireSemaine || 0) + '/h</span><span>' + fmtEuros(sal.montantNormal) + '</span></div>' +
       '<div class="salary-line"><span>Heures dim./férié (' + fmtHours(sal.minDim) + ') × ' + fmtEuros(c.tauxHoraireDimancheFerie || 0) + '/h</span><span>' + fmtEuros(sal.montantDim) + '</span></div>' +
-      '<div class="salary-line total"><span>Total semaine</span><span>' + fmtEuros(sal.total) + '</span></div>' +
-      '<div class="salary-line" style="color:var(--muted);"><span>Prime mois précédent (hors calcul semaine)</span><span>' + fmtEuros(c.primeM1 || 0) + '</span></div>';
+      '<div class="salary-line total"><span>Total semaine</span><span>' + fmtEuros(sal.total) + '</span></div>';
   }
 
   $("btn-cancel-planning").addEventListener("click", closeModals);
@@ -519,7 +584,7 @@
       var declLe = s.createdAt ? new Date(s.createdAt).toLocaleString("fr-FR") : "—";
       return '<tr>' +
         '<td class="name-cell">' + esc(s.conseillerNom || "—") + '</td>' +
-        '<td><span class="badge badge-signal">' + (s.type === "absence" ? "Absence" : "Retard") + '</span></td>' +
+        '<td><span class="badge badge-signal">' + (TYPE_LABELS[s.type] || s.type) + '</span></td>' +
         '<td>' + esc(s.date || "—") + '</td>' +
         '<td>' + esc(s.message || "") + '</td>' +
         '<td>' + declLe + '</td>' +
@@ -535,6 +600,155 @@
   }
 
   // ======================================================
+  // PAIE — vue admin/direction
+  // ======================================================
+  function loadPaie() {
+    var mois = state.moisPaie;
+    var tbody = $("paie-tbody");
+    tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state">Chargement…</div></td></tr>';
+
+    Promise.all([
+      db.collection("plannings").get(),
+      db.collection("signalements").get(),
+      db.collection("primesMensuelles").where("mois", "==", mois).get()
+    ]).then(function (results) {
+      if (state.moisPaie !== mois) return; // l'utilisateur a changé de mois entre temps
+      var planningsSnap = results[0], signalementsSnap = results[1], primesSnap = results[2];
+
+      // absences déclarées (jours à exclure) pour ce mois, par conseiller
+      var absencesParConseiller = {}; // conseillerId -> Set(dateStr)
+      signalementsSnap.docs.forEach(function (d) {
+        var s = d.data();
+        if (!s.date || TYPES_DEDUCTIBLES.indexOf(s.type) === -1) return;
+        if (s.date.slice(0, 7) !== mois) return;
+        if (!absencesParConseiller[s.conseillerId]) absencesParConseiller[s.conseillerId] = {};
+        absencesParConseiller[s.conseillerId][s.date] = true;
+      });
+
+      // primes variables saisies pour ce mois
+      var primesVariables = {};
+      primesSnap.docs.forEach(function (d) {
+        var p = d.data();
+        primesVariables[p.conseillerId] = p.primeVariable || 0;
+      });
+
+      // regrouper les plannings du mois par conseiller
+      var planningsParConseiller = {};
+      planningsSnap.docs.forEach(function (d) {
+        var p = d.data();
+        if (!p.semaine || !p.jours) return;
+        var monday = isoWeekMonday(p.semaine);
+        if (monthOfDate(monday) !== mois) return;
+        (planningsParConseiller[p.conseillerId] = planningsParConseiller[p.conseillerId] || []).push(p);
+      });
+
+      var actifs = state.conseillers.filter(function (c) { return (c.statut || "actif") === "actif"; });
+      state.paieRows = actifs.map(function (c) {
+        var minNormales = 0, minDim = 0, minAbsence = 0;
+        var absSet = absencesParConseiller[c._id] || {};
+        (planningsParConseiller[c._id] || []).forEach(function (p) {
+          JOURS.forEach(function (j, idx) {
+            var day = p.jours[j.key];
+            if (!day || day.repos) return;
+            var dateStr = toDateStr(dateForDayInWeek(p.semaine, idx));
+            var mins = durationMinutes(day.debut, day.fin);
+            var estDim = j.key === "dimanche" || day.ferie;
+            if (absSet[dateStr]) {
+              minAbsence += mins;
+              return; // journée absente : non comptée dans les heures travaillées
+            }
+            if (estDim) minDim += mins; else minNormales += mins;
+          });
+        });
+        var gainsHoraires = (minNormales / 60) * (c.tauxHoraireSemaine || 0) + (minDim / 60) * (c.tauxHoraireDimancheFerie || 0);
+        var primeVariable = primesVariables.hasOwnProperty(c._id) ? primesVariables[c._id] : 0;
+        var primeLangue = c.primeLangue || 0;
+        var primeTeletravail = c.primeTeletravail || 0;
+        var total = gainsHoraires + primeLangue + primeTeletravail + primeVariable;
+        return {
+          conseiller: c, minNormales: minNormales, minDim: minDim, minAbsence: minAbsence,
+          gainsHoraires: gainsHoraires, primeLangue: primeLangue, primeTeletravail: primeTeletravail,
+          primeVariable: primeVariable, total: total
+        };
+      });
+
+      renderPaieTable();
+    }).catch(function (err) {
+      console.error(err);
+      tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state">Erreur de chargement.</div></td></tr>';
+    });
+  }
+
+  function renderPaieTable() {
+    var rows = state.paieRows || [];
+    var tbody = $("paie-tbody");
+    if (rows.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="big">Aucune donnée pour ce mois</div></div></td></tr>';
+      $("paie-stats").innerHTML = "";
+      return;
+    }
+    var totalGeneral = rows.reduce(function (s, r) { return s + r.total; }, 0);
+    $("paie-stats").innerHTML = statCard(fmtEuros(totalGeneral), "Masse salariale du mois") + statCard(rows.length, "Conseillers actifs");
+
+    tbody.innerHTML = rows.map(function (r, i) {
+      var c = r.conseiller;
+      var nomComplet = esc(((c.prenom || "") + " " + (c.nom || "")).trim());
+      return '<tr>' +
+        '<td class="name-cell">' + nomComplet + '</td>' +
+        '<td>' + fmtHours(r.minNormales) + '</td>' +
+        '<td>' + fmtHours(r.minDim) + '</td>' +
+        '<td>' + fmtEuros(r.gainsHoraires) + '</td>' +
+        '<td>' + fmtEuros(r.primeLangue) + '</td>' +
+        '<td>' + fmtEuros(r.primeTeletravail) + '</td>' +
+        '<td><input type="number" step="0.01" class="f-prime-variable" data-idx="' + i + '" value="' + r.primeVariable + '" style="width:90px;"></td>' +
+        '<td>' + (r.minAbsence > 0 ? fmtHours(r.minAbsence) : "—") + '</td>' +
+        '<td><strong>' + fmtEuros(r.total) + '</strong></td>' +
+        '</tr>';
+    }).join("");
+
+    tbody.querySelectorAll(".f-prime-variable").forEach(function (input) {
+      input.addEventListener("change", function () {
+        var idx = +input.getAttribute("data-idx");
+        var row = state.paieRows[idx];
+        var val = parseFloat(input.value) || 0;
+        row.primeVariable = val;
+        row.total = row.gainsHoraires + row.primeLangue + row.primeTeletravail + val;
+        var docId = state.moisPaie + "_" + row.conseiller._id;
+        db.collection("primesMensuelles").doc(docId).set({
+          conseillerId: row.conseiller._id, mois: state.moisPaie, primeVariable: val, misAJourLe: new Date().toISOString()
+        }).then(function () { toast("Prime variable enregistrée."); renderPaieTable(); })
+          .catch(function () { toast("Enregistrement impossible."); });
+      });
+    });
+  }
+
+  function exportPaieCsv() {
+    var rows = state.paieRows || [];
+    if (rows.length === 0) { toast("Rien à exporter pour ce mois."); return; }
+    var header = ["Code agent", "Nom", "Prénom", "Heures normales", "Heures dim/férié", "Gains horaires (€)", "Prime langue (€)", "Prime télétravail (€)", "Prime variable (€)", "Heures absence déduites", "Total mensuel (€)"];
+    var lines = [header.join(";")];
+    rows.forEach(function (r) {
+      var c = r.conseiller;
+      lines.push([
+        c.codeAgent || "", c.nom || "", c.prenom || "",
+        (r.minNormales / 60).toFixed(2), (r.minDim / 60).toFixed(2),
+        r.gainsHoraires.toFixed(2), r.primeLangue.toFixed(2), r.primeTeletravail.toFixed(2), r.primeVariable.toFixed(2),
+        (r.minAbsence / 60).toFixed(2), r.total.toFixed(2)
+      ].join(";"));
+    });
+    var csv = "\uFEFF" + lines.join("\n");
+    var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "paie_bestcall_" + state.moisPaie + ".csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // ======================================================
   // CONSEILLER — mon planning
   // ======================================================
   function loadOwnPlanning() {
@@ -542,7 +756,6 @@
     var docId = state.weekValue + "_" + state.conseillerId;
     db.collection("plannings").doc(docId).get().then(function (docSnap) {
       var jours = docSnap.exists ? docSnap.data().jours : emptyPlanningJours();
-      var mine = state.conseillers.find ? null : null;
       renderOwnPlanning(jours);
     }).catch(function (err) { console.error(err); });
   }
@@ -557,6 +770,36 @@
       return '<tr><td>' + j.label + '</td><td>' + esc(d.debut) + '–' + esc(d.fin) + '</td><td>' + fmtHours(mins) + '</td></tr>';
     }).join("");
     $("own-hours-stats").innerHTML = statCard(fmtHours(totalMin), "Heures cette semaine");
+  }
+
+  function loadOwnAnnualView() {
+    if (!state.conseillerId) return;
+    db.collection("plannings").where("conseillerId", "==", state.conseillerId).get()
+      .then(function (snap) {
+        var byMonth = {};
+        snap.docs.forEach(function (d) {
+          var data = d.data();
+          if (!data.jours || !data.semaine) return;
+          var monday = isoWeekMonday(data.semaine);
+          var mois = monthOfDate(monday);
+          var totalMin = 0;
+          JOURS.forEach(function (j) {
+            var day = data.jours[j.key];
+            if (day && !day.repos) totalMin += durationMinutes(day.debut, day.fin);
+          });
+          byMonth[mois] = (byMonth[mois] || 0) + totalMin;
+        });
+        var months = [];
+        var now = new Date();
+        for (var i = 11; i >= 0; i--) {
+          var d = new Date(Date.UTC(now.getFullYear(), now.getMonth() - i, 1));
+          months.push(monthOfDate(d));
+        }
+        var tbody = $("annual-view-tbody");
+        tbody.innerHTML = months.map(function (m) {
+          return '<tr><td>' + m + '</td><td>' + fmtHours(byMonth[m] || 0) + '</td></tr>';
+        }).join("");
+      }).catch(function (err) { console.error(err); });
   }
 
   // ======================================================
@@ -610,7 +853,7 @@
       return emailjs.send(emailjsConfig.serviceId, emailjsConfig.templateId, {
         to_email: directionEmail,
         conseiller_nom: conseillerNom,
-        type_signal: type === "absence" ? "Absence" : "Retard",
+        type_signal: TYPE_LABELS[type] || type,
         date_signal: date,
         message_signal: message || "(aucun détail)"
       });
@@ -626,7 +869,7 @@
         if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state">Aucun signalement pour l\'instant.</div></td></tr>'; return; }
         tbody.innerHTML = rows.map(function (s) {
           var declLe = s.createdAt ? new Date(s.createdAt).toLocaleString("fr-FR") : "—";
-          return '<tr><td>' + (s.type === "absence" ? "Absence" : "Retard") + '</td><td>' + esc(s.date) + '</td><td>' + esc(s.message || "") + '</td><td>' + declLe + '</td></tr>';
+          return '<tr><td>' + (TYPE_LABELS[s.type] || s.type) + '</td><td>' + esc(s.date) + '</td><td>' + esc(s.message || "") + '</td><td>' + declLe + '</td></tr>';
         }).join("");
       }, function (err) { console.error(err); });
   }
