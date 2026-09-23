@@ -1,7 +1,7 @@
 // ==========================================================
 // CONFIGURATION — BestCall Gestion interne
 // ==========================================================
- 
+
 // Config Firebase (récupérée dans Paramètres du projet > Vos applications)
 const firebaseConfig = {
   apiKey: "AIzaSyATNoOTMshQOocGFl1KKQCVDBcjU-4oFBk",
@@ -11,12 +11,10 @@ const firebaseConfig = {
   messagingSenderId: "152288691223",
   appId: "1:152288691223:web:bc906751600b194fa1c852"
 };
- 
-// Config EmailJS — à remplir une fois ton compte EmailJS créé
-// (Account > API Keys pour PUBLIC_KEY, Email Services pour SERVICE_ID, Email Templates pour TEMPLATE_ID)
+
+// Config EmailJS
 const emailjsConfig = {
-  publicKey: "COLLE_TA_PUBLIC_KEY_ICI",
-  serviceId: "COLLE_TON_SERVICE_ID_ICI",
-  templateId: "COLLE_TON_TEMPLATE_ID_ICI"
+  publicKey: "b_dDHF4g3EqvHUNLz",
+  serviceId: "service_alf664i",
+  templateId: "cfd0fsc"
 };
- 
