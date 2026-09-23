@@ -346,8 +346,9 @@
     $("f-nom").value = c ? (c.nom || "") : "";
     $("f-code").value = c ? (c.codeAgent || "") : "";
     $("f-email").value = c ? (c.email || "") : "";
-    $("f-email").disabled = !!c;
-    $("f-password-wrap").hidden = !!c;
+    $("f-email").disabled = !!(c && c.uid);
+    $("f-password-wrap").hidden = !!(c && c.uid);
+    $("f-password-wrap").querySelector("label").textContent = (c && !c.uid) ? "Créer un mot de passe temporaire" : "Mot de passe temporaire";
     $("f-password").value = "";
     $("f-taux-sem").value = c ? (c.tauxHoraireSemaine || 0) : "";
     $("f-taux-dim").value = c ? (c.tauxHoraireDimancheFerie || 0) : "";
@@ -355,7 +356,7 @@
     $("f-prime-tele").value = c ? (c.primeTeletravail || 0) : 0;
     $("f-statut").value = c ? (c.statut || "actif") : "actif";
     $("btn-delete-conseiller").hidden = !c;
-    $("btn-reset-password").hidden = !c;
+    $("btn-reset-password").hidden = !(c && c.uid);
     showModal("modal-conseiller");
   }
 
@@ -375,8 +376,11 @@
     var email = $("f-email").value.trim();
     var codeAgent = $("f-code").value.trim();
     var errEl = $("conseiller-error");
+    var existing = state.editingConseillerId ? state.conseillers.find(function (x) { return x._id === state.editingConseillerId; }) : null;
+    var needsAccount = !existing || !existing.uid;
+
     if (!prenom || !nom) { errEl.textContent = "Prénom et nom sont requis."; errEl.hidden = false; return; }
-    if (!state.editingConseillerId && !email) { errEl.textContent = "Email requis pour créer le compte de connexion."; errEl.hidden = false; return; }
+    if (needsAccount && !email) { errEl.textContent = "Email requis pour créer le compte de connexion."; errEl.hidden = false; return; }
     var payload = {
       prenom: prenom, nom: nom, email: email, codeAgent: codeAgent,
       tauxHoraireSemaine: parseFloat($("f-taux-sem").value) || 0,
@@ -393,7 +397,8 @@
       return db.collection("agentLogins").doc(slugCode(codeAgent)).set({ email: email });
     }
 
-    if (state.editingConseillerId) {
+    if (existing && !needsAccount) {
+      // Conseiller déjà pourvu d'un compte de connexion : simple mise à jour
       db.collection("conseillers").doc(state.editingConseillerId).update(payload)
         .then(saveAgentLogin)
         .then(function () { toast("Conseiller mis à jour."); closeModals(); })
@@ -402,10 +407,11 @@
       return;
     }
 
+    // Création d'un compte de connexion (conseiller tout nouveau, ou conseiller
+    // existant importé qui n'avait pas encore d'email/mot de passe)
     var pw = $("f-password").value;
     if (!pw || pw.length < 6) { errEl.textContent = "Mot de passe temporaire requis (6 caractères min)."; errEl.hidden = false; btn.disabled = false; return; }
 
-    // Créer le compte Auth via une instance Firebase secondaire pour ne pas déconnecter l'admin
     var secondaryName = "Secondary_" + Date.now();
     var secondaryApp = firebase.initializeApp(firebaseConfig, secondaryName);
     secondaryApp.auth().createUserWithEmailAndPassword(email, pw)
@@ -414,17 +420,24 @@
         return secondaryApp.auth().signOut().then(function () { return newUid; });
       })
       .then(function (newUid) {
-        payload.dateAjout = new Date().toISOString();
         payload.uid = newUid;
-        return db.collection("conseillers").add(payload).then(function (docRef) {
+        var conseillerId = existing ? existing._id : null;
+        var savePromise;
+        if (conseillerId) {
+          savePromise = db.collection("conseillers").doc(conseillerId).update(payload).then(function () { return conseillerId; });
+        } else {
+          payload.dateAjout = new Date().toISOString();
+          savePromise = db.collection("conseillers").add(payload).then(function (docRef) { return docRef.id; });
+        }
+        return savePromise.then(function (cId) {
           return db.collection("users").doc(newUid).set({
-            email: email, role: "conseiller", conseillerId: docRef.id, createdAt: new Date().toISOString()
+            email: email, role: "conseiller", conseillerId: cId, createdAt: new Date().toISOString()
           });
         });
       })
       .then(saveAgentLogin)
       .then(function () {
-        toast("Conseiller ajouté. Communique-lui son email et mot de passe temporaire.");
+        toast("Compte créé. Communique l'email et le mot de passe temporaire au conseiller.");
         closeModals();
       })
       .catch(function (e) {
@@ -548,6 +561,21 @@
       '<div class="salary-line total"><span>Total semaine</span><span>' + fmtEuros(sal.total) + '</span></div>';
   }
 
+  function toIsoWeekString(d) {
+    var date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+    var dayNum = (date.getUTCDay() + 6) % 7;
+    date.setUTCDate(date.getUTCDate() - dayNum + 3);
+    var firstThursday = new Date(Date.UTC(date.getUTCFullYear(), 0, 4));
+    var week = 1 + Math.round(((date - firstThursday) / 86400000 - 3 + ((firstThursday.getUTCDay() + 6) % 7)) / 7);
+    return date.getUTCFullYear() + "-W" + String(week).padStart(2, "0");
+  }
+  function addWeeks(semaine, n) {
+    var monday = isoWeekMonday(semaine);
+    var d = new Date(monday);
+    d.setUTCDate(d.getUTCDate() + n * 7);
+    return toIsoWeekString(d);
+  }
+
   $("btn-cancel-planning").addEventListener("click", closeModals);
   $("btn-save-planning").addEventListener("click", function () {
     if (!state.planningTarget) return;
@@ -560,6 +588,29 @@
       misAJourLe: new Date().toISOString()
     }).then(function () { toast("Planning enregistré."); closeModals(); })
       .catch(function () { toast("Enregistrement impossible."); })
+      .finally(function () { btn.disabled = false; });
+  });
+
+  $("btn-duplicate-planning").addEventListener("click", function () {
+    if (!state.planningTarget) return;
+    var n = parseInt($("f-duplicate-weeks").value, 10) || 0;
+    if (n < 1) { toast("Indique un nombre de semaines valide."); return; }
+    var jours = readGridJours();
+    var conseillerId = state.planningTarget.conseillerId;
+    var baseWeek = state.weekValue;
+    var btn = $("btn-duplicate-planning");
+    btn.disabled = true;
+    var batchPromises = [];
+    for (var i = 1; i <= n; i++) {
+      var week = addWeeks(baseWeek, i);
+      var docId = week + "_" + conseillerId;
+      batchPromises.push(db.collection("plannings").doc(docId).set({
+        conseillerId: conseillerId, semaine: week, jours: jours, misAJourLe: new Date().toISOString()
+      }));
+    }
+    Promise.all(batchPromises)
+      .then(function () { toast("Planning dupliqué sur " + n + " semaine(s)."); closeModals(); })
+      .catch(function () { toast("Erreur lors de la duplication."); })
       .finally(function () { btn.disabled = false; });
   });
 
