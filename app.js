@@ -498,7 +498,7 @@
       var jours = plan && plan.jours ? plan.jours : null;
       var dayCells = JOURS.map(function (j) {
         var d = jours ? jours[j.key] : null;
-        if (!d || d.repos) return '<td><span class="day-off">Repos</span></td>';
+        if (!d || d.repos) return '<td class="cell-repos"><span class="day-off">Repos</span></td>';
         var cls = d.ferie || j.key === "dimanche" ? "day-hours day-ferie" : "day-hours";
         return '<td><span class="' + cls + '">' + esc(d.debut) + '–' + esc(d.fin) + '</span></td>';
       }).join("");
@@ -854,11 +854,12 @@
     tbody.innerHTML = JOURS.map(function (j) {
       var d = jours[j.key];
       var editBtn = '<button class="btn btn-ghost btn-sm" data-edit-day="' + j.key + '">Modifier</button>';
-      if (!d || d.repos) return '<tr><td>' + j.label + '</td><td><span class="day-off">Repos</span></td><td>0h</td><td>' + editBtn + '</td></tr>';
+      if (!d || d.repos) return '<tr class="row-repos"><td>' + j.label + '</td><td><span class="day-off">Repos</span></td><td>—</td><td>0h</td><td>' + editBtn + '</td></tr>';
       var mins = dayWorkedMinutes(d);
       totalMin += mins;
-      var horaireTxt = esc(d.debut) + '–' + esc(d.fin) + (d.pauseDebut && d.pauseFin ? ' <span style="color:var(--muted);font-size:12px;">(pause ' + esc(d.pauseDebut) + '–' + esc(d.pauseFin) + ')</span>' : '');
-      return '<tr><td>' + j.label + '</td><td>' + horaireTxt + '</td><td>' + fmtHours(mins) + '</td><td>' + editBtn + '</td></tr>';
+      var horaireTxt = esc(d.debut) + '–' + esc(d.fin);
+      var pauseTxt = (d.pauseDebut && d.pauseFin) ? (esc(d.pauseDebut) + '–' + esc(d.pauseFin)) : '—';
+      return '<tr><td>' + j.label + '</td><td>' + horaireTxt + '</td><td>' + pauseTxt + '</td><td>' + fmtHours(mins) + '</td><td>' + editBtn + '</td></tr>';
     }).join("");
     $("own-hours-stats").innerHTML = statCard(fmtHours(totalMin), "Heures cette semaine");
     tbody.querySelectorAll("[data-edit-day]").forEach(function (btn) {
@@ -1003,8 +1004,9 @@
       var dateStr = toDateStr(d);
       var info = byDate[dateStr];
       var isToday = dateStr === todayStr;
+      var isRepos = !info || info.repos;
       var content = '<div class="cal-daynum">' + day + '</div>';
-      if (!info || info.repos) {
+      if (isRepos) {
         content += '<div class="cal-repos">Repos</div>';
       } else {
         content += '<div class="cal-horaire">' + esc(info.debut) + '–' + esc(info.fin) + '</div>';
@@ -1012,7 +1014,8 @@
           content += '<div class="cal-pause">pause ' + esc(info.pauseDebut) + '–' + esc(info.pauseFin) + '</div>';
         }
       }
-      cells.push('<div class="cal-cell' + (isToday ? " today" : "") + '">' + content + '</div>');
+      var cellClass = "cal-cell" + (isRepos ? " is-repos" : " is-work") + (isToday ? " today" : "");
+      cells.push('<div class="' + cellClass + '">' + content + '</div>');
     }
     $("calendar-grid").innerHTML = cells.join("");
   }
