@@ -127,11 +127,18 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
 .signal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px;}
 .signal-form .field-row{margin-bottom:0;}
 .own-hours{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+.section-title{font-size:15px;margin:26px 0 4px;font-family:"Manrope",sans-serif;font-weight:600;}
+.section-help{font-size:12.5px;color:var(--muted);margin:0 0 12px;line-height:1.5;}
+tr.row-repos{background:var(--surface-2);}
+tr.row-repos td{color:var(--muted);}
+td.cell-repos{background:var(--surface-2);}
 .month-nav{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
 .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
 .calendar-grid .cal-head{background:var(--surface-2);text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;padding:6px 4px;}
 .calendar-grid .cal-cell{background:var(--surface);min-height:64px;padding:5px 6px;font-size:11.5px;}
 .calendar-grid .cal-cell.empty{background:var(--surface-2);}
+.calendar-grid .cal-cell.is-repos{background:var(--surface-2);}
+.calendar-grid .cal-cell.is-work{background:var(--accent-soft);}
 .calendar-grid .cal-cell .cal-daynum{font-weight:600;font-size:12.5px;margin-bottom:3px;}
 .calendar-grid .cal-cell .cal-horaire{color:var(--ink-soft);line-height:1.35;}
 .calendar-grid .cal-cell .cal-pause{color:var(--muted);font-size:10.5px;}
@@ -260,14 +267,15 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
         <div class="head-actions week-picker"><input type="week" id="week-input-conseiller"></div>
       </div>
       <div class="own-hours" id="own-hours-stats"></div>
-      <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px;">Tu peux ajuster les horaires d'un jour toi-même (ex. retard rattrapé le lendemain) — Marta est notifiée automatiquement à chaque changement.</p>
+      <p class="section-help">Cette semaine. Le total d'heures tient déjà compte de ta pause. Clique "Modifier" sur un jour pour ajuster son horaire ou sa pause (ex. retard rattrapé le lendemain) — Marta est notifiée automatiquement à chaque changement.</p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Jour</th><th>Horaire</th><th>Heures</th><th></th></tr></thead>
-          <tbody id="mon-planning-tbody"><tr><td colspan="4"><div class="empty-state">Chargement…</div></td></tr></tbody>
+          <thead><tr><th>Jour</th><th>Horaire</th><th>Pause</th><th>Heures</th><th></th></tr></thead>
+          <tbody id="mon-planning-tbody"><tr><td colspan="5"><div class="empty-state">Chargement…</div></td></tr></tbody>
         </table>
       </div>
-      <h2 style="font-size:15px;margin:26px 0 12px;">Vue du mois</h2>
+      <h2 class="section-title">Vue du mois</h2>
+      <p class="section-help">Vue d'ensemble type agenda — repos en gris, jours travaillés en clair. Utilise les flèches pour changer de mois.</p>
       <div class="month-nav">
         <button class="btn btn-ghost btn-sm" id="btn-prev-month">‹</button>
         <span id="month-view-label" style="font-weight:600;"></span>
@@ -275,7 +283,8 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
       </div>
       <div class="calendar-grid" id="calendar-grid"></div>
 
-      <h2 style="font-size:15px;margin:26px 0 12px;">Vue annuelle (à partir de septembre)</h2>
+      <h2 class="section-title">Vue annuelle (à partir de septembre)</h2>
+      <p class="section-help">Le total de chaque mois se remplit au fur et à mesure des semaines qui passent — un mois en cours ou à venir n'affiche donc pas encore son total final.</p>
       <div class="table-wrap">
         <table>
           <thead><tr><th>Mois</th><th>Heures totales</th></tr></thead>
