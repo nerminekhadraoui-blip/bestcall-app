@@ -55,6 +55,9 @@
     moisPaie: null,
     paieRows: [],
     ownJours: null,
+    ownAllPlannings: [],
+    monthViewYear: new Date().getFullYear(),
+    monthViewMonth: new Date().getMonth(),
     editingDayKey: null,
     unsub: {}
   };
@@ -116,15 +119,21 @@
   function monthOfDate(d) { return d.getUTCFullYear() + "-" + String(d.getUTCMonth() + 1).padStart(2, "0"); }
   function emptyPlanningJours() {
     var o = {};
-    JOURS.forEach(function (j) { o[j.key] = { debut: "09:00", fin: "17:00", repos: false, ferie: false }; });
+    JOURS.forEach(function (j) { o[j.key] = { debut: "09:00", fin: "17:00", repos: false, ferie: false, pauseDebut: "", pauseFin: "" }; });
     return o;
+  }
+  function dayWorkedMinutes(d) {
+    if (!d || d.repos) return 0;
+    var mins = durationMinutes(d.debut, d.fin);
+    if (d.pauseDebut && d.pauseFin) mins -= durationMinutes(d.pauseDebut, d.pauseFin);
+    return Math.max(0, mins);
   }
   function computeSalary(jours, tauxSem, tauxDim) {
     var minNormales = 0, minDim = 0;
     JOURS.forEach(function (j) {
       var d = jours[j.key];
       if (!d || d.repos) return;
-      var mins = durationMinutes(d.debut, d.fin);
+      var mins = dayWorkedMinutes(d);
       if (j.key === "dimanche" || d.ferie) minDim += mins; else minNormales += mins;
     });
     var montantNormal = (minNormales / 60) * (tauxSem || 0);
@@ -525,14 +534,29 @@
         '<div><input type="time" class="f-fin" value="' + esc(d.fin) + '" ' + (d.repos ? "disabled" : "") + '></div>' +
         '<label class="toggle"><input type="checkbox" class="f-repos" ' + (d.repos ? "checked" : "") + '> Repos</label>' +
         '<label class="toggle"><input type="checkbox" class="f-ferie" ' + (d.ferie ? "checked" : "") + '> Férié</label>' +
+        '</div>' +
+        '<div class="pause-row" data-pause-for="' + j.key + '">' +
+        '<span class="pause-label">Pause</span>' +
+        '<input type="time" class="f-pause-debut" value="' + esc(d.pauseDebut || "") + '" ' + (d.repos ? "disabled" : "") + '>' +
+        '<span>–</span>' +
+        '<input type="time" class="f-pause-fin" value="' + esc(d.pauseFin || "") + '" ' + (d.repos ? "disabled" : "") + '>' +
         '</div>';
     }).join("");
     grid.querySelectorAll(".grid-days").forEach(function (row) {
+      var key = row.getAttribute("data-day");
+      var pauseRow = grid.querySelector('.pause-row[data-pause-for="' + key + '"]');
       var repos = row.querySelector(".f-repos"), debut = row.querySelector(".f-debut"), fin = row.querySelector(".f-fin");
-      repos.addEventListener("change", function () { debut.disabled = repos.checked; fin.disabled = repos.checked; recomputePlanningPreview(); });
+      var pDebut = pauseRow.querySelector(".f-pause-debut"), pFin = pauseRow.querySelector(".f-pause-fin");
+      repos.addEventListener("change", function () {
+        debut.disabled = repos.checked; fin.disabled = repos.checked;
+        pDebut.disabled = repos.checked; pFin.disabled = repos.checked;
+        recomputePlanningPreview();
+      });
       row.querySelector(".f-ferie").addEventListener("change", recomputePlanningPreview);
       debut.addEventListener("change", recomputePlanningPreview);
       fin.addEventListener("change", recomputePlanningPreview);
+      pDebut.addEventListener("change", recomputePlanningPreview);
+      pFin.addEventListener("change", recomputePlanningPreview);
     });
     recomputePlanningPreview();
     showModal("modal-planning");
@@ -542,11 +566,14 @@
     var jours = {};
     document.querySelectorAll("#planning-grid .grid-days").forEach(function (row) {
       var key = row.getAttribute("data-day");
+      var pauseRow = document.querySelector('.pause-row[data-pause-for="' + key + '"]');
       jours[key] = {
         debut: row.querySelector(".f-debut").value || "09:00",
         fin: row.querySelector(".f-fin").value || "17:00",
         repos: row.querySelector(".f-repos").checked,
-        ferie: row.querySelector(".f-ferie").checked
+        ferie: row.querySelector(".f-ferie").checked,
+        pauseDebut: pauseRow.querySelector(".f-pause-debut").value || "",
+        pauseFin: pauseRow.querySelector(".f-pause-fin").value || ""
       };
     });
     return jours;
@@ -638,7 +665,7 @@
       return '<tr>' +
         '<td class="name-cell">' + esc(s.conseillerNom || "—") + '</td>' +
         '<td><span class="badge badge-signal">' + (TYPE_LABELS[s.type] || s.type) + '</span></td>' +
-        '<td>' + esc(s.date || "—") + '</td>' +
+        '<td>' + esc(s.date || "—") + (s.dateFin ? " → " + esc(s.dateFin) : "") + '</td>' +
         '<td>' + esc(s.message || "") + '</td>' +
         '<td>' + declLe + '</td>' +
         '<td>' + (s.statut === "traite" ? "Traité" : "Nouveau") + '</td>' +
@@ -673,9 +700,17 @@
       signalementsSnap.docs.forEach(function (d) {
         var s = d.data();
         if (!s.date || TYPES_DEDUCTIBLES.indexOf(s.type) === -1) return;
-        if (s.date.slice(0, 7) !== mois) return;
+        var finRange = s.dateFin || s.date;
+        // ignore complètement si toute la période est hors du mois affiché
+        if (finRange.slice(0, 7) < mois || s.date.slice(0, 7) > mois) return;
         if (!absencesParConseiller[s.conseillerId]) absencesParConseiller[s.conseillerId] = {};
-        absencesParConseiller[s.conseillerId][s.date] = true;
+        var cur = new Date(s.date + "T00:00:00Z");
+        var fin = new Date(finRange + "T00:00:00Z");
+        while (cur <= fin) {
+          var dStr = toDateStr(cur);
+          if (dStr.slice(0, 7) === mois) absencesParConseiller[s.conseillerId][dStr] = true;
+          cur.setUTCDate(cur.getUTCDate() + 1);
+        }
       });
 
       // primes variables saisies pour ce mois
@@ -704,7 +739,7 @@
             var day = p.jours[j.key];
             if (!day || day.repos) return;
             var dateStr = toDateStr(dateForDayInWeek(p.semaine, idx));
-            var mins = durationMinutes(day.debut, day.fin);
+            var mins = dayWorkedMinutes(day);
             var estDim = j.key === "dimanche" || day.ferie;
             if (absSet[dateStr]) {
               minAbsence += mins;
@@ -820,9 +855,10 @@
       var d = jours[j.key];
       var editBtn = '<button class="btn btn-ghost btn-sm" data-edit-day="' + j.key + '">Modifier</button>';
       if (!d || d.repos) return '<tr><td>' + j.label + '</td><td><span class="day-off">Repos</span></td><td>0h</td><td>' + editBtn + '</td></tr>';
-      var mins = durationMinutes(d.debut, d.fin);
+      var mins = dayWorkedMinutes(d);
       totalMin += mins;
-      return '<tr><td>' + j.label + '</td><td>' + esc(d.debut) + '–' + esc(d.fin) + '</td><td>' + fmtHours(mins) + '</td><td>' + editBtn + '</td></tr>';
+      var horaireTxt = esc(d.debut) + '–' + esc(d.fin) + (d.pauseDebut && d.pauseFin ? ' <span style="color:var(--muted);font-size:12px;">(pause ' + esc(d.pauseDebut) + '–' + esc(d.pauseFin) + ')</span>' : '');
+      return '<tr><td>' + j.label + '</td><td>' + horaireTxt + '</td><td>' + fmtHours(mins) + '</td><td>' + editBtn + '</td></tr>';
     }).join("");
     $("own-hours-stats").innerHTML = statCard(fmtHours(totalMin), "Heures cette semaine");
     tbody.querySelectorAll("[data-edit-day]").forEach(function (btn) {
@@ -832,11 +868,13 @@
 
   function openEditDayModal(dayKey) {
     var jDef = JOURS.find(function (j) { return j.key === dayKey; });
-    var current = (state.ownJours && state.ownJours[dayKey]) || { debut: "09:00", fin: "17:00", repos: false, ferie: false };
+    var current = (state.ownJours && state.ownJours[dayKey]) || { debut: "09:00", fin: "17:00", repos: false, ferie: false, pauseDebut: "", pauseFin: "" };
     state.editingDayKey = dayKey;
     $("edit-day-title").textContent = "Modifier — " + jDef.label;
     $("ed-debut").value = current.debut || "09:00";
     $("ed-fin").value = current.fin || "17:00";
+    $("ed-pause-debut").value = current.pauseDebut || "";
+    $("ed-pause-fin").value = current.pauseFin || "";
     $("ed-repos").checked = !!current.repos;
     $("ed-message").value = "";
     $("edit-day-error").hidden = true;
@@ -853,7 +891,9 @@
       debut: $("ed-debut").value || "09:00",
       fin: $("ed-fin").value || "17:00",
       repos: $("ed-repos").checked,
-      ferie: ancien.ferie || false
+      ferie: ancien.ferie || false,
+      pauseDebut: $("ed-pause-debut").value || "",
+      pauseFin: $("ed-pause-fin").value || ""
     };
     var message = $("ed-message").value.trim();
     var docId = state.weekValue + "_" + state.conseillerId;
@@ -883,8 +923,8 @@
     return db.collection("conseillers").doc(state.conseillerId).get().then(function (cSnap) {
       var c = cSnap.data() || {};
       var conseillerNom = ((c.prenom || "") + " " + (c.nom || "")).trim();
-      var ancienTxt = ancien.repos ? "Repos" : (ancien.debut + "–" + ancien.fin);
-      var nouveauTxt = nouveau.repos ? "Repos" : (nouveau.debut + "–" + nouveau.fin);
+      var ancienTxt = ancien.repos ? "Repos" : (ancien.debut + "–" + ancien.fin + (ancien.pauseDebut && ancien.pauseFin ? " (pause " + ancien.pauseDebut + "–" + ancien.pauseFin + ")" : ""));
+      var nouveauTxt = nouveau.repos ? "Repos" : (nouveau.debut + "–" + nouveau.fin + (nouveau.pauseDebut && nouveau.pauseFin ? " (pause " + nouveau.pauseDebut + "–" + nouveau.pauseFin + ")" : ""));
       return db.collection("users").where("role", "==", "direction").limit(1).get().then(function (snap) {
         if (snap.empty) return;
         var directionEmail = snap.docs[0].data().email;
@@ -901,25 +941,28 @@
 
   function loadOwnAnnualView() {
     if (!state.conseillerId) return;
+    var START_MONTH = "2026-09"; // vue annuelle : démarre à septembre, ne remonte pas avant
     db.collection("plannings").where("conseillerId", "==", state.conseillerId).get()
       .then(function (snap) {
+        // cache brut pour la vue mensuelle (calendrier)
+        state.ownAllPlannings = snap.docs.map(function (d) { return d.data(); }).filter(function (p) { return p.jours && p.semaine; });
+        renderMonthView();
+
         var byMonth = {};
-        snap.docs.forEach(function (d) {
-          var data = d.data();
-          if (!data.jours || !data.semaine) return;
+        state.ownAllPlannings.forEach(function (data) {
           var monday = isoWeekMonday(data.semaine);
           var mois = monthOfDate(monday);
           var totalMin = 0;
           JOURS.forEach(function (j) {
-            var day = data.jours[j.key];
-            if (day && !day.repos) totalMin += durationMinutes(day.debut, day.fin);
+            totalMin += dayWorkedMinutes(data.jours[j.key]);
           });
           byMonth[mois] = (byMonth[mois] || 0) + totalMin;
         });
         var months = [];
-        var now = new Date();
-        for (var i = 11; i >= 0; i--) {
-          var d = new Date(Date.UTC(now.getFullYear(), now.getMonth() - i, 1));
+        var startParts = START_MONTH.split("-");
+        var startDate = new Date(Date.UTC(+startParts[0], +startParts[1] - 1, 1));
+        for (var i = 0; i < 12; i++) {
+          var d = new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth() + i, 1));
           months.push(monthOfDate(d));
         }
         var tbody = $("annual-view-tbody");
@@ -929,16 +972,74 @@
       }).catch(function (err) { console.error(err); });
   }
 
+  function renderMonthView() {
+    var monthDate = new Date(Date.UTC(state.monthViewYear, state.monthViewMonth, 1));
+    var monthLabel = monthDate.toLocaleDateString("fr-FR", { month: "long", year: "numeric", timeZone: "UTC" });
+    $("month-view-label").textContent = monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1);
+
+    // index date -> jour object, à partir des plannings déjà chargés
+    var byDate = {};
+    (state.ownAllPlannings || []).forEach(function (p) {
+      JOURS.forEach(function (j, idx) {
+        var day = p.jours[j.key];
+        if (!day) return;
+        var dateStr = toDateStr(dateForDayInWeek(p.semaine, idx));
+        byDate[dateStr] = day;
+      });
+    });
+
+    var firstOfMonth = new Date(Date.UTC(state.monthViewYear, state.monthViewMonth, 1));
+    var lastOfMonth = new Date(Date.UTC(state.monthViewYear, state.monthViewMonth + 1, 0));
+    var startOffset = (firstOfMonth.getUTCDay() + 6) % 7; // lundi = 0
+    var todayStr = toDateStr(new Date());
+
+    var cells = [];
+    ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].forEach(function (lbl) {
+      cells.push('<div class="cal-head">' + lbl + '</div>');
+    });
+    for (var i = 0; i < startOffset; i++) cells.push('<div class="cal-cell empty"></div>');
+    for (var day = 1; day <= lastOfMonth.getUTCDate(); day++) {
+      var d = new Date(Date.UTC(state.monthViewYear, state.monthViewMonth, day));
+      var dateStr = toDateStr(d);
+      var info = byDate[dateStr];
+      var isToday = dateStr === todayStr;
+      var content = '<div class="cal-daynum">' + day + '</div>';
+      if (!info || info.repos) {
+        content += '<div class="cal-repos">Repos</div>';
+      } else {
+        content += '<div class="cal-horaire">' + esc(info.debut) + '–' + esc(info.fin) + '</div>';
+        if (info.pauseDebut && info.pauseFin) {
+          content += '<div class="cal-pause">pause ' + esc(info.pauseDebut) + '–' + esc(info.pauseFin) + '</div>';
+        }
+      }
+      cells.push('<div class="cal-cell' + (isToday ? " today" : "") + '">' + content + '</div>');
+    }
+    $("calendar-grid").innerHTML = cells.join("");
+  }
+
+  $("btn-prev-month") && $("btn-prev-month").addEventListener("click", function () {
+    state.monthViewMonth--;
+    if (state.monthViewMonth < 0) { state.monthViewMonth = 11; state.monthViewYear--; }
+    renderMonthView();
+  });
+  $("btn-next-month") && $("btn-next-month").addEventListener("click", function () {
+    state.monthViewMonth++;
+    if (state.monthViewMonth > 11) { state.monthViewMonth = 0; state.monthViewYear++; }
+    renderMonthView();
+  });
+
   // ======================================================
   // CONSEILLER — signaler retard/absence
   // ======================================================
   $("btn-send-signal") && $("btn-send-signal").addEventListener("click", function () {
     var type = $("s-type").value;
     var date = $("s-date").value;
+    var dateFin = $("s-date-fin").value || "";
     var message = $("s-message").value.trim();
     var errEl = $("signal-error"), msgEl = $("signal-msg");
     errEl.hidden = true; msgEl.hidden = true;
-    if (!date) { errEl.textContent = "Choisis une date."; errEl.hidden = false; return; }
+    if (!date) { errEl.textContent = "Choisis une date de début."; errEl.hidden = false; return; }
+    if (dateFin && dateFin < date) { errEl.textContent = "La date de fin doit être après la date de début."; errEl.hidden = false; return; }
 
     var conseillerNom = "";
     var btn = $("btn-send-signal");
@@ -951,19 +1052,22 @@
       .then(function (cSnap) {
         var c = cSnap.data() || {};
         conseillerNom = ((c.prenom || "") + " " + (c.nom || "")).trim();
-        return db.collection("signalements").add({
+        var payload = {
           conseillerId: state.conseillerId, conseillerNom: conseillerNom,
           type: type, date: date, message: message,
           semaine: state.weekValue, createdAt: new Date().toISOString(), statut: "nouveau"
-        });
+        };
+        if (dateFin) payload.dateFin = dateFin;
+        return db.collection("signalements").add(payload);
       })
       .then(function () {
-        return sendSignalEmail(conseillerNom, type, date, message);
+        return sendSignalEmail(conseillerNom, type, date, dateFin, message);
       })
       .then(function () {
         msgEl.textContent = "Signalement envoyé, Marta a été notifiée.";
         msgEl.hidden = false;
         $("s-message").value = "";
+        $("s-date-fin").value = "";
       })
       .catch(function (e) {
         errEl.textContent = "Erreur : " + (e && e.message || e);
@@ -972,7 +1076,7 @@
       .finally(function () { btn.disabled = false; });
   });
 
-  function sendSignalEmail(conseillerNom, type, date, message) {
+  function sendSignalEmail(conseillerNom, type, date, dateFin, message) {
     if (!emailjsReady) return Promise.resolve();
     return db.collection("users").where("role", "==", "direction").limit(1).get().then(function (snap) {
       if (snap.empty) return;
@@ -981,7 +1085,7 @@
         to_email: directionEmail,
         conseiller_nom: conseillerNom,
         type_signal: TYPE_LABELS[type] || type,
-        date_signal: date,
+        date_signal: date + (dateFin ? " → " + dateFin : ""),
         message_signal: message || "(aucun détail)"
       });
     }).catch(function (e) { console.warn("Email non envoyé", e); });
@@ -996,7 +1100,7 @@
         if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state">Aucun signalement pour l\'instant.</div></td></tr>'; return; }
         tbody.innerHTML = rows.map(function (s) {
           var declLe = s.createdAt ? new Date(s.createdAt).toLocaleString("fr-FR") : "—";
-          return '<tr><td>' + (TYPE_LABELS[s.type] || s.type) + '</td><td>' + esc(s.date) + '</td><td>' + esc(s.message || "") + '</td><td>' + declLe + '</td></tr>';
+          return '<tr><td>' + (TYPE_LABELS[s.type] || s.type) + '</td><td>' + esc(s.date) + (s.dateFin ? " → " + esc(s.dateFin) : "") + '</td><td>' + esc(s.message || "") + '</td><td>' + declLe + '</td></tr>';
         }).join("");
       }, function (err) { console.error(err); });
   }
