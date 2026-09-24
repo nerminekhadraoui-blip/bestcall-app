@@ -243,10 +243,11 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
         <div class="head-actions week-picker"><input type="week" id="week-input-conseiller"></div>
       </div>
       <div class="own-hours" id="own-hours-stats"></div>
+      <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px;">Tu peux ajuster les horaires d'un jour toi-même (ex. retard rattrapé le lendemain) — Marta est notifiée automatiquement à chaque changement.</p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Jour</th><th>Horaire</th><th>Heures</th></tr></thead>
-          <tbody id="mon-planning-tbody"><tr><td colspan="3"><div class="empty-state">Chargement…</div></td></tr></tbody>
+          <thead><tr><th>Jour</th><th>Horaire</th><th>Heures</th><th></th></tr></thead>
+          <tbody id="mon-planning-tbody"><tr><td colspan="4"><div class="empty-state">Chargement…</div></td></tr></tbody>
         </table>
       </div>
       <h2 style="font-size:15px;margin:26px 0 12px;">Vue annuelle (12 derniers mois)</h2>
@@ -359,6 +360,22 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
     <div class="modal-actions">
       <button class="btn btn-ghost btn-sm" id="btn-cancel-password">Annuler</button>
       <button class="btn btn-primary btn-sm" id="btn-save-password">Enregistrer</button>
+    </div>
+  </div>
+
+  <div class="modal" id="modal-edit-day" hidden>
+    <h2 id="edit-day-title">Modifier ce jour</h2>
+    <p class="modal-sub">Marta sera notifiée automatiquement de ce changement.</p>
+    <div class="field-row">
+      <div class="field"><label for="ed-debut">Début</label><input type="time" id="ed-debut"></div>
+      <div class="field"><label for="ed-fin">Fin</label><input type="time" id="ed-fin"></div>
+    </div>
+    <label class="toggle" style="margin-bottom:14px;display:inline-flex;"><input type="checkbox" id="ed-repos"> Journée de repos</label>
+    <div class="field"><label for="ed-message">Raison (optionnel)</label><input type="text" id="ed-message" placeholder="Ex : retard rattrapé demain"></div>
+    <p class="field-error" id="edit-day-error" hidden></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" id="btn-cancel-edit-day">Annuler</button>
+      <button class="btn btn-primary btn-sm" id="btn-save-edit-day">Enregistrer</button>
     </div>
   </div>
 </div>
