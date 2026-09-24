@@ -54,6 +54,8 @@
     planningTarget: null,
     moisPaie: null,
     paieRows: [],
+    ownJours: null,
+    editingDayKey: null,
     unsub: {}
   };
 
@@ -346,8 +348,8 @@
     $("f-nom").value = c ? (c.nom || "") : "";
     $("f-code").value = c ? (c.codeAgent || "") : "";
     $("f-email").value = c ? (c.email || "") : "";
-    $("f-email").disabled = !!(c && c.uid);
-    $("f-password-wrap").hidden = !!(c && c.uid);
+    $("f-email").disabled = !!(c && c.uid && c.email);
+    $("f-password-wrap").hidden = !!(c && c.uid && c.email);
     $("f-password-wrap").querySelector("label").textContent = (c && !c.uid) ? "Créer un mot de passe temporaire" : "Mot de passe temporaire";
     $("f-password").value = "";
     $("f-taux-sem").value = c ? (c.tauxHoraireSemaine || 0) : "";
@@ -356,7 +358,7 @@
     $("f-prime-tele").value = c ? (c.primeTeletravail || 0) : 0;
     $("f-statut").value = c ? (c.statut || "actif") : "actif";
     $("btn-delete-conseiller").hidden = !c;
-    $("btn-reset-password").hidden = !(c && c.uid);
+    $("btn-reset-password").hidden = !(c && c.uid && c.email);
     showModal("modal-conseiller");
   }
 
@@ -377,7 +379,7 @@
     var codeAgent = $("f-code").value.trim();
     var errEl = $("conseiller-error");
     var existing = state.editingConseillerId ? state.conseillers.find(function (x) { return x._id === state.editingConseillerId; }) : null;
-    var needsAccount = !existing || !existing.uid;
+    var needsAccount = !existing || !existing.uid || !existing.email;
 
     if (!prenom || !nom) { errEl.textContent = "Prénom et nom sont requis."; errEl.hidden = false; return; }
     if (needsAccount && !email) { errEl.textContent = "Email requis pour créer le compte de connexion."; errEl.hidden = false; return; }
@@ -811,16 +813,90 @@
     }).catch(function (err) { console.error(err); });
   }
   function renderOwnPlanning(jours) {
+    state.ownJours = jours;
     var tbody = $("mon-planning-tbody");
     var totalMin = 0;
     tbody.innerHTML = JOURS.map(function (j) {
       var d = jours[j.key];
-      if (!d || d.repos) return '<tr><td>' + j.label + '</td><td><span class="day-off">Repos</span></td><td>0h</td></tr>';
+      var editBtn = '<button class="btn btn-ghost btn-sm" data-edit-day="' + j.key + '">Modifier</button>';
+      if (!d || d.repos) return '<tr><td>' + j.label + '</td><td><span class="day-off">Repos</span></td><td>0h</td><td>' + editBtn + '</td></tr>';
       var mins = durationMinutes(d.debut, d.fin);
       totalMin += mins;
-      return '<tr><td>' + j.label + '</td><td>' + esc(d.debut) + '–' + esc(d.fin) + '</td><td>' + fmtHours(mins) + '</td></tr>';
+      return '<tr><td>' + j.label + '</td><td>' + esc(d.debut) + '–' + esc(d.fin) + '</td><td>' + fmtHours(mins) + '</td><td>' + editBtn + '</td></tr>';
     }).join("");
     $("own-hours-stats").innerHTML = statCard(fmtHours(totalMin), "Heures cette semaine");
+    tbody.querySelectorAll("[data-edit-day]").forEach(function (btn) {
+      btn.addEventListener("click", function () { openEditDayModal(btn.getAttribute("data-edit-day")); });
+    });
+  }
+
+  function openEditDayModal(dayKey) {
+    var jDef = JOURS.find(function (j) { return j.key === dayKey; });
+    var current = (state.ownJours && state.ownJours[dayKey]) || { debut: "09:00", fin: "17:00", repos: false, ferie: false };
+    state.editingDayKey = dayKey;
+    $("edit-day-title").textContent = "Modifier — " + jDef.label;
+    $("ed-debut").value = current.debut || "09:00";
+    $("ed-fin").value = current.fin || "17:00";
+    $("ed-repos").checked = !!current.repos;
+    $("ed-message").value = "";
+    $("edit-day-error").hidden = true;
+    showModal("modal-edit-day");
+  }
+
+  $("btn-cancel-edit-day").addEventListener("click", closeModals);
+  $("btn-save-edit-day").addEventListener("click", function () {
+    if (!state.editingDayKey || !state.conseillerId) return;
+    var dayKey = state.editingDayKey;
+    var jDef = JOURS.find(function (j) { return j.key === dayKey; });
+    var ancien = (state.ownJours && state.ownJours[dayKey]) || { repos: true };
+    var nouveau = {
+      debut: $("ed-debut").value || "09:00",
+      fin: $("ed-fin").value || "17:00",
+      repos: $("ed-repos").checked,
+      ferie: ancien.ferie || false
+    };
+    var message = $("ed-message").value.trim();
+    var docId = state.weekValue + "_" + state.conseillerId;
+    var btn = $("btn-save-edit-day");
+    btn.disabled = true;
+    var fieldUpdate = {};
+    fieldUpdate["jours." + dayKey] = nouveau;
+    fieldUpdate.conseillerId = state.conseillerId;
+    fieldUpdate.semaine = state.weekValue;
+    fieldUpdate.misAJourLe = new Date().toISOString();
+    db.collection("plannings").doc(docId).set(fieldUpdate, { merge: true })
+      .then(function () {
+        toast("Jour mis à jour.");
+        closeModals();
+        loadOwnPlanning();
+        return sendPlanningChangeEmail(jDef.label, ancien, nouveau, message);
+      })
+      .catch(function (e) {
+        $("edit-day-error").textContent = "Erreur : " + (e && e.code || e);
+        $("edit-day-error").hidden = false;
+      })
+      .finally(function () { btn.disabled = false; });
+  });
+
+  function sendPlanningChangeEmail(jourLabel, ancien, nouveau, message) {
+    if (!emailjsReady) return Promise.resolve();
+    return db.collection("conseillers").doc(state.conseillerId).get().then(function (cSnap) {
+      var c = cSnap.data() || {};
+      var conseillerNom = ((c.prenom || "") + " " + (c.nom || "")).trim();
+      var ancienTxt = ancien.repos ? "Repos" : (ancien.debut + "–" + ancien.fin);
+      var nouveauTxt = nouveau.repos ? "Repos" : (nouveau.debut + "–" + nouveau.fin);
+      return db.collection("users").where("role", "==", "direction").limit(1).get().then(function (snap) {
+        if (snap.empty) return;
+        var directionEmail = snap.docs[0].data().email;
+        return emailjs.send(emailjsConfig.serviceId, emailjsConfig.templateId, {
+          to_email: directionEmail,
+          conseiller_nom: conseillerNom,
+          type_signal: "Modification planning",
+          date_signal: jourLabel + " (semaine " + state.weekValue + ") : " + ancienTxt + " → " + nouveauTxt,
+          message_signal: message || "(aucun détail)"
+        });
+      });
+    }).catch(function (e) { console.warn("Email non envoyé", e); });
   }
 
   function loadOwnAnnualView() {
@@ -950,12 +1026,13 @@
   // ---------- modal plumbing ----------
   function showModal(id) {
     $("modal-overlay").hidden = false;
-    ["modal-conseiller", "modal-planning", "modal-password"].forEach(function (m) { $(m).hidden = (m !== id); });
+    ["modal-conseiller", "modal-planning", "modal-password", "modal-edit-day"].forEach(function (m) { $(m).hidden = (m !== id); });
   }
   function closeModals() {
     $("modal-overlay").hidden = true;
     state.editingConseillerId = null;
     state.planningTarget = null;
+    state.editingDayKey = null;
   }
   document.addEventListener("click", function (e) { if (e.target && e.target.id === "modal-overlay") closeModals(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModals(); });
