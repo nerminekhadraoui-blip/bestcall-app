@@ -99,7 +99,8 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
 .modal.modal-wide{max-width:680px;}
 .modal h2{font-size:16px;margin:0 0 3px;font-weight:600;}
 .modal .modal-sub{font-size:12.5px;color:var(--muted);margin:0 0 18px;}
-.field-row{display:flex;gap:10px;}
+.field-row{display:flex;gap:10px;flex-wrap:wrap;}
+.field-row .field{min-width:130px;}
 .field-row .field{flex:1;}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:6px;}
 .field-error{color:var(--danger);font-size:12px;margin-top:5px;}
@@ -112,6 +113,9 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
 .grid-days .day-name{font-size:13px;font-weight:500;}
 .grid-days .toggle{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted);white-space:nowrap;}
 .grid-days input[type="time"]{width:100%;}
+.pause-row{display:flex;align-items:center;gap:8px;margin:2px 0 10px 106px;}
+.pause-row .pause-label{font-size:11.5px;color:var(--muted);white-space:nowrap;}
+.pause-row input[type="time"]{width:90px;padding:5px 7px;font-size:12px;}
 .total-line{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:13px;color:var(--ink-soft);}
 .total-line strong{color:var(--ink);}
 .salary-box{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-top:14px;}
@@ -123,6 +127,19 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
 .signal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px;}
 .signal-form .field-row{margin-bottom:0;}
 .own-hours{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+.month-nav{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.calendar-grid .cal-head{background:var(--surface-2);text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;padding:6px 4px;}
+.calendar-grid .cal-cell{background:var(--surface);min-height:64px;padding:5px 6px;font-size:11.5px;}
+.calendar-grid .cal-cell.empty{background:var(--surface-2);}
+.calendar-grid .cal-cell .cal-daynum{font-weight:600;font-size:12.5px;margin-bottom:3px;}
+.calendar-grid .cal-cell .cal-horaire{color:var(--ink-soft);line-height:1.35;}
+.calendar-grid .cal-cell .cal-pause{color:var(--muted);font-size:10.5px;}
+.calendar-grid .cal-cell .cal-repos{color:var(--muted);font-style:italic;}
+.calendar-grid .cal-cell.today{box-shadow:inset 0 0 0 2px var(--accent);}
+@media (max-width:760px){
+  .calendar-grid .cal-cell{min-height:48px;font-size:10px;padding:3px 4px;}
+}
 @media (max-width:760px){
   #app.ready{flex-direction:column;}
   .sidebar{width:100%;height:auto;position:relative;flex-direction:row;align-items:center;padding:14px 16px;overflow-x:auto;}
@@ -250,7 +267,15 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
           <tbody id="mon-planning-tbody"><tr><td colspan="4"><div class="empty-state">Chargement…</div></td></tr></tbody>
         </table>
       </div>
-      <h2 style="font-size:15px;margin:26px 0 12px;">Vue annuelle (12 derniers mois)</h2>
+      <h2 style="font-size:15px;margin:26px 0 12px;">Vue du mois</h2>
+      <div class="month-nav">
+        <button class="btn btn-ghost btn-sm" id="btn-prev-month">‹</button>
+        <span id="month-view-label" style="font-weight:600;"></span>
+        <button class="btn btn-ghost btn-sm" id="btn-next-month">›</button>
+      </div>
+      <div class="calendar-grid" id="calendar-grid"></div>
+
+      <h2 style="font-size:15px;margin:26px 0 12px;">Vue annuelle (à partir de septembre)</h2>
       <div class="table-wrap">
         <table>
           <thead><tr><th>Mois</th><th>Heures totales</th></tr></thead>
@@ -275,8 +300,12 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
               </select>
             </div>
             <div class="field">
-              <label for="s-date">Date concernée</label>
+              <label for="s-date">Date de début</label>
               <input type="date" id="s-date">
+            </div>
+            <div class="field">
+              <label for="s-date-fin">Date de fin (optionnel)</label>
+              <input type="date" id="s-date-fin">
             </div>
           </div>
           <div class="field">
@@ -369,6 +398,10 @@ td.name-cell .email{display:block;color:var(--muted);font-size:12px;font-weight:
     <div class="field-row">
       <div class="field"><label for="ed-debut">Début</label><input type="time" id="ed-debut"></div>
       <div class="field"><label for="ed-fin">Fin</label><input type="time" id="ed-fin"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label for="ed-pause-debut">Début pause (optionnel)</label><input type="time" id="ed-pause-debut"></div>
+      <div class="field"><label for="ed-pause-fin">Fin pause (optionnel)</label><input type="time" id="ed-pause-fin"></div>
     </div>
     <label class="toggle" style="margin-bottom:14px;display:inline-flex;"><input type="checkbox" id="ed-repos"> Journée de repos</label>
     <div class="field"><label for="ed-message">Raison (optionnel)</label><input type="text" id="ed-message" placeholder="Ex : retard rattrapé demain"></div>
