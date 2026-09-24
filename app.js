@@ -500,7 +500,8 @@
         var d = jours ? jours[j.key] : null;
         if (!d || d.repos) return '<td class="cell-repos"><span class="day-off">Repos</span></td>';
         var cls = d.ferie || j.key === "dimanche" ? "day-hours day-ferie" : "day-hours";
-        return '<td><span class="' + cls + '">' + esc(d.debut) + '–' + esc(d.fin) + '</span></td>';
+        var pauseTxt = (d.pauseDebut && d.pauseFin) ? '<br><span style="color:var(--muted);font-size:10.5px;">pause ' + esc(d.pauseDebut) + '–' + esc(d.pauseFin) + '</span>' : '';
+        return '<td><span class="' + cls + '">' + esc(d.debut) + '–' + esc(d.fin) + '</span>' + pauseTxt + '</td>';
       }).join("");
       var sal = jours ? computeSalary(jours, c.tauxHoraireSemaine, c.tauxHoraireDimancheFerie) : { totalMin: 0, total: 0 };
       var nomComplet = esc(((c.prenom || "") + " " + (c.nom || "")).trim());
@@ -900,11 +901,14 @@
     var docId = state.weekValue + "_" + state.conseillerId;
     var btn = $("btn-save-edit-day");
     btn.disabled = true;
-    var fieldUpdate = {};
-    fieldUpdate["jours." + dayKey] = nouveau;
-    fieldUpdate.conseillerId = state.conseillerId;
-    fieldUpdate.semaine = state.weekValue;
-    fieldUpdate.misAJourLe = new Date().toISOString();
+    var jourUpdate = {};
+    jourUpdate[dayKey] = nouveau;
+    var fieldUpdate = {
+      conseillerId: state.conseillerId,
+      semaine: state.weekValue,
+      jours: jourUpdate,
+      misAJourLe: new Date().toISOString()
+    };
     db.collection("plannings").doc(docId).set(fieldUpdate, { merge: true })
       .then(function () {
         toast("Jour mis à jour.");
