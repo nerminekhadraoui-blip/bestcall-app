@@ -81,6 +81,7 @@ BCF.modules.push(
       { i: "$", t: ["Wallet USD", "Wallet USD"], p: ["Em dólares, clientes latino-americanos e especialistas latinos.", "En dollars, clients latino-américains et experts latinos."] }
     ] },
     { shot: { f: "wallet-wgd.png", cap: ["Um cliente com 53€ e 9 minutos: «Porte monnaie durée» (WGD, em minutos) e «Porte monnaie EUR»", "Un client avec 53€ et 9 minutes : « Porte monnaie durée » (WGD, en minutes) et « Porte monnaie EUR »"] } },
+    { shot: { f: "porte-monnaies-trois.png", cap: ["Às vezes aparece também um «Porta moedas transaction», em número de consultas", "Parfois apparaît aussi un « Porta moedas transaction », en nombre de consultations"] } },
     { p: ["No separador «Moyens de paiement», os três aparecem como <b>Porta moedas USD</b>, <b>Porta moedas durée</b> (a WGD, em minutos) e <b>Porta moedas EUR</b>, cada um com o seu saldo.", "Dans l’onglet « Moyens de paiement », les trois apparaissent comme <b>Porta moedas USD</b>, <b>Porta moedas durée</b> (le WGD, en minutes) et <b>Porta moedas EUR</b>, chacun avec son solde."] },
     { p: ["A Wallet é alimentada de duas formas: <b>presentes de especialistas</b> (só para consultas à tarifa por minuto, não combináveis com promoções ou pacotes) e <b>recargas do cliente</b> (sem restrições, combináveis com promoções e pacotes).", "Le Wallet est alimenté de deux façons : <b>cadeaux d’experts</b> (uniquement pour des consultations au tarif minute, non cumulables avec promos ou forfaits) et <b>recharges du client</b> (sans restriction, cumulables avec promos et forfaits)."] },
     { key: ["Sem cartão bancário, o cliente precisa de um saldo de pelo menos <b>10 minutos de consulta</b> para consultar.", "Sans carte bancaire, le client doit avoir un solde d’au moins <b>10 minutes de consultation</b> pour consulter."] }
@@ -554,6 +555,7 @@ BCF.modules.push(
   desc: ["Tratar os e-mails clientes como tickets.", "Traiter les e-mails clients comme des tickets."],
   lessons: [
   { t: ["A lista de tickets", "La liste des tickets"], b: [
+    { shot: { f: "foxi-liste.png", cap: ["A lista de tickets: filtros, «Nouveau ticket», e cada ticket com grupo (Client ES, Expert ITA…), estado, prioridade, tipo e «Assigner à…»", "La liste des tickets : filtres, « Nouveau ticket », et chaque ticket avec groupe (Client ES, Expert ITA…), statut, priorité, type et « Assigner à… »"] } },
     { lead: ["Cada pedido de cliente é um ticket, da criação à resolução. Referência única: <code>TKT-AAAA-NNNNNN</code>.", "Chaque demande client est un ticket, de la création à la résolution. Référence unique : <code>TKT-AAAA-NNNNNN</code>."] },
     { chips: [
       { c: "s-wait", k: ["Cliente", "Client"], p: ["Badge azul: e-mail do cliente.", "Badge bleu : e-mail du client."] },

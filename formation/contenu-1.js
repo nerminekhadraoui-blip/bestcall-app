@@ -166,6 +166,12 @@ BCF.modules.push(
     { shot: { f: "onglet-notes.png", cap: ["Separador Notas: notas automáticas (fidelidade) e manuais, e à direita o histórico dos tickets", "Onglet Notes : notes automatiques (fidélité) et manuelles, et à droite l’historique des tickets"] } },
     { shot: { f: "ajouter-note.png", cap: ["«Ajouter une note»: tipo (ex.: Service Client), caixas prontas (gesto comercial, número ou horário de contacto) e o texto", "« Ajouter une note » : type (ex. Service Client), cases prêtes (geste commercial, numéro ou horaires de contact) et le texte"] } },
     { tip: ["Deixe uma nota quando o cliente pede para ser contactado num número ou a uma hora específica: as caixas existem para isso.", "Laisse une note quand le client demande à être contacté sur un numéro ou à une heure précise : les cases existent pour ça."] },
+    { shot: { f: "risk-onglet.png", cap: ["O separador RISK da ficha", "L’onglet RISK de la fiche"] } },
+    { p: ["No Risk há 3 quadros de contas primas: <b>por cartão</b> (CB), <b>por telefone</b> (número usado num pedido de MER, com o número de ocorrências) e <b>por e-mail PayPal</b>. Mais abaixo, o histórico do score Risk e os «Comptes cousins FV2».", "Dans Risk il y a 3 tableaux de comptes cousins : <b>par carte</b> (CB), <b>par téléphone</b> (numéro utilisé pour une demande de MER, avec le nombre d’occurrences) et <b>par e-mail PayPal</b>. Plus bas, l’historique du score Risk et les « Comptes cousins FV2 »."] },
+    { shot: { f: "risk-cousins-cb.png", cap: ["Contas primas por cartão (aqui vazio)", "Comptes cousins par CB (ici vide)"] } },
+    { shot: { f: "risk-cousins-tel.png", cap: ["Contas primas por telefone: duas contas partilham um número", "Comptes cousins par téléphone : deux comptes partagent un numéro"] } },
+    { shot: { f: "risk-cousins-paypal.png", cap: ["Contas primas por e-mail PayPal", "Comptes cousins par e-mail PayPal"] } },
+    { shot: { f: "risk-score.png", cap: ["«Historique du score Risk» e o botão para ver as informações de antiga geração", "« Historique du score Risk » et le bouton pour voir les infos d’ancienne génération"] } },
     { shot: { f: "risk-cousins.png", cap: ["Risk → «Comptes cousins»: o caminho que liga duas contas (aqui pelo mesmo número de telefone)", "Risk → « Comptes cousins » : le chemin qui relie deux comptes (ici par le même numéro de téléphone)"] } },
     { p: ["No Risk, a etiqueta de validade do cartão: <b>verde</b> = ativo, <b>laranja</b> = expirado ou apagado, <b>vermelho</b> = crítico, bloqueado no Bobi.", "Dans Risk, la pastille de validité de la carte : <b>vert</b> = active, <b>orange</b> = expirée ou supprimée, <b>rouge</b> = critique, bloquée dans Bobi."] },
     { key: ["A ficha que abre está suspensa ou inativa? O número pode estar ligado a uma ficha antiga. Vá ao <b>Risk</b>: o cliente usa provavelmente outra conta.", "La fiche qui s’ouvre est suspendue ou inactive ? Le numéro est peut-être lié à une vieille fiche. Va dans <b>Risk</b> : le client utilise sûrement un autre compte."] }
@@ -175,6 +181,7 @@ BCF.modules.push(
       { cls: "good", h: ["Transações", "Transactions"], tag: ["Consultas", "Consultations"], items: [["ID, data, produto (telefone, chat, vídeo, QPP)", "ID, date, produit (téléphone, chat, vidéo, QPP)"], ["Valor, tarifa aplicada, duração, especialista", "Montant, tarif appliqué, durée, expert"], ["Estado: OK, Reembolso, Erro (a aguardar pagamento)", "Statut : OK, Remboursement, Erreur (en attente de paiement)"]] },
       { cls: "good", h: ["Faturas", "Factures"], tag: ["Pagamentos", "Paiements"], items: [["Data de faturação e de cobrança", "Date de facturation et d’encaissement"], ["Pré-pago ou pós-pago; tipo: transação, recarga Wallet, subscrição", "Prépayé ou postpayé ; type : transaction, recharge Wallet, abonnement"], ["Estado: OK, Erro, Falha, Em curso", "Statut : OK, Erreur, Échec, En cours"]] }
     ] },
+    { shot: { f: "factures-liste.png", cap: ["Separador Factures: um Refund (transação), um OK e um Failure (recargas Wallet)", "Onglet Factures : un Refund (transaction), un OK et un Failure (recharges Wallet)"] } },
     { tip: ["Para o detalhe de uma promoção ou de um vale aplicado, clique no ID da transação.", "Pour le détail d’une promo ou d’un bon appliqué, clique sur l’ID de la transaction."] }
   ] }],
   quiz: [
@@ -195,6 +202,13 @@ BCF.modules.push(
       { t: ["Chamada a entrar", "Appel entrant"], p: ["A faixa mostra o número do cliente, o número chamado, a fila e uma mensagem de boas-vindas.", "Le bandeau montre le numéro du client, le numéro appelé, la file et un message d’accueil."] },
       { t: ["Autenticar", "Authentifier"], p: ["A ficha abre-se sozinha no Bobi: clique em «Autenticar» para lhe aceder.", "La fiche s’ouvre toute seule dans Bobi : clique sur « Authentifier » pour y accéder."] }
     ] },
+    { shot: { f: "connexion-outils.png", cap: ["Ligar-se: o Bobi com o identificador e palavra-passe, o Graam à direita com o e-mail e palavra-passe", "Se connecter : Bobi avec identifiant et mot de passe, Graam à droite avec e-mail et mot de passe"] } },
+    { shot: { f: "graam-interface.png", cap: ["A interface Graam: estatísticas, tipo de chamada (entrada/saída), botão de pausa com a qualificação da pausa, histórico", "L’interface Graam : statistiques, type d’appel (entrant/sortant), bouton pause avec la qualification de la pause, historique"] } },
+    { tip: ["Para fazer uma pausa, clique no botão pausa e escolha o motivo (café, almoço, formação, pós-chamada…).", "Pour faire une pause, clique sur le bouton pause et choisis le motif (café, déjeuner, formation, post-appel…)."] },
+    { shot: { f: "graam-appel-entrant.png", cap: ["Uma chamada a entrar: número do cliente, fila de espera, número chamado, mensagem de boas-vindas, atender ou desligar", "Un appel entrant : numéro du client, file d’attente, numéro appelé, message d’accueil, décrocher ou raccrocher"] } },
+    { key: ["Leia a <b>mensagem de boas-vindas</b> da faixa: dá a frase de acolhimento e a língua da fila (ex.: Espanha).", "Lis le <b>message d’accueil</b> du bandeau : il donne la phrase d’accueil et la langue de la file (ex. : Espagne)."] },
+    { shot: { f: "graam-authentifier.png", cap: ["Ao atender, a ficha abre-se no Bobi: clique em «Authentifier»", "En décrochant, la fiche s’ouvre dans Bobi : clique sur « Authentifier »"] } },
+    { shot: { f: "graam-bobi-integre.png", cap: ["O Graam à esquerda, a ficha cliente no Bobi à direita, durante a chamada", "Graam à gauche, la fiche client dans Bobi à droite, pendant l’appel"] } },
     { p: ["Todas as chamadas recebidas pelo Graam ficam registadas no bloco «Chamadas» da ficha Bobi.", "Tous les appels reçus via Graam sont enregistrés dans le bloc « Appels » de la fiche Bobi."] }
   ] },
   { t: ["Durante a chamada", "Pendant l’appel"], b: [
@@ -203,7 +217,7 @@ BCF.modules.push(
       { i: "●", cc: "#B5493A", t: ["Gravação", "Enregistrement"], p: ["Automática. Para parar: ícone vermelho (fica azul).", "Automatique. Pour l’arrêter : icône rouge (devient bleue)."] },
       { i: "⇄", t: ["Transferir", "Transférer"], p: ["Ícone de transferência para outro agente.", "Icône de transfert vers un autre agent."] }
     ] },
-    { shot: { f: "graam-enregistrement.png", cap: ["Chamada em curso no Graam: transferir, espera, microfone, teclado, <b>gravação (ícone vermelho)</b>", "Appel en cours dans Graam : transférer, attente, micro, clavier, <b>enregistrement (icône rouge)</b>"] } },
+    { shot: { f: "graam-icones.png", cap: ["Os ícones: transferir para outro conselheiro, pôr em espera, parar a gravação (vermelho)", "Les icônes : transférer à un autre conseiller, mettre en attente, arrêter l’enregistrement (rouge)"] } },
     { warn: ["Parar a gravação é <b>obrigatório</b> quando o cliente dá os dados do cartão bancário.", "Couper l’enregistrement est <b>obligatoire</b> quand le client donne ses coordonnées bancaires."] }
   ] },
   { t: ["Depois da chamada", "Après l’appel"], b: [
@@ -213,7 +227,12 @@ BCF.modules.push(
       { t: ["Comentário", "Commentaire"], p: ["Se necessário, um resumo curto.", "Si besoin, un court résumé."] },
       { t: ["Guardar", "Enregistrer"], p: ["A qualificação fica gravada.", "La qualification est enregistrée."] }
     ] },
-    { p: ["<b>Histórico de chamadas</b>: filtrar por data ou tipo (perdidas, atendidas…), ver o detalhe, ouvir ou descarregar a gravação, modificar uma qualificação, voltar a ligar. <b>Definições</b> (roda dentada): língua e som.", "<b>Historique d’appels</b> : filtrer par date ou type (manqués, répondus…), voir le détail, écouter ou télécharger l’enregistrement, modifier une qualification, rappeler. <b>Paramètres</b> (roue crantée) : langue et son."] }
+    { shot: { f: "graam-qualification.png", cap: ["Qualificação: Client, Prospect ou Hors-Cibles, depois a subcategoria (Demande de MER/RDV, Gestion compte, Demande d’information, Insatisfaction, Recouvrement), comentário e «Sauvegarder»", "Qualification : Client, Prospect ou Hors-Cibles, puis la sous-catégorie (Demande de MER/RDV, Gestion compte, Demande d’information, Insatisfaction, Recouvrement), commentaire et « Sauvegarder »"] } },
+    { p: ["<b>Histórico de chamadas</b>: filtrar por data ou tipo (perdidas, atendidas…), ver o detalhe, ouvir ou descarregar a gravação, modificar uma qualificação, voltar a ligar. <b>Definições</b> (roda dentada): língua e som.", "<b>Historique d’appels</b> : filtrer par date ou type (manqués, répondus…), voir le détail, écouter ou télécharger l’enregistrement, modifier une qualification, rappeler. <b>Paramètres</b> (roue crantée) : langue et son."] },
+    { shot: { f: "graam-historique.png", cap: ["O «Journal d’appel»: em cada chamada, detalhes, gravação, descarregar, qualificação, voltar a ligar", "Le « Journal d’appel » : sur chaque appel, détails, enregistrement, télécharger, qualification, rappeler"] } },
+    { shot: { f: "graam-detail-appel.png", cap: ["O detalhe de uma chamada: número, data e hora, histórico das chamadas anteriores", "Le détail d’un appel : numéro, date et heure, historique des appels précédents"] } },
+    { shot: { f: "graam-appels-manques.png", cap: ["«Mes appels manqués»: clique numa chamada para ver o detalhe e voltar a ligar", "« Mes appels manqués » : clique sur un appel pour voir le détail et rappeler"] } },
+    { shot: { f: "graam-parametres.png", cap: ["Definições (roda dentada): língua da aplicação e parâmetros de áudio (toque, periférico)", "Paramètres (roue crantée) : langue de l’appli et paramètres audio (sonnerie, périphérique)"] } }
   ] }],
   quiz: [
     { q: ["O cliente vai dar o número do cartão. O que faz no Graam?", "Le client va donner son numéro de carte. Que fais-tu dans Graam ?"], o: [["Paro a gravação (ícone vermelho → azul)", "Je coupe l’enregistrement (icône rouge → bleue)"], ["Ponho em espera", "Je mets en attente"], ["Nada", "Rien"]], a: 0, w: ["É obrigatório para a segurança dos dados.", "C’est obligatoire pour la sécurité des données."] },
