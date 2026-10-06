@@ -16,6 +16,7 @@ BCF.modules.push(
     ] },
     { p: ["Meios aceites: cartão bancário, cartão pré-pago, PayPal; Portugal: <b>Multibanco</b> e <b>MB Way</b>; Espanha: <b>Bizum</b>.", "Moyens acceptés : carte bancaire, carte prépayée, PayPal ; Portugal : <b>Multibanco</b> et <b>MB Way</b> ; Espagne : <b>Bizum</b>."] },
     { warn: ["<b>Maestro</b> e <b>American Express</b> não funcionam na plataforma.", "<b>Maestro</b> et <b>American Express</b> ne fonctionnent pas sur la plateforme."] },
+    { shot: { f: "fiche-ajouter-moyen.png", cap: ["Bloco Ações → Compte: «Ajouter un moyen de paiement» e «Proposition de recharge wallet»", "Bloc Actions → Compte : « Ajouter un moyen de paiement » et « Proposition de recharge wallet »"] } },
     { p: ["Para tudo isto: ficha cliente → botão <b>«Ajouter un moyen de paiement»</b>. Daí pode adicionar um cartão, recarregar a Wallet, ou enviar um e-mail/SMS ao cliente.", "Pour tout ça : fiche client → bouton <b>« Ajouter un moyen de paiement »</b>. De là tu peux ajouter une carte, recharger le Wallet, ou envoyer un e-mail/SMS au client."] }
   ] },
   { t: ["Adicionar um cartão por telefone", "Ajouter une carte par téléphone"], b: [
@@ -26,11 +27,28 @@ BCF.modules.push(
       { t: ["Transferir para o SVI seguro", "Transférer vers le SVI sécurisé"], p: ["O cliente digita validade e CVV no teclado. Fique em linha: a chamada volta para si.", "Le client tape la date d’expiration et le CVV au clavier. Reste en ligne : l’appel revient vers toi."] },
       { t: ["Retomar se necessário", "Reprendre si besoin"], p: ["«Reprendre le contrôle du formulaire» se o cliente bloquear, depois «Valider».", "« Reprendre le contrôle du formulaire » si le client bloque, puis « Valider »."] }
     ] },
-    { key: ["Marque a caixa «Je garde ma carte bancaire pour faciliter mes transactions futures».", "Coche la case « Je garde ma carte bancaire pour faciliter mes transactions futures »."] }
+    { shot: { f: "graam-enregistrement.png", cap: ["Antes do cartão: parar a gravação no Graam (ícone vermelho)", "Avant la carte : couper l’enregistrement dans Graam (icône rouge)"] } },
+    { shot: { f: "carte-formulaire-svi.png", cap: ["Número e nome no cartão, depois «Transférer cet appel au SVI sécurisé». As frases a azul são as que diz ao cliente", "Numéro et nom sur la carte, puis « Transférer cet appel au SVI sécurisé ». Les phrases en bleu sont à dire au client"] } },
+    { shot: { f: "carte-svi-en-cours.png", cap: ["O botão passa a «En cours…» durante a transferência. «Reprendre la main sur le formulaire» se o cliente bloquear", "Le bouton passe à « En cours… » pendant le transfert. « Reprendre la main sur le formulaire » si le client bloque"] } },
+    { p: ["Se retomar o formulário, vê o formulário completo com um guião em cada etapa: número, validade, CVV, nome, e a pergunta «quer que o cartão fique associado à sua conta?». É feita uma autorização de 0,00€ no cartão para o validar.", "Si tu reprends la main, tu vois le formulaire complet avec un script à chaque étape : numéro, validité, CVV, nom, et la question « voulez-vous que la carte reste associée à votre compte ? ». Une autorisation de 0,00€ est faite sur la carte pour la valider."] },
+    { shot: { f: "carte-formulaire-adyen.png", cap: ["O formulário completo (Adyen), com as frases a dizer e as caixas a marcar no fim", "Le formulaire complet (Adyen), avec les phrases à dire et les cases à cocher à la fin"] } },
+    { tip: ["Para tranquilizar: os dados são encriptados e o cartão é guardado pela Adyen, o prestador de pagamento. Se o cliente não quiser guardar o cartão, terá de introduzir os dados antes de cada consulta.", "Pour rassurer : les données sont cryptées et la carte est conservée par Adyen, le prestataire de paiement. Si le client ne veut pas garder sa carte, il devra saisir ses données avant chaque consultation."] },
+    { key: ["Marque a caixa «J’enregistre ma carte bancaire pour faciliter mes prochaines consultations».", "Coche la case « J’enregistre ma carte bancaire pour faciliter mes prochaines consultations »."] }
   ] },
   { t: ["Sem o cartão à mão?", "Pas de carte sous la main ?"], b: [
-    { p: ["O cliente não tem o cartão ou não quer dá-lo por telefone? Envie-lhe <b>«e-mail ou SMS para adicionar um cartão»</b>: categoria «Moyen de paiement», depois a mensagem:", "Le client n’a pas sa carte ou ne veut pas la donner au téléphone ? Envoie-lui <b>« e-mail ou SMS pour ajouter une carte »</b> : catégorie « Moyen de paiement », puis le message :"] },
-    { list: [["<b>Adicionar CB</b>: cartão bancário ou pré-pago.", "<b>Ajouter CB</b> : carte bancaire ou prépayée."], ["<b>Adicionar PayPal e outros</b>: recarregar a Wallet por PayPal, cartão, Paysafecard, Bizum, Google Pay.", "<b>Ajouter PayPal et autres</b> : recharger le Wallet par PayPal, carte, Paysafecard, Bizum, Google Pay."], ["México: e-mail sobre o cartão <b>OXXO</b>. Argentina: <b>Mercadopago</b> e <b>Naranja X</b>.", "Mexique : e-mail sur la carte <b>OXXO</b>. Argentine : <b>Mercadopago</b> et <b>Naranja X</b>."]] }
+    { p: ["O cliente não tem o cartão ou não quer dá-lo por telefone? Envie-lhe uma mensagem para ele o fazer sozinho no espaço cliente: bloco Ações → <b>«Envoyer un mail / un SMS»</b>.", "Le client n’a pas sa carte ou ne veut pas la donner au téléphone ? Envoie-lui un message pour qu’il le fasse seul dans son espace : bloc Actions → <b>« Envoyer un mail / un SMS »</b>."] },
+    { shot: { f: "fiche-envoyer-mail.png", cap: ["O botão «Envoyer un mail / un SMS» no bloco Contact client", "Le bouton « Envoyer un mail / un SMS » dans le bloc Contact client"] } },
+    { steps: [
+      { t: ["Categoria «Gestion espace client»", "Catégorie « Gestion espace client »"], p: ["O anuário (Portugal, França…) define a língua da mensagem.", "L’annuaire (Portugal, France…) définit la langue du message."] },
+      { t: ["Escolher a mensagem", "Choisir le message"], p: ["<b>[Accès et fonctionnalités] Ajouter une carte bancaire depuis l’espace client</b>, ou <b>Recharger et gérer le porte-monnaie</b> (PayPal, MB Way, Multibanco…).", "<b>[Accès et fonctionnalités] Ajouter une carte bancaire depuis l’espace client</b>, ou <b>Recharger et gérer le porte-monnaie</b> (PayPal, MB Way, Multibanco…)."] },
+      { t: ["Verificar o conteúdo", "Vérifier le contenu"], p: ["O corpo do e-mail e o SMS aparecem por baixo.", "Le corps de l’e-mail et le SMS s’affichent en dessous."] },
+      { t: ["Enviar", "Envoyer"], p: ["«Envoyer par email» ou «Envoyer par SMS».", "« Envoyer par email » ou « Envoyer par SMS »."] }
+    ] },
+    { shot: { f: "message-ajout-carte.png", cap: ["Mensagem «Ajouter une carte bancaire depuis l’espace client». Em cima: os últimos e-mails e SMS enviados ao cliente", "Message « Ajouter une carte bancaire depuis l’espace client ». En haut : les derniers e-mails et SMS envoyés au client"] } },
+    { shot: { f: "message-porte-monnaie.png", cap: ["Mensagem «Recharger et gérer le porte-monnaie»", "Message « Recharger et gérer le porte-monnaie »"] } },
+    { shot: { f: "email-recharge.png", cap: ["O e-mail que o cliente recebe (aqui em espanhol)", "L’e-mail que reçoit le client (ici en espagnol)"] } },
+    { tip: ["Antes de enviar, veja o bloco «Dernier e-mail et SMS envoyés»: evita enviar duas vezes a mesma mensagem.", "Avant d’envoyer, regarde le bloc « Dernier e-mail et SMS envoyés » : ça évite d’envoyer deux fois le même message."] },
+    { p: ["México: e-mail sobre o cartão <b>OXXO</b>. Argentina: <b>Mercadopago</b> e <b>Naranja X</b>.", "Mexique : e-mail sur la carte <b>OXXO</b>. Argentine : <b>Mercadopago</b> et <b>Naranja X</b>."] }
   ] },
   { t: ["Apagar um cartão", "Supprimer une carte"], b: [
     { steps: [
@@ -80,16 +98,40 @@ BCF.modules.push(
     { key: ["Para libertar o saldo: <b>cancelar a transação pendente</b> (em «consultations live»). O saldo volta automaticamente.", "Pour libérer le solde : <b>annuler la transaction en attente</b> (dans « consultations live »). Le solde revient automatiquement."] }
   ] },
   { t: ["Recarregar a Wallet", "Recharger le Wallet"], b: [
+    { steps: [
+      { t: ["«Ajouter un moyen de paiement»", "« Ajouter un moyen de paiement »"], p: ["Tipo: <b>«Créditer le wallet par CB, lien de paiement, Multibanco…»</b>, moeda (EUR ou USD), depois «Afficher le formulaire».", "Type : <b>« Créditer le wallet par CB, lien de paiement, Multibanco… »</b>, devise (EUR ou USD), puis « Afficher le formulaire »."] },
+      { t: ["Método de pagamento", "Méthode de paiement"], p: ["<b>PayByLink</b>, <b>Moyen de paiement du compte</b> ou <b>Multibanco</b>.", "<b>PayByLink</b>, <b>Moyen de paiement du compte</b> ou <b>Multibanco</b>."] },
+      { t: ["Montante", "Montant"], p: ["«Montant fixe» ou «Utiliser une offre», depois «Valider».", "« Montant fixe » ou « Utiliser une offre », puis « Valider »."] }
+    ] },
+    { shot: { f: "wallet-type.png", cap: ["Escolher o tipo «Créditer le wallet…» e a moeda", "Choisir le type « Créditer le wallet… » et la devise"] } },
+    { shot: { f: "wallet-paybylink.png", cap: ["Os três métodos: PayByLink, meio de pagamento da conta, Multibanco", "Les trois méthodes : PayByLink, moyen de paiement du compte, Multibanco"] } },
+    { shot: { f: "wallet-moyen-compte.png", cap: ["«Moyen de paiement du compte»: o cartão preferido aparece por defeito", "« Moyen de paiement du compte » : la carte préférée s’affiche par défaut"] } },
     { compare: [
       { cls: "good", h: ["Tem cartão na conta", "A une carte sur le compte"], tag: ["Opção 1", "Option 1"], items: [["«Moyen de paiement du compte»", "« Moyen de paiement du compte »"], ["Cartão, moeda (EUR Europa, USD América Latina), valor → Valider", "Carte, devise (EUR Europe, USD Amérique latine), montant → Valider"]] },
       { cls: "good", h: ["Sem cartão", "Pas de carte"], tag: ["Opção 2", "Option 2"], items: [["<b>Paybylink</b>: link seguro por e-mail ou SMS", "<b>Paybylink</b> : lien sécurisé par e-mail ou SMS"], ["Cartão, PayPal, Paysafecard, Google Pay, Bizum (ES), Multibanco/MB Way (PT)", "Carte, PayPal, Paysafecard, Google Pay, Bizum (ES), Multibanco/MB Way (PT)"]] }
     ] },
-    { tip: ["Recarga de mais de 100€ feita pelo espaço cliente = <b>bónus de 5%</b>.", "Recharge de plus de 100€ faite depuis l’espace client = <b>bonus de 5%</b>."] },
+    { shot: { f: "paybylink-notification.png", cap: ["PayByLink: o link e a data de validade. Enviar por e-mail ou SMS", "PayByLink : le lien et sa date de validité. Envoyer par e-mail ou SMS"] } },
+    { shot: { f: "paybylink-paiement.png", cap: ["O que o cliente vê ao abrir o link: Google Pay, cartão, Paysafecard, PayPal", "Ce que voit le client en ouvrant le lien : Google Pay, carte, Paysafecard, PayPal"] } },
+    { tip: ["O link tem uma data de validade: diga ao cliente para pagar antes.", "Le lien a une date de validité : dis au client de payer avant."] },
     { p: ["<b>Paybylink</b>: menos riscos (sem manipular o cartão), valor definido antes, a consulta para quando o saldo acaba. <b>Cartão</b>: rápido, sem interrupção mesmo se a consulta durar mais.", "<b>Paybylink</b> : moins de risques (pas de manipulation de carte), montant fixé d’avance, la consultation s’arrête quand le solde est épuisé. <b>Carte</b> : rapide, sans interruption même si la consultation dure plus."] }
+  ] },
+  { t: ["O que o cliente vê", "Ce que voit le client"], b: [
+    { lead: ["Para guiar o cliente, é preciso saber o que ele vê no espaço dele. Use «Selfcare client» na ficha para abrir a mesma página.", "Pour guider le client, il faut savoir ce qu’il voit dans son espace. Utilise « Selfcare client » sur la fiche pour ouvrir la même page."] },
+    { shot: { f: "espace-client-portemonnaie.png", cap: ["Espaço cliente → «Gestão da conta cliente»: o saldo do porta-moedas", "Espace client → « Gestion du compte client » : le solde du portefeuille"] } },
+    { shot: { f: "espace-wallet.png", cap: ["A página Wengo Wallet: saldo, creditar, opções, histórico", "La page Wengo Wallet : solde, créditer, options, historique"] } },
+    { steps: [
+      { t: ["Separador «Creditar»", "Onglet « Créditer »"], p: ["Escolher 10€, 15€, 30€, 50€, 100€ ou 250€, ou «Prefiro escolher o valor».", "Choisir 10€, 15€, 30€, 50€, 100€ ou 250€, ou « Je préfère choisir le montant »."] },
+      { t: ["Verificar o país", "Vérifier le pays"], p: ["«Efetuo esta compra em Portugal (alterar)»: o país muda os meios de pagamento propostos.", "« J’effectue cet achat au Portugal (modifier) » : le pays change les moyens de paiement proposés."] },
+      { t: ["Escolher o meio de pagamento", "Choisir le moyen de paiement"], p: ["Cartão guardado, cartão bancário, Multibanco, PayPal, Paysafecard, MB WAY.", "Carte enregistrée, carte bancaire, Multibanco, PayPal, Paysafecard, MB WAY."] }
+    ] },
+    { shot: { f: "espace-wallet-creditar.png", cap: ["Os montantes: 100€ e 250€ dão <b>5% oferecidos</b>", "Les montants : 100€ et 250€ donnent <b>5% offerts</b>"] } },
+    { shot: { f: "espace-wallet-paiement.png", cap: ["Os meios de pagamento em Portugal, com MB WAY selecionado", "Les moyens de paiement au Portugal, avec MB WAY sélectionné"] } },
+    { key: ["Recarregar <b>100€ ou mais</b> pelo espaço cliente = <b>+5% oferecidos</b>. Um bom argumento para clientes regulares.", "Recharger <b>100€ ou plus</b> depuis l’espace client = <b>+5% offerts</b>. Un bon argument pour les clients réguliers."] }
   ] }],
   quiz: [
     { q: ["A Wallet do cliente parece vazia no espaço dele, mas ele recarregou ontem.", "Le Wallet du client semble vide dans son espace, mais il a rechargé hier."], o: [["Vejo «Autorisations wallet»: o saldo pode estar bloqueado", "Je regarde « Autorisations wallet » : le solde est peut-être bloqué"], ["Peço outra recarga", "Je demande une autre recharge"]], a: 0, w: ["Uma transação pendente bloqueia 10 min de saldo.", "Une transaction en attente bloque 10 min de solde."] },
     { q: ["Quanto tempo fica bloqueado o saldo de uma chamada pendente?", "Combien de temps reste bloqué le solde d’un appel en attente ?"], o: [["30 min", "30 min"], ["2h30", "2h30"], ["7 dias", "7 jours"]], a: 1, w: ["Chamada 2h30, chat ~30 min, QPP 7 dias.", "Appel 2h30, chat ~30 min, QPP 7 jours."] },
+    { q: ["Que recarga no espaço cliente dá 5% oferecidos?", "Quelle recharge dans l’espace client donne 5% offerts ?"], o: [["50€", "50€"], ["100€", "100€"], ["30€", "30€"]], a: 1, w: ["100€ e 250€ dão 5% oferecidos.", "100€ et 250€ donnent 5% offerts."] },
     { q: ["Um presente de especialista pode ser usado com um pacote?", "Un cadeau d’expert peut-il servir avec un forfait ?"], o: [["Sim", "Oui"], ["Não, só à tarifa por minuto", "Non, seulement au tarif minute"]], a: 1, w: ["Presentes de especialistas não se combinam com promoções nem pacotes.", "Les cadeaux d’experts ne se cumulent ni avec les promos ni avec les forfaits."] }
   ]
 },
@@ -316,10 +358,11 @@ BCF.modules.push(
   lessons: [
   { t: ["Modificar informações", "Modifier les informations"], b: [
     { steps: [
-      { t: ["«Infos du compte»", "« Infos du compte »"], p: ["Na ficha cliente.", "Sur la fiche client."] },
+      { t: ["«Infos du compte»", "« Infos du compte »"], p: ["Bloco Ações → Compte, por baixo de «Ajouter un moyen de paiement».", "Bloc Actions → Compte, sous « Ajouter un moyen de paiement »."] },
       { t: ["Corrigir ou completar", "Corriger ou compléter"], p: ["Nacionalidade, fuso horário, e-mail, palavra-passe, código PIN, telefone principal e telemóvel, data de nascimento.", "Nationalité, fuseau horaire, e-mail, mot de passe, code PIN, téléphone principal et mobile, date de naissance."] },
       { t: ["«Valider» depois de cada modificação", "« Valider » après chaque modification"], p: ["Aparece um sinal verde. Não saia da página sem validar.", "Un signal vert apparaît. Ne quitte pas la page sans valider."] }
     ] },
+    { shot: { f: "fiche-compte-liens.png", cap: ["Os links do bloco Compte: Infos du compte, Adresses, Abonnement news, Avis, Paramètres SMS", "Les liens du bloc Compte : Infos du compte, Adresses, Abonnement news, Avis, Paramètres SMS"] } },
     { warn: ["O <b>pseudónimo</b> (identificador de ligação) <b>não pode</b> ser modificado.", "Le <b>pseudo</b> (identifiant de connexion) <b>ne peut pas</b> être modifié."] },
     { p: ["O cliente recebe um e-mail automático quando o e-mail, o telefone principal ou o telemóvel mudam.", "Le client reçoit un e-mail automatique quand l’e-mail, le téléphone principal ou le mobile changent."] }
   ] },
