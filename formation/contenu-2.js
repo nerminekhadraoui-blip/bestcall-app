@@ -92,6 +92,10 @@ BCF.modules.push(
       [["Descrição", "Description"], ["Nome da oferta e restrições: validade, chamada e/ou chat, número de transações, não combinável.", "Nom de l’offre et restrictions : validité, appel et/ou chat, nombre de transactions, non cumulable."]]
     ] } },
     { p: ["<b>Saldo da Wallet</b>: Total, <b>Disponível</b> (realmente utilizável), Promocional (oferecido), <b>Reservado</b> (bloqueado para uma transação em curso).", "<b>Solde du Wallet</b> : Total, <b>Disponible</b> (réellement utilisable), Promotionnel (offert), <b>Réservé</b> (bloqué pour une transaction en cours)."] },
+    { shot: { f: "wallet-cadeau-expert.png", cap: ["Conteúdo da Wallet: presentes de especialista com as restrições (Promo, validade, canais, 1 consulta, especialista) e recargas do cliente", "Contenu du Wallet : cadeaux d’expert avec leurs contraintes (Promo, validité, canaux, 1 consultation, expert) et recharges du client"] } },
+    { shot: { f: "wallet-anniversaire.png", cap: ["Um vale de aniversário: válido 1 mês, 1 consulta, só no anuário italiano, com sugestões de especialistas", "Un bon anniversaire : valable 1 mois, 1 consultation, annuaire italien uniquement, avec des suggestions d’experts"] } },
+    { p: ["Leia sempre as <b>«Contraintes d’utilisation»</b>: a etiqueta <b>Promo</b> vermelha quer dizer que o crédito não pode pagar uma consulta com oferta promocional. Quando o crédito é limitado a um especialista, os botões «Consultation immédiate» e «RDV» estão logo ao lado.", "Lis toujours les <b>« Contraintes d’utilisation »</b> : l’étiquette rouge <b>Promo</b> veut dire que le crédit ne peut pas payer une consultation avec une offre promo. Quand le crédit est limité à un expert, les boutons « Consultation immédiate » et « RDV » sont juste à côté."] },
+    { warn: ["O botão <b>«Périmer»</b> faz expirar o crédito. Não lhe toque sem instrução.", "Le bouton <b>« Périmer »</b> fait expirer le crédit. N’y touche pas sans consigne."] },
     { tip: ["Crédito inutilizável apesar de válido? Verifique se está bloqueado por uma transação pendente e se o canal escolhido corresponde às restrições do crédito.", "Crédit inutilisable malgré sa validité ? Vérifie s’il est bloqué par une transaction en attente et si le canal choisi correspond aux restrictions du crédit."] }
   ] },
   { t: ["O saldo bloqueado", "Le solde bloqué"], b: [
@@ -188,10 +192,16 @@ BCF.modules.push(
       { cls: "good", h: ["Com a Wallet", "Avec le Wallet"], tag: ["Saldo", "Solde"], items: [["Verificar o saldo", "Vérifier le solde"], ["Selecionar as faturas", "Sélectionner les factures"], ["«Tenter le prélèvement sur le portefeuille»", "« Tenter le prélèvement sur le portefeuille »"]] },
       { cls: "good", h: ["Com o cartão", "Avec la carte"], tag: ["Cartão", "Carte"], items: [["Ver os cartões registados", "Voir les cartes enregistrées"], ["Outro cartão? «Sélection des flux financiers»", "Autre carte ? « Sélection des flux financiers »"], ["«Tenter le paiement»", "« Tenter le paiement »"]] }
     ] },
+    { p: ["Outro exemplo: <b>«Fonds insuffisants»</b>. Convidar o cliente a recarregar a conta ou dar outro meio de pagamento, e tentar primeiro a <b>fatura mais pequena</b> (mais hipóteses de passar). Se o cliente tem outro cartão, pode <b>«Basculer»</b> os fluxos para esse cartão: todos de uma vez («Tout basculer») ou fatura a fatura («Basculer ce flux»).", "Autre exemple : <b>« Fonds insuffisants »</b>. Inviter le client à renflouer son compte ou à donner un autre moyen de paiement, et tenter d’abord la <b>plus petite facture</b> (plus de chances de passer). Si le client a une autre carte, tu peux <b>« Basculer »</b> les flux vers cette carte : tous d’un coup (« Tout basculer ») ou facture par facture (« Basculer ce flux »)."] },
+    { shot: { f: "recouvrement-fonds-insuffisants.png", cap: ["Ação recomendada «Fonds insuffisants», escolha do motivo e basculamento dos fluxos para outro cartão", "Action recommandée « Fonds insuffisants », choix du motif et bascule des flux vers une autre carte"] } },
     { key: ["Siga sempre a <b>ação recomendada</b>. Antes de cada tentativa, <b>indique o motivo</b> (cliente em linha, e-mail recebido…). Cada tentativa manual tem um custo para a Wengo.", "Avant chaque tentative, <b>justifie l’action</b> dans le formulaire (client en ligne, e-mail reçu…). Chaque tentative manuelle a un coût pour Wengo."] }
   ] },
   { t: ["Chargeback e robô", "Chargeback et robot"], b: [
     { p: ["<b>Chargeback</b> = pagamento contestado no banco; o dinheiro é retirado à Wengo. Só se regulariza por <b>transferência bancária</b>, e só o <b>N2</b> valida. Depois o cliente pode voltar a consultar. Se pedir o IBAN: e-mail Bobi «como regularizar a sua situação».", "<b>Chargeback</b> = paiement contesté auprès de la banque ; l’argent est repris à Wengo. Régularisable uniquement par <b>virement</b>, et seul le <b>N2</b> valide. Ensuite le client peut reconsulter. S’il demande l’IBAN : e-mail Bobi « comment régulariser votre situation »."] },
+    { shot: { f: "etat-chargeback.png", cap: ["Saúde da conta: «Est en impayé et chargeback», com o link Recouvrement", "Santé du compte : « Est en impayé et chargeback », avec le lien Recouvrement"] } },
+    { shot: { f: "facture-chargeback.png", cap: ["Uma fatura por pagar com o estado «Chargeback»", "Une facture impayée avec le statut « Chargeback »"] } },
+    { p: ["Para enviar as modalidades de pagamento (com o IBAN): «Envoyer un mail / un SMS» → categoria <b>Recouvrement</b> → <b>«[Gestion des impayés] Modalités pour régulariser»</b>.", "Pour envoyer les modalités de paiement (avec l’IBAN) : « Envoyer un mail / un SMS » → catégorie <b>Recouvrement</b> → <b>« [Gestion des impayés] Modalités pour régulariser »</b>."] },
+    { shot: { f: "message-recouvrement.png", cap: ["Categoria Recouvrement, mensagem «Modalités pour régulariser» (aqui no anuário italiano)", "Catégorie Recouvrement, message « Modalités pour régulariser » (ici annuaire italien)"] } },
     { p: ["<b>Robô de cobrança</b>: tenta cobrar sozinho. Se o cliente negociar prestações, <b>desative-o</b> (verde «Não» → laranja «Sim») e escolha a data de reativação.", "<b>Robot de recouvrement</b> : il tente de prélever tout seul. Si le client négocie un paiement en plusieurs fois, <b>désactive-le</b> (vert « Non » → orange « Oui ») et choisis la date de réactivation."] }
   ] }],
   quiz: [
@@ -209,7 +219,7 @@ BCF.modules.push(
   { t: ["Com o cliente em linha", "Avec le client en ligne"], b: [
     { lead: ["A maioria das chamadas acaba na caixa de voz. Dedique-se aos clientes com quem consegue falar.", "La plupart des appels tombent sur messagerie. Concentre-toi sur les clients que tu arrives à joindre."] },
     { p: ["Lembre as faturas pendentes e peça a regularização imediata: cartão, recarga da Wallet, transferência, ou cheque (só França) para <b>MyBestPro – 75 rue d’Amsterdam – 75008 Paris</b>, com o pseudónimo no verso.", "Rappelle les factures en attente et demande la régularisation immédiate : carte, recharge du Wallet, virement, ou chèque (France uniquement) à <b>MyBestPro – 75 rue d’Amsterdam – 75008 Paris</b>, avec le pseudo au dos."] },
-    { p: ["IBAN ou outro meio? Envie um e-mail ou SMS pelo Bobi. O comprovativo de transferência vai para o e-mail de cobranças do país (ver Ficha memória → Contactos).", "IBAN ou autre moyen ? Envoie un e-mail ou un SMS depuis Bobi. Le justificatif de virement va à l’e-mail recouvrement du pays (voir Fiche mémo → Contacts)."] },
+    { p: ["IBAN ou outro meio? Envie pelo Bobi a mensagem <b>Recouvrement → «[Gestion des impayés] Modalités pour régulariser»</b>. O comprovativo de transferência vai para o e-mail de cobranças do país (ver Ficha memória → Contactos).", "IBAN ou autre moyen ? Envoie un e-mail ou un SMS depuis Bobi. Le justificatif de virement va à l’e-mail recouvrement du pays (voir Fiche mémo → Contacts)."] },
     { warn: ["Depois de cada chamada há uma <b>pausa automática de 1 min 30</b> para qualificar e deixar uma nota. Se o cliente não atendeu, anule a pausa manualmente.", "Après chaque appel il y a une <b>pause automatique de 1 min 30</b> pour qualifier et laisser une note. Si le client n’a pas répondu, annule la pause manuellement."] }
   ] },
   { t: ["Pagar mais tarde ou em prestações", "Payer plus tard ou en plusieurs fois"], b: [
@@ -244,22 +254,36 @@ BCF.modules.push(
       { i: "E", t: ["Ofertas de especialistas", "Offres d’experts"], p: ["Descontos limitados, só certos especialistas.", "Réductions limitées, certains experts seulement."] },
       { i: "V", t: ["Vales de especialistas", "Bons d’experts"], p: ["Ex.: 10€ ou 5 min. Um por consulta, não acumulável.", "Ex. : 10€ ou 5 min. Un par consultation, non cumulable."] }
     ] },
-    { shot: { f: "offre-it-expert.png", cap: ["Especialista em promoção: 1,92€/min em vez de 2,40€/min", "Expert en promo : 1,92€/min au lieu de 2,40€/min"] } }
+    { shot: { f: "fiche-consultation-immediate.png", cap: ["Na ficha: «Consultation immédiate» abre a página das ofertas", "Sur la fiche : « Consultation immédiate » ouvre la page des offres"] } },
+    { shot: { f: "offres-fr-forfaits.png", cap: ["França: pacotes «sem ultrapassagem» (59€/20 min, 30€/10 min), especialistas em promoção, «Coups de cœur», seleção vídeo", "France : forfaits « sans dépassement » (59€/20 min, 30€/10 min), experts en promo, « Coups de cœur », sélection visio"] } },
+    { shot: { f: "offre-du-jour.png", cap: ["Portugal: «[OFERTA DO DIA] 30%», com a data de validade", "Portugal : « [OFERTA DO DIA] 30% », avec la date de validité"] } },
+    { p: ["Ao escolher o especialista, o Bobi mostra a tarifa promocional («em vez de») e, em baixo, <b>«Promotion valide»</b> com o desconto aplicado. Verifique-o antes de lançar.", "En choisissant l’expert, Bobi montre le tarif promo (« au lieu de ») et, en bas, <b>« Promotion valide »</b> avec la réduction appliquée. Vérifie-le avant de lancer."] },
+    { shot: { f: "promo-activee.png", cap: ["Especialista em promoção (2,85€ em vez de 3€) e «Promotion valide: 5% de réduction»", "Expert en promo (2,85€ au lieu de 3€) et « Promotion valide : 5% de réduction »"] } },
+    { shot: { f: "offre-it-expert.png", cap: ["Especialista em promoção: 1,92€/min em vez de 2,40€/min", "Expert en promo : 1,92€/min au lieu de 2,40€/min"] } },
+    { shot: { f: "experts-coup-de-coeur.png", cap: ["A seleção «Coups de cœur» e a tarifa por minuto de cada especialista", "La sélection « Coups de cœur » et le tarif à la minute de chaque expert"] } }
   ] },
   { t: ["Os vales Wengo", "Les bons cadeaux Wengo"], b: [
     { p: ["A Wengo oferece um vale: no aniversário; 30 dias após a inscrição (ainda prospect); 30 dias após a 1.ª chamada (novo cliente); 180 dias após a última transação.", "Wengo offre un bon : à l’anniversaire ; 30 jours après l’inscription (toujours prospect) ; 30 jours après le 1er appel (nouveau client) ; 180 jours après la dernière transaction."] },
     { steps: [
-      { t: ["Faixa azul «Cadeau disponible»", "Bandeau bleu « Cadeau disponible »"], p: ["Clique em «Ajouter au wallet».", "Clique sur « Ajouter au wallet »."] },
-      { t: ["Verificar as condições", "Vérifier les conditions"], p: ["Data de nascimento, e-mail, telefone preenchidos e nenhuma dívida.", "Date de naissance, e-mail, téléphone remplis et aucun impayé."] },
-      { t: ["OK no pop-in", "OK dans la pop-in"], p: ["O vale entra na Wallet.", "Le bon arrive dans le Wallet."] }
+      { t: ["Abrir as propostas", "Ouvrir les propositions"], p: ["Faixa azul «Cadeau disponible» → «Ajouter au wallet», ou bloco Ações → Compte → <b>«Proposition de recharge wallet»</b>.", "Bandeau bleu « Cadeau disponible » → « Ajouter au wallet », ou bloc Actions → Compte → <b>« Proposition de recharge wallet »</b>."] },
+      { t: ["«Accepter»", "« Accepter »"], p: ["Na lista das propostas (data de início, expiração, montante, motivo).", "Dans la liste des propositions (début, expiration, montant, motif)."] },
+      { t: ["Confirmar as condições", "Confirmer les conditions"], p: ["O pop-in pergunta: o cliente já não tem dívidas? Tem e-mail, telemóvel e data de nascimento? Se sim, «OK».", "La pop-in demande : le client n’a plus d’impayé ? Il a renseigné e-mail, mobile et date de naissance ? Si oui, « OK »."] },
+      { t: ["Verificar a Wallet", "Vérifier le Wallet"], p: ["O vale aparece no conteúdo da Wallet.", "Le bon apparaît dans le contenu du Wallet."] }
     ] },
-    { shot: { f: "fiche-cadeau-reward.png", cap: ["Faixa azul: «Ajouter au wallet du client»", "Bandeau bleu : « Ajouter au wallet du client »"] } }
+    { shot: { f: "fiche-cadeau-reward.png", cap: ["Faixa azul: «Ajouter au wallet du client»", "Bandeau bleu : « Ajouter au wallet du client »"] } },
+    { shot: { f: "fiche-proposition-recharge.png", cap: ["Ou: bloco Compte → «Proposition de recharge wallet»", "Ou : bloc Compte → « Proposition de recharge wallet »"] } },
+    { shot: { f: "propositions-recharge.png", cap: ["A lista das propostas: clique em «Accepter» se o cliente cumprir as condições", "La liste des propositions : clique sur « Accepter » si le client remplit les conditions"] } },
+    { shot: { f: "popin-conditions.png", cap: ["O pop-in de confirmação: sem dívidas, e-mail, telemóvel e data de nascimento preenchidos → OK", "La pop-in de confirmation : pas d’impayé, e-mail, mobile et date de naissance renseignés → OK"] } },
+    { shot: { f: "alerte-infos-manquantes.png", cap: ["Se faltar informação, aparece este alerta laranja: complete primeiro a ficha", "S’il manque une info, cette alerte orange s’affiche : complète d’abord la fiche"] } },
+    { shot: { f: "wallet-anniversaire.png", cap: ["O vale de aniversário na Wallet", "Le bon anniversaire dans le Wallet"] } }
   ] },
   { t: ["Explicar o preço", "Expliquer le prix"], b: [
     { cards: [
       { i: "1", t: ["Cada minuto começado conta", "Chaque minute entamée compte"], p: ["Um minuto começado é um minuto inteiro.", "Une minute entamée est une minute complète."] },
       { i: "+", t: ["Sobretaxa telemóvel", "Surtaxe mobile"], p: ["0,20€/min na Europa, 0,30 USD/min na América do Sul.", "0,20€/min en Europe, 0,30 USD/min en Amérique du Sud."] }
     ] },
+    { shot: { f: "transactions-liste.png", cap: ["Separador Transactions: produto, montante, estado da fatura, <b>tarifa aplicada</b> (com a etiqueta Promo), duração, especialista", "Onglet Transactions : produit, montant, statut de la facture, <b>tarif appliqué</b> (avec l’étiquette Promo), durée, expert"] } },
+    { shot: { f: "facture-detail.png", cap: ["Detalhe de uma fatura: tipo, transação ligada, pós-pago, montante faturado e reembolsável, PDF, e os fluxos financeiros (aqui pago com a Wallet EUR)", "Détail d’une facture : type, transaction liée, postpayé, montant facturé et remboursable, PDF, et les flux financiers (ici payé avec le Wallet EUR)"] } },
     { p: ["Faturas (bloco «Factures»): OK = paga, Erro = a aguardar pagamento, Falha = recarga não feita. Detalhe de promo ou vale: «Transactions» → ID → «Plus de détails».", "Factures (bloc « Factures ») : OK = payée, Erreur = en attente, Échec = recharge non effectuée. Détail promo ou bon : « Transactions » → ID → « Plus de détails »."] }
   ] },
   { t: ["Apadrinhamento", "Parrainage"], b: [
