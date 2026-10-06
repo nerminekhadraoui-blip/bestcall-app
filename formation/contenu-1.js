@@ -96,6 +96,7 @@ BCF.modules.push(
   desc: ["Ler a ficha em 30 segundos antes de agir.", "Lire la fiche en 30 secondes avant d’agir."],
   lessons: [
   { t: ["A faixa do topo", "Le bandeau du haut"], b: [
+    { shot: { f: "fiche-vue-ensemble.png", cap: ["A ficha completa: faixa do topo, Informações cliente e Ações, depois Informações gerais, Meios de pagamento e Especialistas favoritos", "La fiche complète : bandeau du haut, Infos client et Actions, puis Infos générales, Moyens de paiement et Experts favoris"] } },
     { lead: ["É a primeira coisa que vê ao abrir a ficha. Verifique-a antes de tratar qualquer pedido.", "C’est la première chose que tu vois en ouvrant la fiche. Vérifie-le avant de traiter toute demande."] },
     { shot: { f: "fiche-client-bandeau.png", cap: ["Faixa do topo: criação da conta, última consulta, meio de pagamento, top especialistas e ações", "Bandeau du haut : création du compte, dernière consultation, moyen de paiement, top experts et actions"] } },
     { steps: [
@@ -107,9 +108,12 @@ BCF.modules.push(
     { shot: { f: "fiche-a-savoir.png", cap: ["Cliente inativo: o bloco «À savoir» diz logo a que oferta tem direito, e «Profil à vérifier» pede para verificar o perfil antes de continuar", "Client inactif : le bloc « À savoir » dit directement à quelle offre il a droit, et « Profil à vérifier » demande de vérifier le profil avant de continuer"] } },
     { shot: { f: "profil-suspendu.png", cap: ["Perfil suspenso: a nota no topo diz porquê. Clique em «Voir les Notes» para mais informação", "Profil suspendu : la note en haut dit pourquoi. Clique sur « Voir les Notes » pour plus d’infos"] } },
     { tip: ["Leia sempre o bloco <b>«À savoir»</b>: indica a oferta de descoberta a que o cliente é elegível.", "Lis toujours le bloc <b>« À savoir »</b> : il indique l’offre découverte à laquelle le client est éligible."] },
+    { shot: { f: "fiche-bandeau-nouveau.png", cap: ["Um cliente novo: conta criada há 4 horas, 1 consulta com promoção aplicada, já tem um cartão. Prioridade: descobrir a necessidade", "Un nouveau client : compte créé il y a 4 heures, 1 consultation avec promo appliquée, il a déjà une carte. Priorité : découvrir son besoin"] } },
+    { tip: ["A linha <b>«Votre priorité»</b> diz-lhe o que fazer primeiro com este cliente (ex.: «découvrir son besoin»).", "La ligne <b>« Votre priorité »</b> te dit quoi faire en premier avec ce client (ex. : « découvrir son besoin »)."] },
     { p: ["A barra de separadores permite navegar: <b>Informações, Notas, Chamadas, Risk, Transações, Faturas, Meios de pagamento</b>.", "La barre d’onglets permet de naviguer : <b>Informations, Notes, Appels, Risk, Transactions, Factures, Moyens de paiement</b>."] }
   ] },
   { t: ["Informações do cliente e saúde da conta", "Infos client et santé du compte"], b: [
+    { shot: { f: "infos-generales.png", cap: ["O bloco Informations générales: pseudónimo com etiquetas (Nouveau, Impayé), anuário, fuso, e-mail com estado, telefone, inscrição, Pay as you go, Wengo Reward", "Le bloc Informations générales : pseudo avec étiquettes (Nouveau, Impayé), annuaire, fuseau, e-mail avec statut, téléphone, inscription, Pay as you go, Wengo Reward"] } },
     { table: { h: [["Campo", "Champ"], ["Para que serve", "À quoi ça sert"]], r: [
       [["Pseudónimo", "Pseudo"], ["Confirmar que fala com o cliente certo.", "Confirmer que tu parles au bon client."]],
       [["Data de nascimento", "Date de naissance"], ["Elemento-chave para verificar a identidade.", "Élément clé pour vérifier l’identité."]],
@@ -130,6 +134,10 @@ BCF.modules.push(
     { shot: { f: "fiche-selfcare-es.png", cap: ["Cliente espanhol: «Selfcare client» em baixo à esquerda e, à direita, o bloco amarelo «Informations à demander» com a frase para confirmar o e-mail", "Client espagnol : « Selfcare client » en bas à gauche et, à droite, le bloc jaune « Informations à demander » avec la phrase pour confirmer l’e-mail"] } },
     { p: ["Quando faltam dados, o bloco <b>«Informations à demander»</b> dá-lhe a frase a dizer e os botões para confirmar ou atualizar (ex.: o e-mail).", "Quand il manque des données, le bloc <b>« Informations à demander »</b> te donne la phrase à dire et les boutons pour confirmer ou mettre à jour (ex. : l’e-mail)."] },
     { p: ["<b>Saúde da conta</b>: este bloco sobe para o topo da ficha quando há um alerta (ponto vermelho).", "<b>Santé du compte</b> : ce bloc remonte en haut de la fiche quand il y a une alerte (point rouge)."] },
+    { shot: { f: "sante-compte.png", cap: ["Saúde da conta sem alerta: tudo verde («Actif», «Aucun problème», «Non»)", "Santé du compte sans alerte : tout est vert (« Actif », « Aucun problème », « Non »)"] } },
+    { shot: { f: "bloc-moyens-paiement.png", cap: ["O bloco Moyens de paiement: tipo de pagamento, cartão por defeito (aqui nenhum: «Ajouter une CB»), créditos Wallet em euros e segundos", "Le bloc Moyens de paiement : type de paiement, carte par défaut (ici aucune : « Ajouter une CB »), crédits Wallet en euros et secondes"] } },
+    { shot: { f: "dernieres-activites.png", cap: ["Últimas atividades: RDV futuro, RDV passado, último processo de pedido (e em que etapa parou), última consulta, com atalhos", "Dernières activités : RDV à venir, RDV passé, dernier process de demande (et où il s’est arrêté), dernière consultation, avec raccourcis"] } },
+    { shot: { f: "actions-bloc.png", cap: ["O bloco Actions completo: consultas, em curso, atividade, contacto cliente, histórico, conta", "Le bloc Actions complet : consultations, en cours, activité, contact client, historique, compte"] } },
     { shot: { f: "conso-suspendue.png", cap: ["Sinais de alerta numa ficha: «Consommation suspendue: Oui», etiqueta «Impayé» no pseudónimo, e-mail «Inconnu» e «Blacklisté»", "Signaux d’alerte sur une fiche : « Consommation suspendue : Oui », étiquette « Impayé » sur le pseudo, e-mail « Inconnu » et « Blacklisté »"] } },
     { chips: [
       { c: "s-bad", k: ["Perfil suspenso", "Profil suspendu"], p: ["Normalmente a pedido do cliente. Não consulta, mas acede ao espaço cliente.", "Souvent à la demande du client. Il ne consulte pas, mais accède à son espace."] },
@@ -146,6 +154,7 @@ BCF.modules.push(
       { c: "s-bad", k: ["Vermelho", "Rouge"], p: ["Indisponível neste canal.", "Indisponible sur ce canal."] },
       { c: "s-wait", k: ["Cinzento", "Gris"], p: ["Canal não proposto pelo especialista.", "Canal non proposé par l’expert."] }
     ] },
+    { shot: { f: "experts-favoris-orange.png", cap: ["Favoritos consultados nos últimos 6 meses: a maioria está ocupada (laranja), Maeve está disponível em telefone e chat (verde)", "Favoris consultés ces 6 derniers mois : la plupart sont occupés (orange), Maeve est disponible en téléphone et chat (vert)"] } },
     { tip: ["Lista muito longa? Filtre: <b>Todos</b>, <b>Disponíveis imediatamente</b>, ou consultados nos últimos 6 meses.", "Liste trop longue ? Filtre : <b>Tous</b>, <b>Disponibles immédiatement</b>, ou consultés ces 6 derniers mois."] }
   ] },
   { t: ["Notas, Chamadas, Risk", "Notes, Appels, Risk"], b: [
@@ -154,6 +163,10 @@ BCF.modules.push(
       { i: "C", t: ["Chamadas", "Appels"], p: ["Data, ID da chamada, entrada/saída, operador, duração, qualificação. Dica: cole o ID na pesquisa do Graam para ver tudo.", "Date, ID d’appel, entrant/sortant, opérateur, durée, qualification. Astuce : colle l’ID dans la recherche Graam pour tout voir."] },
       { i: "R", t: ["Risk", "Risk"], p: ["Contas primas: mesmo cartão, mesmo PayPal ou mesmo telefone.", "Comptes cousins : même carte, même PayPal ou même téléphone."] }
     ] },
+    { shot: { f: "onglet-notes.png", cap: ["Separador Notas: notas automáticas (fidelidade) e manuais, e à direita o histórico dos tickets", "Onglet Notes : notes automatiques (fidélité) et manuelles, et à droite l’historique des tickets"] } },
+    { shot: { f: "ajouter-note.png", cap: ["«Ajouter une note»: tipo (ex.: Service Client), caixas prontas (gesto comercial, número ou horário de contacto) e o texto", "« Ajouter une note » : type (ex. Service Client), cases prêtes (geste commercial, numéro ou horaires de contact) et le texte"] } },
+    { tip: ["Deixe uma nota quando o cliente pede para ser contactado num número ou a uma hora específica: as caixas existem para isso.", "Laisse une note quand le client demande à être contacté sur un numéro ou à une heure précise : les cases existent pour ça."] },
+    { shot: { f: "risk-cousins.png", cap: ["Risk → «Comptes cousins»: o caminho que liga duas contas (aqui pelo mesmo número de telefone)", "Risk → « Comptes cousins » : le chemin qui relie deux comptes (ici par le même numéro de téléphone)"] } },
     { p: ["No Risk, a etiqueta de validade do cartão: <b>verde</b> = ativo, <b>laranja</b> = expirado ou apagado, <b>vermelho</b> = crítico, bloqueado no Bobi.", "Dans Risk, la pastille de validité de la carte : <b>vert</b> = active, <b>orange</b> = expirée ou supprimée, <b>rouge</b> = critique, bloquée dans Bobi."] },
     { key: ["A ficha que abre está suspensa ou inativa? O número pode estar ligado a uma ficha antiga. Vá ao <b>Risk</b>: o cliente usa provavelmente outra conta.", "La fiche qui s’ouvre est suspendue ou inactive ? Le numéro est peut-être lié à une vieille fiche. Va dans <b>Risk</b> : le client utilise sûrement un autre compte."] }
   ] },

@@ -363,19 +363,25 @@ BCF.modules.push(
       [["Gestos comerciais", "Gestes commerciaux"], ["Vales, minutos grátis, crédito oferecido: sem pontos. Descontos e pacotes: sim.", "Bons, minutes gratuites, crédit offert : pas de points. Réductions et forfaits : oui."]],
       [["Validade", "Validité"], ["12 meses; cada novo ponto prolonga todo o saldo 12 meses.", "12 mois ; chaque nouveau point prolonge tout le solde de 12 mois."]]
     ] } },
-    { p: ["Pontos não creditados? Página do programa → bloco <b>«Registos de erros / Motivos de não crédito»</b>: tetos, transação inelegível, fatura não paga, gesto comercial, 3 avaliações já dadas no mês, avaliação já dada a este especialista, consulta demasiado curta.", "Points non crédités ? Page du programme → bloc <b>« Logs d’erreurs / Motifs de non-crédit »</b> : plafonds, transaction inéligible, facture impayée, geste commercial, 3 avis déjà laissés ce mois, avis déjà laissé à cet expert, consultation trop courte."] }
+    { shot: { f: "reward-logs-rejet.png", cap: ["«Logs de rejet»: «Transaction non éligible car durée trop courte», «Seuil mensuel»…", "« Logs de rejet » : « Transaction non éligible car durée trop courte », « Seuil mensuel »…"] } },
+    { p: ["Pontos não creditados? Página do programa → separador <b>«Logs de rejet»</b> (motivos de não crédito): tetos, transação inelegível, fatura não paga, gesto comercial, 3 avaliações já dadas no mês, avaliação já dada a este especialista, consulta demasiado curta.", "Points non crédités ? Page du programme → bloc <b>« Logs d’erreurs / Motifs de non-crédit »</b> : plafonds, transaction inéligible, facture impayée, geste commercial, 3 avis déjà laissés ce mois, avis déjà laissé à cet expert, consultation trop courte."] }
   ] },
   { t: ["Inscrever e trocar", "Inscrire et échanger"], b: [
     { shot: { f: "reward-oui-fiche.png", cap: ["Nas informações gerais: «Wengo Reward: Oui» = inscrito", "Dans les infos générales : « Wengo Reward : Oui » = inscrit"] } },
     { steps: [
       { t: ["Abrir o programa", "Ouvrir le programme"], p: ["Na faixa azul, clique em «voir le détail».", "Dans le bandeau bleu, clique sur « voir le détail »."] },
       { t: ["Completar as informações", "Compléter les infos"], p: ["Links clicáveis para adicionar e-mail, telemóvel, data de nascimento.", "Liens cliquables pour ajouter e-mail, mobile, date de naissance."] },
-      { t: ["Inscrever", "Inscrire"], p: ["Botão de inscrição no Wengo Reward.", "Bouton d’inscription à Wengo Reward."] },
-      { t: ["Ver o saldo", "Voir le solde"], p: ["Total, pontos do mês, pontos usados. Bloco «Opérations»: créditos e débitos.", "Total, points du mois, points utilisés. Bloc « Opérations » : crédits et débits."] },
+      { t: ["Inscrever", "Inscrire"], p: ["Botão «Inscrire le client au programme de fidélité».", "Bouton « Inscrire le client au programme de fidélité »."] },
+      { t: ["Ver o saldo", "Voir le solde"], p: ["Saldo, pontos acumulados (total e do mês), pontos consumidos, data de inscrição. Separador «Historique des opérations»: créditos e débitos.", "Solde, points cumulés (total et du mois), points consommés, date d’inscription. Onglet « Historique des opérations » : crédits et débits."] },
       { t: ["Trocar", "Échanger"], p: ["«Échanger des points»: recompensas a preto = possíveis, a cinzento = pontos insuficientes. Uma nota é criada automaticamente.", "« Échanger des points » : récompenses en noir = possibles, en gris = pas assez de points. Une note est créée automatiquement."] }
     ] },
+    { shot: { f: "reward-inscrire.png", cap: ["Cliente não inscrito: botão «Inscrire le client au programme de fidélité»", "Client non inscrit : bouton « Inscrire le client au programme de fidélité »"] } },
+    { shot: { f: "reward-solde.png", cap: ["O saldo de pontos em detalhe", "Le solde de points en détail"] } },
+    { shot: { f: "reward-historique.png", cap: ["«Historique des opérations»: cada crédito de pontos com a data, o especialista e o link para a fatura e a transação", "« Historique des opérations » : chaque crédit de points avec la date, l’expert et le lien vers la facture et la transaction"] } },
     { shot: { f: "reward-voir-detail.png", cap: ["«voir le détail» abre a página do programa de fidelidade", "« voir le détail » ouvre la page du programme de fidélité"] } },
     { shot: { f: "programme-fidelite.png", cap: ["A página do programa: saldo de pontos, separadores Échanger / Créditer / Historique / Logs de rejet, e as recompensas (recargas Wallet, relatórios astrológicos)", "La page du programme : solde de points, onglets Échanger / Créditer / Historique / Logs de rejet, et les récompenses (recharges Wallet, rapports astrologiques)"] } },
+    { shot: { f: "reward-echanger-wallet.png", cap: ["«Échanger des points» → Recharges wallet: 5 min por 20 pts, 10 min por 35 pts, 15 min por 59 pts (preços promocionais)", "« Échanger des points » → Recharges wallet : 5 min pour 20 pts, 10 min pour 35 pts, 15 min pour 59 pts (prix promo)"] } },
+    { shot: { f: "reward-rapports.png", cap: ["Relatórios astrológicos: Tarot Sim-Não, Tiragem de Tarot 2025… «Achetable» = o cliente tem pontos suficientes", "Rapports astrologiques : Tarot Oui-Non, Tirage de Tarot 2025… « Achetable » = le client a assez de points"] } },
     { cards: [
       { i: "✦", t: ["Estudos e tiragens", "Études et tirages"], p: ["Caixas (documento + minutos) ou horóscopos.", "Box (document + minutes) ou horoscopes."] },
       { i: "⏱", t: ["Vales de compra", "Bons d’achat"], p: ["Pontos → minutos de consulta (chamada, chat, vídeo, RDV ou MER).", "Points → minutes de consultation (appel, chat, vidéo, RDV ou MER)."] },
