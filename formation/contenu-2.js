@@ -16,6 +16,8 @@ BCF.modules.push(
     ] },
     { p: ["Meios aceites: cartão bancário, cartão pré-pago, PayPal; Portugal: <b>Multibanco</b> e <b>MB Way</b>; Espanha: <b>Bizum</b>.", "Moyens acceptés : carte bancaire, carte prépayée, PayPal ; Portugal : <b>Multibanco</b> et <b>MB Way</b> ; Espagne : <b>Bizum</b>."] },
     { warn: ["<b>Maestro</b> e <b>American Express</b> não funcionam na plataforma.", "<b>Maestro</b> et <b>American Express</b> ne fonctionnent pas sur la plateforme."] },
+    { p: ["O separador <b>«Moyens de paiement»</b> da ficha resume tudo: o tipo de pagamento (ex.: «Prépayé seulement» ou «Pré&Post payé»), o cartão por defeito, os créditos Wallet, a lista dos meios de pagamento (filtros CB, Paiement Expert, Autre, Tous) e os porta-moedas USD, duração (minutos) e EUR.", "L’onglet <b>« Moyens de paiement »</b> de la fiche résume tout : le type de paiement (ex. « Prépayé seulement » ou « Pré&Post payé »), la carte par défaut, les crédits Wallet, la liste des moyens de paiement (filtres CB, Paiement Expert, Autre, Tous) et les porte-monnaies USD, durée (minutes) et EUR."] },
+    { shot: { f: "onglet-moyens-paiement.png", cap: ["Separador «Moyens de paiement»: resumo, botão «Ajouter une CB ou créditer le wallet», lista e porta-moedas", "Onglet « Moyens de paiement » : résumé, bouton « Ajouter une CB ou créditer le wallet », liste et porte-monnaies"] } },
     { shot: { f: "fiche-ajouter-moyen.png", cap: ["Bloco Ações → Compte: «Ajouter un moyen de paiement» e «Proposition de recharge wallet»", "Bloc Actions → Compte : « Ajouter un moyen de paiement » et « Proposition de recharge wallet »"] } },
     { p: ["Para tudo isto: ficha cliente → botão <b>«Ajouter un moyen de paiement»</b>. Daí pode adicionar um cartão, recarregar a Wallet, ou enviar um e-mail/SMS ao cliente.", "Pour tout ça : fiche client → bouton <b>« Ajouter un moyen de paiement »</b>. De là tu peux ajouter une carte, recharger le Wallet, ou envoyer un e-mail/SMS au client."] }
   ] },
@@ -52,9 +54,13 @@ BCF.modules.push(
   ] },
   { t: ["Apagar um cartão", "Supprimer une carte"], b: [
     { steps: [
-      { t: ["Separador «Moyens de paiement»", "Onglet « Moyens de paiement »"], p: ["Escolha o cartão a apagar.", "Choisis la carte à supprimer."] },
-      { t: ["Apagar", "Supprimer"], p: ["Um pop-up confirma.", "Une pop-up confirme."] }
+      { t: ["Separador «Moyens de paiement»", "Onglet « Moyens de paiement »"], p: ["Clique no cartão a apagar na lista.", "Clique sur la carte à supprimer dans la liste."] },
+      { t: ["Ver o detalhe", "Voir le détail"], p: ["Estado, origem, datas, cartão por defeito, lista negra, dados Adyen.", "Statut, origine, dates, carte par défaut, liste noire, données Adyen."] },
+      { t: ["«Supprimer le moyen de paiement»", "« Supprimer le moyen de paiement »"], p: ["Botão vermelho em baixo. Um pop-up confirma.", "Bouton rouge en bas. Une pop-up confirme."] }
     ] },
+    { shot: { f: "moyen-paiement-detail.png", cap: ["O detalhe de um cartão e o botão «Supprimer le moyen de paiement»", "Le détail d’une carte et le bouton « Supprimer le moyen de paiement »"] } },
+    { shot: { f: "suppression-impayes.png", cap: ["Recusado: o cliente tem dívidas", "Refusé : le client a des impayés"] } },
+    { shot: { f: "suppression-transaction.png", cap: ["Recusado: o cliente tem uma transação em curso", "Refusé : le client a une transaction en cours"] } },
     { warn: ["Impossível apagar se o cliente tiver <b>dívidas</b> (pagar primeiro) ou um <b>pedido de consulta em curso</b> (tentar depois da consulta).", "Impossible de supprimer si le client a des <b>impayés</b> (régler d’abord) ou une <b>demande de consultation en cours</b> (réessayer après)."] }
   ] }],
   quiz: [
@@ -74,6 +80,7 @@ BCF.modules.push(
       { i: "€", t: ["Wallet EUR", "Wallet EUR"], p: ["Em euros, clientes europeus, só para especialistas na Europa.", "En euros, clients européens, uniquement pour experts en Europe."] },
       { i: "$", t: ["Wallet USD", "Wallet USD"], p: ["Em dólares, clientes latino-americanos e especialistas latinos.", "En dollars, clients latino-américains et experts latinos."] }
     ] },
+    { p: ["No separador «Moyens de paiement», os três aparecem como <b>Porta moedas USD</b>, <b>Porta moedas durée</b> (a WGD, em minutos) e <b>Porta moedas EUR</b>, cada um com o seu saldo.", "Dans l’onglet « Moyens de paiement », les trois apparaissent comme <b>Porta moedas USD</b>, <b>Porta moedas durée</b> (le WGD, en minutes) et <b>Porta moedas EUR</b>, chacun avec son solde."] },
     { p: ["A Wallet é alimentada de duas formas: <b>presentes de especialistas</b> (só para consultas à tarifa por minuto, não combináveis com promoções ou pacotes) e <b>recargas do cliente</b> (sem restrições, combináveis com promoções e pacotes).", "Le Wallet est alimenté de deux façons : <b>cadeaux d’experts</b> (uniquement pour des consultations au tarif minute, non cumulables avec promos ou forfaits) et <b>recharges du client</b> (sans restriction, cumulables avec promos et forfaits)."] },
     { key: ["Sem cartão bancário, o cliente precisa de um saldo de pelo menos <b>10 minutos de consulta</b> para consultar.", "Sans carte bancaire, le client doit avoir un solde d’au moins <b>10 minutes de consultation</b> pour consulter."] }
   ] },
@@ -110,6 +117,9 @@ BCF.modules.push(
       { cls: "good", h: ["Tem cartão na conta", "A une carte sur le compte"], tag: ["Opção 1", "Option 1"], items: [["«Moyen de paiement du compte»", "« Moyen de paiement du compte »"], ["Cartão, moeda (EUR Europa, USD América Latina), valor → Valider", "Carte, devise (EUR Europe, USD Amérique latine), montant → Valider"]] },
       { cls: "good", h: ["Sem cartão", "Pas de carte"], tag: ["Opção 2", "Option 2"], items: [["<b>Paybylink</b>: link seguro por e-mail ou SMS", "<b>Paybylink</b> : lien sécurisé par e-mail ou SMS"], ["Cartão, PayPal, Paysafecard, Google Pay, Bizum (ES), Multibanco/MB Way (PT)", "Carte, PayPal, Paysafecard, Google Pay, Bizum (ES), Multibanco/MB Way (PT)"]] }
     ] },
+    { p: ["<b>Multibanco</b> (Portugal): escolha «Multibanco», o montante, depois «Valider». O Bobi gera uma <b>entidade e uma referência</b> com data de validade; envie-as por e-mail ou SMS. O cliente paga no multibanco ou no homebanking.", "<b>Multibanco</b> (Portugal) : choisis « Multibanco », le montant, puis « Valider ». Bobi génère une <b>entité et une référence</b> avec une date de validité ; envoie-les par e-mail ou SMS. Le client paie au distributeur ou via sa banque en ligne."] },
+    { shot: { f: "wallet-multibanco.png", cap: ["Método «Multibanco», montante 5€, «Valider»", "Méthode « Multibanco », montant 5€, « Valider »"] } },
+    { shot: { f: "multibanco-reference.png", cap: ["A notificação Multibanco: entidade / referência e data de validade, a enviar por e-mail ou SMS", "La notification Multibanco : entité / référence et date de validité, à envoyer par e-mail ou SMS"] } },
     { shot: { f: "paybylink-notification.png", cap: ["PayByLink: o link e a data de validade. Enviar por e-mail ou SMS", "PayByLink : le lien et sa date de validité. Envoyer par e-mail ou SMS"] } },
     { shot: { f: "paybylink-paiement.png", cap: ["O que o cliente vê ao abrir o link: Google Pay, cartão, Paysafecard, PayPal", "Ce que voit le client en ouvrant le lien : Google Pay, carte, Paysafecard, PayPal"] } },
     { tip: ["O link tem uma data de validade: diga ao cliente para pagar antes.", "Le lien a une date de validité : dis au client de payer avant."] },
@@ -126,6 +136,12 @@ BCF.modules.push(
     ] },
     { shot: { f: "espace-wallet-creditar.png", cap: ["Os montantes: 100€ e 250€ dão <b>5% oferecidos</b>", "Les montants : 100€ et 250€ donnent <b>5% offerts</b>"] } },
     { shot: { f: "espace-wallet-paiement.png", cap: ["Os meios de pagamento em Portugal, com MB WAY selecionado", "Les moyens de paiement au Portugal, avec MB WAY sélectionné"] } },
+    { p: ["<b>Espanha</b>: o mesmo percurso em espanhol. «Tu monedero» → «Recargar» → montante → formas de pago, com <b>Bizum</b> e <b>Transferencia</b>. A página lembra que é preciso um crédito de 10 minutos para lançar uma consulta.", "<b>Espagne</b> : le même parcours en espagnol. « Tu monedero » → « Recargar » → montant → formas de pago, avec <b>Bizum</b> et <b>Transferencia</b>. La page rappelle qu’il faut un crédit de 10 minutes pour lancer une consultation."] },
+    { shot: { f: "espace-es-panel.png", cap: ["Espanha: «Tu panel de control» → «Tu monedero»", "Espagne : « Tu panel de control » → « Tu monedero »"] } },
+    { shot: { f: "espace-es-wallet.png", cap: ["«Para lanzar una consulta debes tener… 10 minutos de consulta»", "« Pour lancer une consultation tu dois avoir… 10 minutes de consultation »"] } },
+    { shot: { f: "espace-es-recargar.png", cap: ["«Recargar»: os montantes e «Prefiero elegir la cantidad»", "« Recargar » : les montants et « Je préfère choisir le montant »"] } },
+    { shot: { f: "espace-es-pago.png", cap: ["As formas de pagamento em Espanha: cartão, PayPal, Paysafecard, Bizum, transferência", "Les moyens de paiement en Espagne : carte, PayPal, Paysafecard, Bizum, virement"] } },
+    { shot: { f: "espace-es-bizum.png", cap: ["Bizum: o cliente introduz o telefone registado no Bizum", "Bizum : le client saisit le téléphone enregistré chez Bizum"] } },
     { key: ["Recarregar <b>100€ ou mais</b> pelo espaço cliente = <b>+5% oferecidos</b>. Um bom argumento para clientes regulares.", "Recharger <b>100€ ou plus</b> depuis l’espace client = <b>+5% offerts</b>. Un bon argument pour les clients réguliers."] }
   ] }],
   quiz: [
@@ -145,12 +161,15 @@ BCF.modules.push(
       { cls: "good", h: ["OUI", "OUI"], tag: ["Wallet + cartão", "Wallet + carte"], items: [["Primeiro a Wallet, depois o cartão", "D’abord le Wallet, puis la carte"], ["A consulta não é cortada a 0€", "La consultation n’est pas coupée à 0€"], ["Faturado pela duração real", "Facturé selon la durée réelle"]] },
       { cls: "bad", h: ["NON", "NON"], tag: ["Só Wallet", "Wallet seul"], items: [["Limitado ao saldo", "Limité au solde"], ["A consulta para quando o saldo acaba", "La consultation s’arrête à 0"], ["Por defeito se o cliente só recarregou a Wallet", "Par défaut si le client a seulement rechargé son Wallet"]] }
     ] },
-    { shot: { f: "pay-as-you-go.png", cap: ["Na ficha: Pay as you go «Oui»", "Sur la fiche : Pay as you go « Oui »"] } },
+    { shot: { f: "payg-oui.png", cap: ["Informações gerais: Pay as you go «Oui» (verde)", "Informations générales : Pay as you go « Oui » (vert)"] } },
+    { shot: { f: "payg-non.png", cap: ["Pay as you go «Non» (amarelo)", "Pay as you go « Non » (jaune)"] } },
     { key: ["Antes de mudar (botão Sim/Não), garanta que o cliente percebe as <b>duas opções</b>.", "Avant de changer (bouton Oui/Non), assure-toi que le client comprend les <b>deux options</b>."] }
   ] },
   { t: ["O Pedido de Autorização", "La Demande d’Autorisation"], b: [
     { lead: ["Uma <b>verificação temporária</b> dos fundos antes da consulta, não um débito. Muitas vezes o cliente recebe um SMS e pensa que foi debitado.", "Une <b>vérification temporaire</b> des fonds avant la consultation, pas un débit. Souvent le client reçoit un SMS et croit avoir été débité."] },
-    { p: ["Onde ver: ficha → «Moyens de paiement» → «Historique des actions».", "Où le voir : fiche → « Moyens de paiement » → « Historique des actions »."] },
+    { p: ["Onde ver: separador «Moyens de paiement» → bloco <b>«Historique des actions des moyens de paiement»</b> (em baixo). Cada linha é uma ação: montante, «Après PSP», «PSP contacté», erro, risco, fatura, transação, fluxo financeiro.", "Où le voir : onglet « Moyens de paiement » → bloc <b>« Historique des actions des moyens de paiement »</b> (en bas). Chaque ligne est une action : montant, « Après PSP », « PSP contacté », erreur, risque, facture, transaction, flux financier."] },
+    { shot: { f: "onglet-historique.png", cap: ["O bloco «Historique des actions des moyens de paiement» está por baixo dos meios de pagamento", "Le bloc « Historique des actions des moyens de paiement » se trouve sous les moyens de paiement"] } },
+    { shot: { f: "historique-actions-paiement.png", cap: ["O histórico: montantes, resposta do PSP, nível de risco, fatura e transação", "L’historique : montants, réponse du PSP, niveau de risque, facture et transaction"] } },
     { script: [
       { s: ["«Garanto-lhe que o pedido de autorização não é um débito. É uma verificação temporária dos fundos para a consulta.»", "« Je vous rassure, la demande d’autorisation n’est pas un débit. C’est une vérification temporaire des fonds pour la consultation. »"], tag: ["Explicar", "Expliquer"] },
       { s: ["«Se a consulta não se realizar, é anulado. Pode levar até 30 dias úteis.»", "« Si la consultation n’a pas lieu, elle est annulée. Cela peut prendre jusqu’à 30 jours ouvrés. »"], tag: ["Anulação", "Annulation"] },
@@ -158,13 +177,18 @@ BCF.modules.push(
     ] }
   ] },
   { t: ["Regularizar dívidas", "Régulariser les impayés"], b: [
-    { p: ["Ficha → bloco «État du compte» (no topo se houver dívidas) → página <b>Recouvrement</b>.", "Fiche → bloc « État du compte » (en haut s’il y a des impayés) → page <b>Recouvrement</b>."] },
+    { p: ["Com dívidas, a ficha mostra um alerta <b>«Alerte Santé du compte – Impayés»</b> e um bloco <b>«À traiter en priorité»</b>. Clique em <b>«Gérer la cobrança»</b> para abrir a página Recouvrement.", "En cas d’impayés, la fiche montre une alerte <b>« Alerte Santé du compte – Impayés »</b> et un bloc <b>« À traiter en priorité »</b>. Clique sur <b>« Gérer la cobrança »</b> pour ouvrir la page Recouvrement."] },
+    { shot: { f: "alerte-impayes.png", cap: ["O alerta de dívidas e o botão «Gérer la cobrança»", "L’alerte impayés et le bouton « Gérer la cobrança »"] } },
+    { p: ["No topo da página Recouvrement: número de faturas por pagar, montante, antiguidade, última tentativa (e o seu motivo), cartões e créditos Wallet. Botão «Créer une réclamation» à direita.", "En haut de la page Recouvrement : nombre de factures impayées, montant, ancienneté, dernière tentative (et son motif), cartes et crédits Wallet. Bouton « Créer une réclamation » à droite."] },
+    { shot: { f: "recouvrement-resume.png", cap: ["O resumo das dívidas: 5 faturas, 358,89€, 148 dias, última tentativa recusada por fraude", "Le résumé des impayés : 5 factures, 358,89€, 148 jours, dernière tentative refusée pour fraude"] } },
+    { p: ["Por baixo, a <b>ação recomendada</b> diz o que fazer (ex.: código de fraude do banco → não voltar a tentar com o mesmo cartão, pedir outro meio). Escolha o <b>motivo</b> da tentativa, depois a ação: adicionar um cartão, enviar um link PayByLink ou Multibanco, registar um cheque ou transferência, programar uma chamada, adicionar uma nota, ou «Tenter l’encaissement».", "En dessous, l’<b>action recommandée</b> dit quoi faire (ex. : code fraude de la banque → ne pas retenter avec la même carte, demander un autre moyen). Choisis le <b>motif</b> de la tentative, puis l’action : ajouter une carte, envoyer un lien PayByLink ou Multibanco, enregistrer un chèque ou un virement, programmer un rappel, ajouter une note, ou « Tenter l’encaissement »."] },
+    { shot: { f: "recouvrement-action.png", cap: ["Ação recomendada, motivo, botões de ação e as faturas por pagar com o motivo da recusa", "Action recommandée, motif, boutons d’action et les factures impayées avec le motif du refus"] } },
     { warn: ["O total das faturas com dívida <b>não é</b> o valor em dívida. Ex.: fatura de 300€, faltam 40€ → total 300€, dívida real 40€.", "Le total des factures avec impayé <b>n’est pas</b> le montant dû. Ex. : facture de 300€, il reste 40€ → total 300€, dette réelle 40€."] },
     { compare: [
       { cls: "good", h: ["Com a Wallet", "Avec le Wallet"], tag: ["Saldo", "Solde"], items: [["Verificar o saldo", "Vérifier le solde"], ["Selecionar as faturas", "Sélectionner les factures"], ["«Tenter le prélèvement sur le portefeuille»", "« Tenter le prélèvement sur le portefeuille »"]] },
       { cls: "good", h: ["Com o cartão", "Avec la carte"], tag: ["Cartão", "Carte"], items: [["Ver os cartões registados", "Voir les cartes enregistrées"], ["Outro cartão? «Sélection des flux financiers»", "Autre carte ? « Sélection des flux financiers »"], ["«Tenter le paiement»", "« Tenter le paiement »"]] }
     ] },
-    { key: ["Antes de cada tentativa, <b>justifique a ação</b> no formulário (cliente em linha, e-mail recebido…). Cada tentativa manual tem um custo para a Wengo.", "Avant chaque tentative, <b>justifie l’action</b> dans le formulaire (client en ligne, e-mail reçu…). Chaque tentative manuelle a un coût pour Wengo."] }
+    { key: ["Siga sempre a <b>ação recomendada</b>. Antes de cada tentativa, <b>indique o motivo</b> (cliente em linha, e-mail recebido…). Cada tentativa manual tem um custo para a Wengo.", "Avant chaque tentative, <b>justifie l’action</b> dans le formulaire (client en ligne, e-mail reçu…). Chaque tentative manuelle a un coût pour Wengo."] }
   ] },
   { t: ["Chargeback e robô", "Chargeback et robot"], b: [
     { p: ["<b>Chargeback</b> = pagamento contestado no banco; o dinheiro é retirado à Wengo. Só se regulariza por <b>transferência bancária</b>, e só o <b>N2</b> valida. Depois o cliente pode voltar a consultar. Se pedir o IBAN: e-mail Bobi «como regularizar a sua situação».", "<b>Chargeback</b> = paiement contesté auprès de la banque ; l’argent est repris à Wengo. Régularisable uniquement par <b>virement</b>, et seul le <b>N2</b> valide. Ensuite le client peut reconsulter. S’il demande l’IBAN : e-mail Bobi « comment régulariser votre situation »."] },
@@ -173,6 +197,7 @@ BCF.modules.push(
   quiz: [
     { q: ["Pay as you go = NON e a Wallet chega a 0€.", "Pay as you go = NON et le Wallet arrive à 0€."], o: [["Continua no cartão", "Ça continue sur la carte"], ["A consulta para", "La consultation s’arrête"]], a: 1, w: ["NON = limitado à Wallet.", "NON = limité au Wallet."] },
     { q: ["SMS de «débito» e a consulta não aconteceu.", "SMS de « débit » et la consultation n’a pas eu lieu."], o: [["É um pedido de autorização, será anulado (até 30 dias úteis)", "C’est une demande d’autorisation, elle sera annulée (jusqu’à 30 jours ouvrés)"], ["Reembolso imediato", "Remboursement immédiat"]], a: 0, w: ["Não é um débito.", "Ce n’est pas un débit."] },
+    { q: ["A página Recouvrement mostra «Code fraude remonté par la banque».", "La page Recouvrement affiche « Code fraude remonté par la banque »."], o: [["Volto a tentar com o mesmo cartão", "Je retente avec la même carte"], ["Peço outro meio de pagamento", "Je demande un autre moyen de paiement"]], a: 1, w: ["A ação recomendada: não voltar a tentar com o mesmo cartão.", "L’action recommandée : ne pas retenter avec la même carte."] },
     { q: ["Fatura em chargeback?", "Facture en chargeback ?"], o: [["Cartão", "Carte"], ["Transferência, validada pelo N2", "Virement, validé par le N2"]], a: 1, w: ["O sistema já não aceita cartão.", "Le système n’accepte plus la carte."] }
   ]
 },
@@ -190,7 +215,7 @@ BCF.modules.push(
   { t: ["Pagar mais tarde ou em prestações", "Payer plus tard ou en plusieurs fois"], b: [
     { steps: [
       { t: ["Pedir uma data concreta", "Demander une date précise"], p: ["Para verificar se o cliente cumpre.", "Pour vérifier que le client tient parole."] },
-      { t: ["Programar a chamada", "Programmer l’appel"], p: ["Escolher o número; Motif: <b>Recouvrement</b>; <b>à une date précise</b>; data e hora segundo os seus dias de presença; <b>«vers moi»</b>; validar.", "Choisir le numéro ; Motif : <b>Recouvrement</b> ; <b>à une date précise</b> ; date et heure selon tes jours de présence ; <b>« vers moi »</b> ; valider."] },
+      { t: ["Programar a chamada", "Programmer l’appel"], p: ["Botão «Programmer un rappel» na página Recouvrement. Escolher o número; Motif: <b>Recouvrement</b>; <b>à une date précise</b>; data e hora segundo os seus dias de presença; <b>«vers moi»</b>; validar.", "Choisir le numéro ; Motif : <b>Recouvrement</b> ; <b>à une date précise</b> ; date et heure selon tes jours de présence ; <b>« vers moi »</b> ; valider."] },
       { t: ["2 ou 3 prestações", "2 ou 3 mensualités"], p: ["Uma chamada programada por data. Ex.: 05/11 e 05/12 → 2 chamadas.", "Un appel programmé par date. Ex. : 05/11 et 05/12 → 2 appels."] },
       { t: ["Parar o débito automático", "Arrêter le prélèvement automatique"], p: ["Se tem cartão: desative o robô até à data da última prestação (fica em OUI = desativado).", "S’il a une carte : désactive le robot jusqu’à la date de la dernière mensualité (OUI = désactivé)."] }
     ] },
