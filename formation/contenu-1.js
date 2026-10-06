@@ -311,9 +311,10 @@ BCF.modules.push(
       [["Boas-vindas fixo, chat, vídeo", "Bienvenue fixe, chat, vidéo"], ["1€/10 min → 1,40€/min", "1€/10 min → 1,40€/min"]],
       [["Boas-vindas telemóvel", "Bienvenue mobile"], ["3€/10 min → 1,60€/min", "3€/10 min → 1,60€/min"]],
       [["Mais de 10 min", "Plus de 10 min"], ["11€/15 min · 19€/20 min", "11€/15 min · 19€/20 min"]],
-      [["Pacotes", "Forfaits"], ["20€/20 min (1,50€/min) · 25€/15 min (1,60€/min) · 39€/25 min (1,60€/min)", "20€/20 min (1,50€/min) · 25€/15 min (1,60€/min) · 39€/25 min (1,60€/min)"]],
+      [["Pacotes", "Forfaits"], ["20€/20 min (1,50€/min) · 25€/15 min (1,60€/min) · 39€/25 min (1,60€/min) · Pack Web & Callcenter 15€/12 min (1,50€/min)", "20€/20 min (1,50€/min) · 25€/15 min (1,60€/min) · 39€/25 min (1,60€/min) · Pack Web & Callcenter 15€/12 min (1,50€/min)"]],
       [["Pacotes telemóvel", "Forfaits mobile"], ["17,40€/12 min (1,70€/min) · 24€/20 min (1,70€/min)", "17,40€/12 min (1,70€/min) · 24€/20 min (1,70€/min)"]]
     ] } },
+    { shot: { f: "pt-pacotes-mobile.png", cap: ["Portugal: as ofertas e o preço para telemóvel por baixo de cada uma (3€/10 min, 17,40€/12 min, 24€/20 min)", "Portugal : les offres et le prix pour mobile sous chacune (3€/10 min, 17,40€/12 min, 24€/20 min)"] } },
     { shot: { f: "offre-pt-1e.png", cap: ["Portugal: [Prospect ou Inativos 6 meses+] 1€ para 10 min", "Portugal : [Prospect ou Inactifs 6 mois+] 1€ pour 10 min"] } },
     { table: { h: [["França", "France"], ["Preço", "Prix"]], r: [
       [["Astro: Prospects ou Inativos 6 meses", "Astro : Prospects ou Inactifs 6 mois"], ["5€/10 min → 2,50€/min (despesas de telemóvel incluídas)", "5€/10 min → 2,50€/min (frais mobile inclus)"]],

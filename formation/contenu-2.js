@@ -320,6 +320,12 @@ BCF.modules.push(
       { cls: "good", h: ["O padrinho", "Le parrain"], tag: ["10€", "10€"], items: [["Cria um código de 6 a 8 caracteres", "Crée un code de 6 à 8 caractères"], ["Partilha-o (WhatsApp, Facebook, e-mail…)", "Le partage (WhatsApp, Facebook, e-mail…)"], ["Recebe 10€ se já gastou 30€ ou mais e o afilhado pagou uma consulta sem oferta", "Reçoit 10€ s’il a dépensé 30€ ou plus et que le filleul a payé une consultation sans offre"]] },
       { cls: "good", h: ["O afilhado", "Le filleul"], tag: ["30€", "30€"], items: [["Introduz o código em «tenho um código promocional»", "Saisit le code dans « j’ai un code promo »"], ["30€ creditados na Wallet", "30€ crédités dans le Wallet"], ["Tem de carregar pelo menos 1€ e ter um cartão", "Doit charger au moins 1€ et avoir une carte"], ["Na 1.ª consulta, à tarifa por minuto, sem boas-vindas nem promoções", "À la 1re consultation, au tarif minute, sans bienvenue ni promo"]] }
     ] },
+    { p: ["No espaço cliente, menu → Ofertas → <b>«Oferta de Apadrinhamento»</b>: o cliente cria o seu código (8 caracteres no máximo), depois partilha-o por WhatsApp, Facebook, X ou «Enviar um convite». O afilhado introduz o código em «Tenho um código promocional», na página de recarga.", "Dans l’espace client, menu → Offres → <b>« Offre de Parrainage »</b> : le client crée son code (8 caractères maximum), puis le partage par WhatsApp, Facebook, X ou « Envoyer une invitation ». Le filleul saisit le code dans « J’ai un code promo », sur la page de recharge."] },
+    { shot: { f: "espace-menu-parrainage.png", cap: ["Menu do espaço cliente: Ofertas → «Oferta de Apadrinhamento»", "Menu de l’espace client : Offres → « Offre de Parrainage »"] } },
+    { shot: { f: "parrainage-creer.png", cap: ["Criar o código de apadrinhamento", "Créer le code de parrainage"] } },
+    { shot: { f: "parrainage-code.png", cap: ["O código criado e os botões de partilha (aqui em Portugal: 10€ para o padrinho e 10€ para o afilhado)", "Le code créé et les boutons de partage (ici au Portugal : 10€ pour le parrain et 10€ pour le filleul)"] } },
+    { shot: { f: "espace-recharger-code.png", cap: ["Do lado do afilhado: «Tenho um código promocional» por baixo da recarga", "Côté filleul : « J’ai un code promo » sous la recharge"] } },
+    { warn: ["Os montantes mudam conforme o país: o guia fala de 30€ para o afilhado, a página portuguesa mostra 10€. Leia sempre as condições no espaço do cliente.", "Les montants changent selon le pays : le guide parle de 30€ pour le filleul, la page portugaise affiche 10€. Lis toujours les conditions dans l’espace du client."] },
     { warn: ["Um crédito de apadrinhamento sozinho não chega para lançar uma consulta: é preciso um meio de pagamento.", "Un crédit de parrainage seul ne suffit pas pour lancer une consultation : il faut un moyen de paiement."] }
   ] }],
   quiz: [
@@ -397,6 +403,18 @@ BCF.modules.push(
   ] },
   { t: ["O especialista favorito do mês", "L’expert favori du mois"], b: [
     { p: ["Para dar um favorito, o cliente deve: ter pelo menos <b>3 consultas</b> desde a criação da conta; ter consultado no mês anterior (5 min ou mais, ou QPP); ter a conta ativa e um e-mail válido.", "Pour donner un favori, le client doit : avoir au moins <b>3 consultations</b> depuis la création du compte ; avoir consulté le mois précédent (5 min ou plus, ou QPP) ; avoir un compte actif et un e-mail valide."] },
+    { steps: [
+      { t: ["A notificação", "La notification"], p: ["Na página inicial do espaço cliente: «Escolha o/a seu/sua Especialista favorito/a do mês» → «Selecionar».", "Sur l’accueil de l’espace client : « Choisissez votre expert favori du mois » → « Sélectionner »."] },
+      { t: ["Escolher e comentar", "Choisir et commenter"], p: ["Um especialista consultado no mês, um comentário de 90 caracteres no mínimo, pseudónimo ou primeiro nome, «Validar».", "Un expert consulté dans le mois, un commentaire de 90 caractères minimum, pseudo ou prénom, « Valider »."] },
+      { t: ["O e-mail", "L’e-mail"], p: ["O cliente recebe também um e-mail «coup de cœur - invitation» (visível em Mail & SMS).", "Le client reçoit aussi un e-mail « coup de cœur - invitation » (visible dans Mail & SMS)."] }
+    ] },
+    { shot: { f: "favori-pt.png", cap: ["A notificação no espaço cliente (Portugal)", "La notification dans l’espace client (Portugal)"] } },
+    { shot: { f: "favori-it.png", cap: ["A mesma notificação em Itália: «Indica il tuo preferito del mese»", "La même notification en Italie : « Indica il tuo preferito del mese »"] } },
+    { shot: { f: "favori-choisir.png", cap: ["Escolher o especialista e escrever o comentário (90 caracteres mínimo)", "Choisir l’expert et écrire le commentaire (90 caractères minimum)"] } },
+    { shot: { f: "email-coup-de-coeur.png", cap: ["Em Mail & SMS: o e-mail «coup de cœur - invitation», recebido, aberto e clicado", "Dans Mail & SMS : l’e-mail « coup de cœur - invitation », reçu, ouvert et cliqué"] } },
+    { p: ["Para ver os favoritos e as avaliações dadas: bloco Compte → <b>«Avis»</b>. A coluna «Buyer rating» mostra «Favoritos» ou a nota, com a data.", "Pour voir les favoris et les avis laissés : bloc Compte → <b>« Avis »</b>. La colonne « Buyer rating » affiche « Favoritos » ou la note, avec la date."] },
+    { shot: { f: "compte-avis-lien.png", cap: ["O link «Avis» no bloco Compte", "Le lien « Avis » dans le bloc Compte"] } },
+    { shot: { f: "avis-liste.png", cap: ["A lista das avaliações: um favorito a 07/10 e uma nota 4 a 16/09. O próximo favorito só 30 dias depois", "La liste des avis : un favori le 07/10 et une note de 4 le 16/09. Le prochain favori seulement 30 jours après"] } },
     { key: ["Só <b>uma vez a cada 30 dias</b>. O cliente não consegue? Verifique a data do último favorito.", "Seulement <b>une fois tous les 30 jours</b>. Le client n’y arrive pas ? Vérifie la date du dernier favori."] }
   ] }],
   quiz: [
@@ -454,6 +472,9 @@ BCF.modules.push(
     { shot: { f: "modifier-infos.png", cap: ["A página de modificação: cada bloco tem o seu botão «Validar». À direita, as 6 opções da newsletter", "La page de modification : chaque bloc a son bouton « Valider ». À droite, les 6 options de la newsletter"] } },
     { shot: { f: "modif-confirmation.png", cap: ["Depois de validar: a faixa verde confirma (aqui «Email mis à jour»)", "Après validation : le bandeau vert confirme (ici « Email mis à jour »)"] } },
     { shot: { f: "fiche-compte-liens.png", cap: ["Os links do bloco Compte: Infos du compte, Adresses, Abonnement news, Avis, Paramètres SMS", "Les liens du bloc Compte : Infos du compte, Adresses, Abonnement news, Avis, Paramètres SMS"] } },
+    { p: ["<b>Moradas</b>: bloco Compte → «Adresses» abre a morada de faturação (tipo, civilidade, nome, apelido, país). Para corrigir: «Éditer». É aqui que se muda o país de faturação (ex.: para ver Multibanco e MB Way em Portugal).", "<b>Adresses</b> : bloc Compte → « Adresses » ouvre l’adresse de facturation (type, civilité, nom, prénom, pays). Pour corriger : « Éditer ». C’est ici qu’on change le pays de facturation (ex. : pour voir Multibanco et MB Way au Portugal)."] },
+    { shot: { f: "actions-adresses.png", cap: ["O link «Adresses» no bloco Compte", "Le lien « Adresses » dans le bloc Compte"] } },
+    { shot: { f: "adresse-facturation.png", cap: ["A morada de faturação e o botão «Éditer»", "L’adresse de facturation et le bouton « Éditer »"] } },
     { warn: ["O <b>pseudónimo</b> (identificador de ligação) <b>não pode</b> ser modificado.", "Le <b>pseudo</b> (identifiant de connexion) <b>ne peut pas</b> être modifié."] },
     { p: ["O cliente recebe um e-mail automático quando o e-mail, o telefone principal ou o telemóvel mudam.", "Le client reçoit un e-mail automatique quand l’e-mail, le téléphone principal ou le mobile changent."] }
   ] },
@@ -563,6 +584,8 @@ BCF.modules.push(
       { c: "s-wait", k: ["CRM", "CRM"], p: ["Badge cinzento.", "Badge gris."] },
       { c: "s-bad", k: ["N2", "N2"], p: ["Badge laranja: escalado para o N2.", "Badge orange : escaladé au N2."] }
     ] },
+    { shot: { f: "foxi-filtres.png", cap: ["Os filtros por cima da lista", "Les filtres au-dessus de la liste"] } },
+    { shot: { f: "foxi-listes.png", cap: ["«Mes listes»: listas por país e serviço, com o número de não lidos e o total", "« Mes listes » : listes par pays et service, avec le nombre de non lus et le total"] } },
     { p: ["<b>Filtros</b>: estado, prioridade, grupo, conselheiro, nível (N1 por defeito), tipo, período, «só não lidos». Os filtros ficam no URL: copie-o para partilhar. <b>Listas personalizadas</b>: botão + ao lado de «Listes de tickets» (nome, ícone, cor, filtros, partilha).", "<b>Filtres</b> : statut, priorité, groupe, conseiller, niveau (N1 par défaut), type, période, « non lus uniquement ». Les filtres sont dans l’URL : copie-la pour partager. <b>Listes perso</b> : bouton + à côté de « Listes de tickets » (nom, icône, couleur, filtres, partage)."] }
   ] },
   { t: ["Ciclo de vida", "Cycle de vie"], b: [
@@ -575,6 +598,9 @@ BCF.modules.push(
       { c: "s-ok", k: ["Fechado", "Fermé"], p: ["Encerrado definitivamente.", "Clôturé définitivement."] }
     ] },
     { tip: ["Se o cliente responde a um ticket resolvido ou fechado, volta automaticamente a «Em curso».", "Si le client répond à un ticket résolu ou fermé, il repasse automatiquement « En cours »."] },
+    { shot: { f: "foxi-detail.png", cap: ["Um ticket aberto: o e-mail traduzido automaticamente, a análise IA, a resposta (traduzida para português no envio), e à direita Contact, Actions e Classification", "Un ticket ouvert : l’e-mail traduit automatiquement, l’analyse IA, la réponse (traduite en portugais à l’envoi), et à droite Contact, Actions et Classification"] } },
+    { tip: ["O Foxi traduz o e-mail do cliente e a sua resposta. Pode escrever na sua língua: «Sera traduit automatiquement… à l’envoi». Use «Voir original» para ler o texto exato.", "Foxi traduit l’e-mail du client et ta réponse. Tu peux écrire dans ta langue : « Sera traduit automatiquement… à l’envoi ». Utilise « Voir original » pour lire le texte exact."] },
+    { shot: { f: "foxi-actions.png", cap: ["Painel Actions: estado, botão N2, «Moi» para se atribuir o ticket", "Panneau Actions : statut, bouton N2, « Moi » pour s’assigner le ticket"] } },
     { p: ["Mudar o estado, atribuir (a si ou a um colega) e mudar de grupo: painel <b>Actions</b> à direita do ticket.", "Changer le statut, assigner (à toi ou un collègue) et changer de groupe : panneau <b>Actions</b> à droite du ticket."] }
   ] },
   { t: ["Criar, escalar, colaborar", "Créer, escalader, collaborer"], b: [
@@ -583,7 +609,10 @@ BCF.modules.push(
       { t: ["Escalar para o N2", "Escalader en N2"], p: ["Botão laranja «Escalader en N2» → confirmar. O N1 deixa de ver o ticket.", "Bouton orange « Escalader en N2 » → confirmer. Le N1 ne voit plus le ticket."] },
       { t: ["Comentários internos", "Commentaires internes"], p: ["Painel Comentários: o cliente não os vê. Para instruções ou resultados de pesquisa.", "Panneau Commentaires : le client ne les voit pas. Pour des consignes ou des résultats de recherche."] }
     ] },
+    { shot: { f: "foxi-nouveau-ticket.png", cap: ["O formulário «Nouveau ticket»: sujeito, mensagem, prioridade, contacto, grupo, categoria, subcategoria, atribuição", "Le formulaire « Nouveau ticket » : sujet, message, priorité, contact, groupe, catégorie, sous-catégorie, assignation"] } },
+    { shot: { f: "foxi-commentaires.png", cap: ["Comentários internos: o cliente não os vê", "Commentaires internes : le client ne les voit pas"] } },
     { warn: ["Sem contacto selecionado, os e-mails do ticket não têm destinatário. Só managers e admins podem «désescalader» para N1.", "Sans contact sélectionné, les e-mails du ticket n’ont pas de destinataire. Seuls managers et admins peuvent désescalader en N1."] },
+    { shot: { f: "foxi-presence.png", cap: ["Indicador de presença: alguém está a consultar este ticket agora", "Indicateur de présence : quelqu’un consulte ce ticket en ce moment"] } },
     { p: ["<b>Presença</b>: um olho âmbar mostra que um colega está no mesmo ticket (sinal a cada 30 s, desaparece ~90 s depois de sair). Não bloqueia: combinem para não tratar duas vezes.", "<b>Présence</b> : un œil ambre montre qu’un collègue est sur le même ticket (signal toutes les 30 s, disparaît ~90 s après départ). Ça ne bloque pas : coordonnez-vous pour ne pas traiter deux fois."] }
   ] }],
   quiz: [
