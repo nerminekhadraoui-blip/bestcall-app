@@ -37,6 +37,7 @@ BCF.modules.push(
       { i: "F", cc: "#E67E22", t: ["Foxi", "Foxi"], p: ["Os tickets: cada e-mail de cliente é seguido como um ticket.", "Les tickets : chaque e-mail client est suivi sous forme de ticket."] },
       { i: "AI", cc: "#16A085", t: ["Gemini", "Gemini"], p: ["O primeiro reflexo perante um código de erro.", "Le premier réflexe face à un code d’erreur."] }
     ] },
+    { shot: { f: "bobi-accueil.png", cap: ["A página inicial do Bobi: pesquisar um cliente (e-mail, ID, telefone ou pseudónimo) e os atalhos: criar conta, iniciar chamada, marcar consulta, consulta escrita, transações em curso", "L’accueil de Bobi : rechercher un client (e-mail, ID, téléphone ou pseudo) et les raccourcis : créer un compte, lancer un appel, prendre un RDV, consultation écrite, transactions en cours"] } },
     { warn: ["Lance sempre as chamadas a partir da página Bobi <b>integrada no Graam</b>. Fora do Graam, a MER torna-se indireta e o cliente pode pagar a sobretaxa de telemóvel.", "Lance toujours les appels depuis la page Bobi <b>intégrée dans Graam</b>. Hors de Graam, la MER devient indirecte et le client peut payer la surtaxe mobile."] }
   ] },
   { t: ["Os reflexos essenciais", "Les réflexes essentiels"], b: [
@@ -103,6 +104,8 @@ BCF.modules.push(
       { t: ["Meio de pagamento", "Moyen de paiement"], p: ["Cartão, Wallet, ou os dois.", "Carte, Wallet, ou les deux."] },
       { t: ["Especialistas favoritos", "Experts favoris"], p: ["Propor um favorito melhora a satisfação e a fidelidade.", "Proposer un favori améliore la satisfaction et la fidélité."] }
     ] },
+    { shot: { f: "fiche-a-savoir.png", cap: ["Cliente inativo: o bloco «À savoir» diz logo a que oferta tem direito, e «Profil à vérifier» pede para verificar o perfil antes de continuar", "Client inactif : le bloc « À savoir » dit directement à quelle offre il a droit, et « Profil à vérifier » demande de vérifier le profil avant de continuer"] } },
+    { tip: ["Leia sempre o bloco <b>«À savoir»</b>: indica a oferta de descoberta a que o cliente é elegível.", "Lis toujours le bloc <b>« À savoir »</b> : il indique l’offre découverte à laquelle le client est éligible."] },
     { p: ["A barra de separadores permite navegar: <b>Informações, Notas, Chamadas, Risk, Transações, Faturas, Meios de pagamento</b>.", "La barre d’onglets permet de naviguer : <b>Informations, Notes, Appels, Risk, Transactions, Factures, Moyens de paiement</b>."] }
   ] },
   { t: ["Informações do cliente e saúde da conta", "Infos client et santé du compte"], b: [
@@ -117,6 +120,8 @@ BCF.modules.push(
       [["Wengo Reward", "Wengo Reward"], ["Inscrito ou não no programa de fidelidade.", "Inscrit ou non au programme de fidélité."]]
     ] } },
     { shot: { f: "pay-as-you-go.png", cap: ["Data de inscrição, Pay as you go e Wengo Reward na ficha", "Date d’inscription, Pay as you go et Wengo Reward sur la fiche"] } },
+    { shot: { f: "fiche-actions.png", cap: ["Informações do cliente, Saúde da conta e Últimas atividades à esquerda; o bloco Ações à direita", "Infos client, Santé du compte et Dernières activités à gauche ; le bloc Actions à droite"] } },
+    { p: ["O bloco <b>Ações</b> reúne tudo: Consultation immédiate, Consultation mail, RDV; o que está <b>em curso</b> (consultas live, mail, RDV); <b>Contacto cliente</b> (registar uma reclamação, enviar e-mail/SMS); o <b>histórico</b> (Mail & SMS, reclamações, chamadas, notas e tickets); e <b>Conta</b> (adicionar um meio de pagamento, proposta de recarga).", "Le bloc <b>Actions</b> regroupe tout : Consultation immédiate, Consultation mail, RDV ; ce qui est <b>en cours</b> (consultations live, mail, RDV) ; <b>Contact client</b> (déposer une réclamation, envoyer un mail/SMS) ; l’<b>historique</b> (Mail & SMS, réclamations, appels, notes et tickets) ; et <b>Compte</b> (ajouter un moyen de paiement, proposition de recharge)."] },
     { p: ["<b>Saúde da conta</b>: este bloco sobe para o topo da ficha quando há um alerta (ponto vermelho).", "<b>Santé du compte</b> : ce bloc remonte en haut de la fiche quand il y a une alerte (point rouge)."] },
     { chips: [
       { c: "s-bad", k: ["Perfil suspenso", "Profil suspendu"], p: ["Normalmente a pedido do cliente. Não consulta, mas acede ao espaço cliente.", "Souvent à la demande du client. Il ne consulte pas, mais accède à son espace."] },
@@ -341,7 +346,8 @@ BCF.modules.push(
   { t: ["Chat e vídeo: enviar o link", "Chat et vidéo : envoyer le lien"], b: [
     { p: ["Depois de lançar um chat ou vídeo, pergunte ao cliente se quer o link por e-mail ou SMS (campos pré-preenchidos e editáveis).", "Après avoir lancé un chat ou une vidéo, demande au client s’il veut le lien par e-mail ou SMS (champs pré-remplis et modifiables)."] },
     { shot: { f: "envoi-lien-chat.png", cap: ["«Envoyer le lien par mail / par SMS» e, por baixo, as sessões em curso", "« Envoyer le lien par mail / par SMS » et, en dessous, les sessions en cours"] } },
-    { shot: { f: "confirmation-email.png", cap: ["A mensagem verde no topo confirma o envio", "Le message vert en haut confirme l’envoi"] } },
+    { shot: { f: "confirmation-email.png", cap: ["A mensagem verde no topo confirma o envio por e-mail…", "Le message vert en haut confirme l’envoi par e-mail…"] } },
+    { shot: { f: "confirmation-sms.png", cap: ["…ou por SMS", "…ou par SMS"] } },
     { p: ["O cliente recebe também uma chamada automática que o convida a ir ao espaço cliente.", "Le client reçoit aussi un appel automatique qui l’invite à aller dans son espace."] }
   ] },
   { t: ["Problemas frequentes", "Problèmes fréquents"], b: [
@@ -350,6 +356,7 @@ BCF.modules.push(
       [["O cliente ainda está em espera", "Le client attend toujours"], ["O sistema relança até 2h. Especialista disponível, sem pausa, cliente em 1.ª posição: relançar. Se não quiser esperar: outro especialista ou RDV.", "Le système relance jusqu’à 2h. Expert dispo, pas en pause, client en 1re position : relancer. S’il ne veut pas attendre : autre expert ou RDV."]],
       [["Falha técnica", "Problème technique"], ["Relançar, mudar de canal, outro número ou RDV.", "Relancer, changer de canal, autre numéro ou RDV."]]
     ] } },
+    { shot: { f: "limite-depenses.png", cap: ["«Opção limite de despesas»: o cliente indica 30, o Bobi calcula o montante e a duração máxima. Aqui também uma promoção válida de 20%", "« Option limite de dépenses » : le client indique 30, Bobi calcule le montant et la durée maximum. Ici aussi une promo valide de 20%"] } },
     { key: ["França: o cliente quer limitar o gasto (ex.: 30€) e tem cartão? Use a opção <b>limite de despesas</b>: dá logo os minutos autorizados, mesmo em Pay as you go.", "France : le client veut limiter sa dépense (ex. 30€) et a une carte ? Utilise l’option <b>limite de dépenses</b> : elle donne directement les minutes autorisées, même en Pay as you go."] }
   ] }],
   quiz: [
@@ -371,6 +378,7 @@ BCF.modules.push(
       { t: ["Aplicar a solução", "Appliquer la solution"], p: ["Outro meio de pagamento, orientar para o banco, ou reclamação N2.", "Autre moyen de paiement, orienter vers la banque, ou réclamation N2."] },
       { t: ["Propor uma alternativa", "Proposer une alternative"], p: ["Favorito disponível, especialista nunca consultado, ou RDV.", "Favori disponible, expert jamais consulté, ou RDV."] }
     ] },
+    { shot: { f: "erreur-bandeau-rouge.png", cap: ["Quando a MER falha, aparece uma faixa vermelha com o código (aqui 2040: dívidas em contas primas)", "Quand la MER échoue, un bandeau rouge s’affiche avec le code (ici 2040 : impayés sur des comptes cousins)"] } },
     { errors: 1 },
     { tip: ["Erro 39009: sugira ao cliente dizer ao banco: «Uma tentativa de pagamento com o meu cartão para a Wengo foi recusada. Sou eu que uso este cartão. Por favor, autorizem estas transações.»", "Erreur 39009 : suggère au client de dire à sa banque : « Une tentative de paiement avec ma carte pour Wengo a été refusée. C’est bien moi qui utilise cette carte. Merci d’autoriser ces transactions. »"] }
   ] }],
@@ -392,14 +400,17 @@ BCF.modules.push(
       { t: ["Selecionar o especialista", "Sélectionner l’expert"], p: ["Pelo nome, pesquisa livre ou oferta. Sem nome: pesquisa por especialidade.", "Par le nom, recherche libre ou offre. Sans nom : recherche par spécialité."] },
       { t: ["Ver a agenda", "Consulter l’agenda"], p: ["As disponibilidades aparecem automaticamente.", "Les disponibilités s’affichent automatiquement."] },
       { t: ["Preencher", "Remplir"], p: ["Data/hora (fuso!), telefone (repetir em voz alta), canal, mensagem ao especialista.", "Date/heure (fuseau !), téléphone (répéter à voix haute), canal, message à l’expert."] },
-      { t: ["Finalizar", "Finaliser"], p: ["«Lancer la consultation». A oferta deve aparecer em «code promo».", "« Lancer la consultation ». L’offre doit apparaître dans « code promo »."] }
-    ] }
+      { t: ["Finalizar", "Finaliser"], p: ["«Lancer le rendez-vous». A oferta deve aparecer em «código promocional».", "« Lancer le rendez-vous ». L’offre doit apparaître dans « code promo »."] }
+    ] },
+    { shot: { f: "rdv-formulaire.png", cap: ["«Marcar uma Consulta»: especialista, fuso horário, data/hora e mensagem. Fora da disponibilidade, a mensagem ao especialista vem pré-preenchida", "« Prendre un RDV » : expert, fuseau horaire, date/heure et message. Hors disponibilité, le message à l’expert est pré-rempli"] } }
   ] },
   { t: ["A regra das 48h", "La règle des 48h"], b: [
     { compare: [
       { cls: "good", h: ["Menos de 48h + disponível", "Moins de 48h + dispo"], tag: ["Automático", "Automatique"], items: [["RDV aceite automaticamente", "RDV accepté automatiquement"], ["Um banner confirma", "Un bandeau le confirme"]] },
       { cls: "bad", h: ["Mais de 48h ou fora do horário", "Plus de 48h ou hors horaires"], tag: ["A validar", "À valider"], items: [["O especialista tem de validar", "L’expert doit valider"], ["Sem validação: anulado 15 min antes", "Sans validation : annulé 15 min avant"], ["Informar sempre o cliente", "Toujours prévenir le client"]] }
     ] },
+    { shot: { f: "rdv-auto.png", cap: ["Menos de 48h e no horário: «Demande de RDV finalisée», aceite automaticamente", "Moins de 48h et dans les horaires : « Demande de RDV finalisée », acceptée automatiquement"] } },
+    { shot: { f: "rdv-a-valider.png", cap: ["Fora destas condições: «Demande de RDV envoyée», o especialista tem de aceitar", "Hors de ces conditions : « Demande de RDV envoyée », l’expert doit accepter"] } },
     { warn: ["A hora no Bobi é a de <b>Paris</b>. Converta para o fuso do cliente (EUA, Inglaterra, América Latina, Portugal, Turquia…). A agenda mostra o fuso do especialista e do cliente.", "L’heure dans Bobi est celle de <b>Paris</b>. Convertis dans le fuseau du client (USA, Angleterre, Amérique latine, Portugal, Turquie…). L’agenda montre le fuseau de l’expert et du client."] },
     { p: ["Telemóvel: lembre a sobretaxa de 0,20€/min (não existe em rede fixa).", "Mobile : rappelle la surtaxe de 0,20€/min (pas sur un fixe)."] },
     { tip: ["O cliente vê o RDV no espaço pessoal («Os meus especialistas e eu» › «As minhas marcações») e recebe um e-mail.", "Le client voit son RDV dans son espace (« Mes experts et moi » › « Mes rendez-vous ») et reçoit un e-mail."] }
@@ -422,8 +433,9 @@ BCF.modules.push(
       { i: "R", t: ["Raison", "Raison"], p: ["Estado atual do pedido.", "Statut actuel de la demande."] },
       { i: "D", t: ["Durée autorisée", "Durée autorisée"], p: ["Tempo previsto.", "Durée prévue."] }
     ] },
+    { shot: { f: "colonnes-transactions.png", cap: ["Clique em «Bridged», «Raison» e «Durée autorisée» para adicionar as colunas", "Clique sur « Bridged », « Raison » et « Durée autorisée » pour ajouter les colonnes"] } },
     { key: ["Adicione sempre estas <b>3 colunas</b>.", "Ajoute toujours ces <b>3 colonnes</b>."] },
-    { shot: { f: "envoi-lien-chat.png", cap: ["Sessões em curso: estado «Pending», posição, tentativas, em pausa, e o botão «Terminar»", "Sessions en cours : statut « Pending », position, tentatives, en pause, et le bouton « Terminer »"] } }
+    { shot: { f: "transactions-en-cours.png", cap: ["A lista: data, cliente (estatuto VIP, Regular, Prospect), produto, especialista, em pausa, estado, posição, tentativas e ação", "La liste : date, client (statut VIP, Régulier, Prospect), produit, expert, en pause, état, position, tentatives et action"] } }
   ] },
   { t: ["Os estados de uma MER", "Les statuts d’une MER"], b: [
     { chips: [
@@ -433,19 +445,29 @@ BCF.modules.push(
       { c: "s-bad", k: "Failed", p: ["Tentativas falhadas; o sistema relança durante 2h. Cliente não quer esperar: outro especialista.", "Tentatives échouées ; le système relance pendant 2h. Client pressé : autre expert."] },
       { c: "s-wait", k: "Reset", p: ["Pedido relançado: aguardar.", "Demande relancée : attendre."] }
     ] },
+    { shot: { f: "transactions-relancer.png", cap: ["«Failure» com o especialista em pausa: aparece o botão «Relancer». «Demandé» + RDV: é uma marcação à espera", "« Failure » avec l’expert en pause : le bouton « Relancer » apparaît. « Demandé » + RDV : c’est un rendez-vous en attente"] } },
     { p: ["<b>Posição</b> = lugar na fila. Máximo <b>2 horas</b> na fila, depois falha. Informe sempre o cliente da posição. A hora no Bobi é a de Paris.", "<b>Position</b> = place dans la file. Maximum <b>2 heures</b> en file, ensuite échec. Informe toujours le client de sa position. L’heure dans Bobi est celle de Paris."] }
   ] },
   { t: ["Relançar ou cancelar", "Relancer ou annuler"], b: [
     { p: ["<b>Relançar</b> (botão «Reiniciar» → RESET) quando o cliente está em <b>posição 1</b> e:", "<b>Relancer</b> (bouton « Réinitialiser » → RESET) quand le client est en <b>position 1</b> et :"] },
     { list: [["o pedido está em «falha»;", "la demande est en « échec » ;"], ["o especialista está offline;", "l’expert est hors ligne ;"], ["espera há mais de <b>20 min</b> e o especialista não está em pausa.", "attend depuis plus de <b>20 min</b> et l’expert n’est pas en pause."]] },
-    { p: ["<b>Cancelar</b> («Terminar a sessão» + motivo): só com bloqueio grave ou se o cliente pedir. Proponha sempre um RDV.", "<b>Annuler</b> (« Terminer la session » + motif) : seulement en cas de blocage grave ou si le client le demande. Propose toujours un RDV."] },
-    { warn: ["Nunca use «Terminer la session» numa consulta já em curso: corta a comunicação entre cliente e especialista.", "N’utilise jamais « Terminer la session » sur une consultation déjà en cours : ça coupe la communication entre le client et l’expert."] }
+    { shot: { f: "transactions-terminer.png", cap: ["Dois botões diferentes: «Terminar» nos pedidos Pending, «Terminer la session» nas consultas Bridged", "Deux boutons différents : « Terminar » sur les demandes Pending, « Terminer la session » sur les consultations Bridged"] } },
+    { compare: [
+      { cls: "good", h: ["«Terminar»", "« Terminar »"], tag: ["Pending", "Pending"], items: [["Cancela um <b>pedido</b> que ainda não começou", "Annule une <b>demande</b> qui n’a pas encore commencé"], ["Só com bloqueio grave ou se o cliente pedir", "Seulement en cas de blocage grave ou si le client le demande"], ["Indicar o motivo e propor sempre um RDV", "Indiquer le motif et toujours proposer un RDV"]] },
+      { cls: "bad", h: ["«Terminer la session»", "« Terminer la session »"], tag: ["Bridged", "Bridged"], items: [["Aparece numa consulta <b>em curso</b>", "Apparaît sur une consultation <b>en cours</b>"], ["Corta a comunicação entre cliente e especialista", "Coupe la communication entre le client et l’expert"], ["Nunca tocar", "Ne jamais y toucher"]] }
+    ] }
   ] },
   { t: ["Os RDV em curso", "Les RDV en cours"], b: [
-    { p: ["Seta do botão «RDV en cours» na ficha. Para modificar ou cancelar: «Modifier / Annuler le RDV au nom du client».", "Flèche du bouton « RDV en cours » sur la fiche. Pour modifier ou annuler : « Modifier / Annuler le RDV au nom du client »."] },
+    { p: ["Na ficha, bloco Ações → «RDV» em curso. A lista mostra os RDV a vir e passados: n.º, canal, data do RDV (hora de Paris), data do pedido, especialista e estado.", "Sur la fiche, bloc Actions → « RDV » en cours. La liste montre les RDV à venir et passés : n°, canal, date du RDV (heure de Paris), date de prise, expert et statut."] },
+    { shot: { f: "rdv-liste-client.png", cap: ["Os RDV de um cliente: um «Annulé» e um «Planifié»", "Les RDV d’un client : un « Annulé » et un « Planifié »"] } },
+    { p: ["Clique no n.º do RDV para ver o detalhe: especialista, canal, data, estado, mensagem, origem, promoção aplicada. Os botões em baixo permitem <b>cancelar em nome do cliente</b>, <b>cancelar em nome do especialista</b> ou <b>modificar em nome do cliente</b>.", "Clique sur le n° du RDV pour voir le détail : expert, canal, date, statut, message, origine, promo appliquée. Les boutons en bas permettent d’<b>annuler à la place du client</b>, d’<b>annuler à la place de l’expert</b> ou de <b>modifier à la place du client</b>."] },
+    { shot: { f: "rdv-detail.png", cap: ["Detalhe de um RDV planificado, com a promoção aplicada e os 3 botões", "Détail d’un RDV planifié, avec la promo appliquée et les 3 boutons"] } },
+    { shot: { f: "rdv-modifier.png", cap: ["«Modifier le rendez-vous à la place du client»: mensagem, telefone, nova data e hora → «Envoyer»", "« Modifier le rendez-vous à la place du client » : message, téléphone, nouvelle date et heure → « Envoyer »"] } },
+    { shot: { f: "rdv-statuts-liste.png", cap: ["Na lista: «Planifié» (confirmado) e «Demandé» (à espera do especialista)", "Dans la liste : « Planifié » (confirmé) et « Demandé » (en attente de l’expert)"] } },
+    { shot: { f: "rdv-detail-demande.png", cap: ["Um RDV «requested»: o especialista ainda tem de aceitar", "Un RDV « requested » : l’expert doit encore accepter"] } },
     { chips: [
-      { c: "s-wait", k: ["Pendente", "En attente"], p: ["Aguarda validação.", "Attend la validation."] },
-      { c: "s-ok", k: ["Agendada", "Planifié"], p: ["Vai realizar-se.", "Aura lieu."] },
+      { c: "s-wait", k: ["Demandé · requested", "Demandé · requested"], p: ["Aguarda validação do especialista.", "Attend la validation de l’expert."] },
+      { c: "s-ok", k: ["Planifié · planified", "Planifié · planified"], p: ["Confirmado: vai realizar-se.", "Confirmé : aura lieu."] },
       { c: "s-mid", k: ["Em curso", "En cours"], p: ["A decorrer.", "A lieu maintenant."] },
       { c: "s-ok", k: ["Realizada", "Réalisé"], p: ["Feita.", "Effectué."] },
       { c: "s-bad", k: ["Recusada / Cancelada", "Refusé / Annulé"], p: ["Pelo especialista ou pelo cliente.", "Par l’expert ou le client."] },

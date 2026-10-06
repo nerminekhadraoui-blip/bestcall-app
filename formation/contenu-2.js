@@ -219,6 +219,7 @@ BCF.modules.push(
       { c: "s-wait", k: ["Cinzento", "Gris"], p: ["Inscrito, mas ainda sem pontos suficientes.", "Inscrit, mais pas encore assez de points."] },
       { c: "s-ok", k: ["Azul", "Bleu"], p: ["Inscrito com pontos trocáveis → propor uma troca.", "Inscrit avec des points échangeables → proposer un échange."] }
     ] },
+    { shot: { f: "fiche-bandeau-reward.png", cap: ["Faixa azul «Wengo Reward [inscrit]» na ficha: pontos disponíveis e recompensas", "Bandeau bleu « Wengo Reward [inscrit] » sur la fiche : points disponibles et récompenses"] } },
     { shot: { f: "reward-inscrit.png", cap: ["Cliente inscrito com 784 pontos: várias recompensas disponíveis", "Client inscrit avec 784 points : plusieurs récompenses disponibles"] } },
     { key: ["Inscrição gratuita. Precisa de: <b>e-mail válido, número de telemóvel, data de nascimento</b>.", "Inscription gratuite. Il faut : <b>e-mail valide, numéro de mobile, date de naissance</b>."] }
   ] },
