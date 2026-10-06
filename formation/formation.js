@@ -256,7 +256,7 @@
   function renderMemo() {
     var html = header() + '<section class="fm-hero" style="grid-template-columns:1fr"><div><div class="fm-eyebrow">' + u("memo") + '</div><h1>' + u("memoH") + '</h1><p>' + u("memoP") + '</p></div></section>' +
       '<div class="fm-flash">' + (BCF.memo || []).map(function (c) {
-        return '<button class="fm-fc" style="--fcol:' + c.c + '"><div class="fm-in"><div class="fm-face fm-front"><b>' + c.n + '</b><span>' + T(c.q) + '</span></div><div class="fm-face fm-back">' + T(c.a) + '</div></div></button>';
+        return '<button class="fm-fc" style="--fcol:' + c.c + '"><div class="fm-in"><div class="fm-face fm-front"><b>' + c.n + '</b><span>' + T(c.q) + '</span></div><div class="fm-face fm-verso">' + T(c.a) + '</div></div></button>';
       }).join("") + '</div>' +
       '<h2 class="fm-section-h">' + u("errH") + '</h2><div style="--c:#B5493A;margin-bottom:28px">' + block({ errors: 1 }) + '</div>' +
       '<h2 class="fm-section-h">' + u("contacts") + '</h2><div class="fm-contacts">' + (BCF.contacts || []).map(function (p) {

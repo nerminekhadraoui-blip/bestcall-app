@@ -184,7 +184,7 @@
 .fm-front{background:var(--fm-surface);border:1px solid var(--fm-line);border-top:4px solid var(--fcol)}
 .fm-front b{font-family:"Manrope",sans-serif;font-size:26px;color:var(--fcol)}
 .fm-front span{font-size:13px;color:var(--fm-muted)}
-.fm-back{background:var(--fcol);color:#fff;transform:rotateY(180deg);font-size:14px;font-weight:600}
+.fm-verso{background:var(--fcol);color:#fff;transform:rotateY(180deg);font-size:14px;font-weight:600}
 .fm-section-h{font-size:19px;margin:6px 0 12px}
 .fm-contacts{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:12px}
 .fm-contact{background:var(--fm-surface);border:1px solid var(--fm-line);border-radius:8px;padding:14px}
