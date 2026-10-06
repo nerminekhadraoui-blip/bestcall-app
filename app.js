@@ -332,8 +332,11 @@
   function subscribeConseillers() {
     state.unsub.conseillers = db.collection("conseillers").onSnapshot(function (snap) {
       state.conseillers = snap.docs.map(function (d) { var data = d.data() || {}; data._id = d.id; return data; });
+      // Tri par numéro de code agent (Best 01, Best 02, … Best 15) ; repli sur le nom
       state.conseillers.sort(function (a, b) {
-        return (a.nom || "").localeCompare(b.nom || "") || (a.prenom || "").localeCompare(b.prenom || "");
+        var ka = (a.codeAgent || a.nom || "").replace(/\s+/g, ""), kb = (b.codeAgent || b.nom || "").replace(/\s+/g, "");
+        return ka.localeCompare(kb, undefined, { numeric: true, sensitivity: "base" }) ||
+          (a.prenom || "").localeCompare(b.prenom || "");
       });
       renderStats();
       renderConseillersTable();
