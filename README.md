@@ -78,3 +78,9 @@ match /formation/{uid} {
 ```
 
 Sans cette règle, la formation fonctionne quand même, mais la progression reste seulement dans le navigateur de la personne et le tableau de suivi reste vide.
+
+## Langue (FR / PT)
+
+Toute l'appli est traduisible en portugais : bouton **PT / FR** sur l'écran de connexion et en bas du menu de gauche. Le choix est mémorisé dans le navigateur et s'applique aussi à l'onglet Formation. Un conseiller qui n'a encore rien choisi voit l'appli en portugais.
+
+Les traductions sont dans `i18n.js` : pour un nouveau texte ajouté dans l'appli, ajoute une ligne `"texte français": "texto em português"` dans `DICT`.

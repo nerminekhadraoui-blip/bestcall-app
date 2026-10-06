@@ -223,6 +223,7 @@
       var badge = $("role-badge");
       badge.textContent = roleLabel(state.role);
       badge.classList.toggle("is-admin", state.role === "admin" || state.role === "direction");
+      if (window.BCI18N) BCI18N.defaultForRole(state.role);
       renderNav();
       wireViewForRole();
       initFormation();

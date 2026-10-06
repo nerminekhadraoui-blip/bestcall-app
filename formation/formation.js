@@ -274,8 +274,13 @@
     if (!root) return;
     if (view.page === "home") renderHome(); else if (view.page === "memo") renderMemo(); else renderMod();
     root.querySelectorAll("[data-go]").forEach(function (b) { b.onclick = function () { view.page = b.dataset.go; render(); }; });
-    root.querySelectorAll(".fm-lang button").forEach(function (b) { b.onclick = function () { L = b.dataset.l === "fr" ? 1 : 0; S.lang = b.dataset.l; save(); render(); }; });
+    root.querySelectorAll(".fm-lang button").forEach(function (b) { b.onclick = function () {
+      if (window.BCI18N) { BCI18N.set(b.dataset.l, true); return; }
+      setLang(b.dataset.l);
+    }; });
   }
+
+  function setLang(l) { L = l === "fr" ? 1 : 0; S.lang = l; save(); render(); }
 
   function merge(a, b) {
     if (!b) return a;
@@ -291,16 +296,19 @@
     mount: function (el, o) {
       root = el; opts = o || {}; root.classList.add("fm");
       view = { page: "home", m: 0, l: 0 };
-      S = merge({ lang: "pt", seen: {}, quiz: {}, last: null }, lsLoad()); L = S.lang === "fr" ? 1 : 0;
+      S = merge({ lang: "pt", seen: {}, quiz: {}, last: null }, lsLoad());
+      if (window.BCI18N) S.lang = BCI18N.lang;
+      L = S.lang === "fr" ? 1 : 0;
       render();
       if (opts.store && opts.store.load) {
         opts.store.load().then(function (remote) {
-          if (remote) { S = merge(S, remote); L = S.lang === "fr" ? 1 : 0; lsSave(S); if (view.page === "home") render(); }
+          if (remote) { S = merge(S, remote); if (window.BCI18N) S.lang = BCI18N.lang; L = S.lang === "fr" ? 1 : 0; lsSave(S); if (view.page === "home") render(); }
         }).catch(function (e) { console.warn("Formation: lecture distante impossible", e); });
       }
     },
     show: function () { if (root && view.page !== "mod") render(); },
     lang: function () { return L; },
+    setLang: function (l) { if (root && (L === 1) !== (l === "fr")) setLang(l); },
     renderAdmin: function (slot, rows) {
       if (!slot) return;
       if (!rows || !rows.length) { slot.innerHTML = '<section class="fm-admin"><div class="fm-phase-h"><h2>' + u("adminH") + '</h2><span>' + u("none") + '</span></div></section>'; return; }
