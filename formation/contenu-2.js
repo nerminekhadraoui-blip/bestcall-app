@@ -222,8 +222,12 @@ BCF.modules.push(
     { shot: { f: "etat-chargeback.png", cap: ["Saúde da conta: «Est en impayé et chargeback», com o link Recouvrement", "Santé du compte : « Est en impayé et chargeback », avec le lien Recouvrement"] } },
     { shot: { f: "facture-chargeback.png", cap: ["Uma fatura por pagar com o estado «Chargeback»", "Une facture impayée avec le statut « Chargeback »"] } },
     { p: ["Para enviar as modalidades de pagamento (com o IBAN): «Envoyer un mail / un SMS» → categoria <b>Recouvrement</b> → <b>«[Gestion des impayés] Modalités pour régulariser»</b>.", "Pour envoyer les modalités de paiement (avec l’IBAN) : « Envoyer un mail / un SMS » → catégorie <b>Recouvrement</b> → <b>« [Gestion des impayés] Modalités pour régulariser »</b>."] },
+    { shot: { f: "message-regulariser-fr.png", cap: ["A mesma mensagem no anuário francês: o cliente recebe um botão «Je régularise ma situation» e um SMS", "Le même message dans l’annuaire français : le client reçoit un bouton « Je régularise ma situation » et un SMS"] } },
     { shot: { f: "message-recouvrement.png", cap: ["Categoria Recouvrement, mensagem «Modalités pour régulariser» (aqui no anuário italiano)", "Catégorie Recouvrement, message « Modalités pour régulariser » (ici annuaire italien)"] } },
-    { p: ["<b>Robô de cobrança</b>: tenta cobrar sozinho. Se o cliente negociar prestações, <b>desative-o</b> (verde «Não» → laranja «Sim») e escolha a data de reativação.", "<b>Robot de recouvrement</b> : il tente de prélever tout seul. Si le client négocie un paiement en plusieurs fois, <b>désactive-le</b> (vert « Non » → orange « Oui ») et choisis la date de réactivation."] }
+    { shot: { f: "sante-recouvrement-desactive.png", cap: ["Saúde da conta: «Recouvrement désactivé: Non» = o robô está ativo", "Santé du compte : « Recouvrement désactivé : Non » = le robot est actif"] } },
+    { shot: { f: "recouvrement-date-sortie.png", cap: ["Escolher a data de saída automática e «Confirmer»", "Choisir la date de sortie automatique et « Confirmer »"] } },
+    { shot: { f: "sante-recouvrement-oui.png", cap: ["Depois: «Recouvrement désactivé: Oui» (laranja), o robô já não cobra até essa data", "Après : « Recouvrement désactivé : Oui » (orange), le robot ne prélève plus jusqu’à cette date"] } },
+    { p: ["<b>Robô de cobrança</b>: tenta cobrar sozinho. Se o cliente negociar prestações, <b>desative-o</b>: na Saúde da conta, clique em «Recouvrement désactivé: Non», escolha a <b>data de saída automática</b> (a da última prestação) e «Confirmer». O estado passa a «Oui» (laranja).", "<b>Robot de recouvrement</b> : il tente de prélever tout seul. Si le client négocie un paiement en plusieurs fois, <b>désactive-le</b> (vert « Non » → orange « Oui ») et choisis la date de réactivation."] }
   ] }],
   quiz: [
     { q: ["Pay as you go = NON e a Wallet chega a 0€.", "Pay as you go = NON et le Wallet arrive à 0€."], o: [["Continua no cartão", "Ça continue sur la carte"], ["A consulta para", "La consultation s’arrête"]], a: 1, w: ["NON = limitado à Wallet.", "NON = limité au Wallet."] },
@@ -246,11 +250,16 @@ BCF.modules.push(
   { t: ["Pagar mais tarde ou em prestações", "Payer plus tard ou en plusieurs fois"], b: [
     { steps: [
       { t: ["Pedir uma data concreta", "Demander une date précise"], p: ["Para verificar se o cliente cumpre.", "Pour vérifier que le client tient parole."] },
-      { t: ["Programar a chamada", "Programmer l’appel"], p: ["Botão «Programmer un rappel» na página Recouvrement. Escolher o número; Motif: <b>Recouvrement</b>; <b>à une date précise</b>; data e hora segundo os seus dias de presença; <b>«vers moi»</b>; validar.", "Choisir le numéro ; Motif : <b>Recouvrement</b> ; <b>à une date précise</b> ; date et heure selon tes jours de présence ; <b>« vers moi »</b> ; valider."] },
+      { t: ["Programar a chamada", "Programmer l’appel"], p: ["Link «Programmer un rappel» no topo da página Recouvrement (também há «Envoyer un lien Paybylink» e as ajudas «Argumentaire», «Comment recouvrer»). Escolher o número; Motif: <b>Recouvrement</b>; <b>à une date précise</b>; data e hora segundo os seus dias de presença; <b>«vers moi»</b>; validar.", "Choisir le numéro ; Motif : <b>Recouvrement</b> ; <b>à une date précise</b> ; date et heure selon tes jours de présence ; <b>« vers moi »</b> ; valider."] },
       { t: ["2 ou 3 prestações", "2 ou 3 mensualités"], p: ["Uma chamada programada por data. Ex.: 05/11 e 05/12 → 2 chamadas.", "Un appel programmé par date. Ex. : 05/11 et 05/12 → 2 appels."] },
       { t: ["Parar o débito automático", "Arrêter le prélèvement automatique"], p: ["Se tem cartão: desative o robô até à data da última prestação (fica em OUI = desativado).", "S’il a une carte : désactive le robot jusqu’à la date de la dernière mensualité (OUI = désactivé)."] }
     ] },
-    { p: ["<b>Notas</b>: na página de cobranças, use as notas propostas ou personalize a última linha. Só quando falou com o cliente (não duplicar a qualificação). Não use as notas riscadas a vermelho.", "<b>Notes</b> : sur la page recouvrement, utilise les notes proposées ou personnalise la dernière ligne. Seulement si tu as parlé au client (ne pas doubler la qualification). N’utilise pas les notes barrées en rouge."] }
+    { shot: { f: "recouvrement-liens.png", cap: ["No topo da página Recouvrement: «Programmer un rappel», «Envoyer un lien Paybylink» e as ajudas", "En haut de la page Recouvrement : « Programmer un rappel », « Envoyer un lien Paybylink » et les aides"] } },
+    { shot: { f: "rappel-numero.png", cap: ["Escolher o número da lista ou introduzir outro", "Choisir le numéro dans la liste ou en saisir un autre"] } },
+    { shot: { f: "rappel-programmer.png", cap: ["Motivo «Recouvrement», «À une date précise», data e hora, «Vers moi», «Valider»", "Motif « Recouvrement », « À une date précise », date et heure, « Vers moi », « Valider »"] } },
+    { shot: { f: "recouvrement-motifs.png", cap: ["Antes de uma tentativa: escolher o motivo (o cliente enviou um e-mail, está em linha, outro)", "Avant une tentative : choisir le motif (le client a envoyé un mail, il est en ligne, autre)"] } },
+    { p: ["<b>Notas</b>: na página de cobranças, use as notas propostas ou personalize a última linha. Só quando falou com o cliente (não duplicar a qualificação). Não use as notas riscadas a vermelho.", "<b>Notes</b> : sur la page recouvrement, utilise les notes proposées ou personnalise la dernière ligne. Seulement si tu as parlé au client (ne pas doubler la qualification). N’utilise pas les notes barrées en rouge."] },
+    { shot: { f: "recouvrement-notes.png", cap: ["Nota de tipo «Recouvrement»: as linhas riscadas a vermelho não se usam (o Graam já as qualifica)", "Note de type « Recouvrement » : les lignes barrées en rouge ne s’utilisent pas (Graam les qualifie déjà)"] } }
   ] }],
   quiz: [
     { q: ["O cliente não atendeu e deixou caixa de voz.", "Le client n’a pas répondu, messagerie."], o: [["Anulo a pausa pós-chamada manualmente", "J’annule la pause post-appel manuellement"], ["Uso a pausa para descansar", "J’utilise la pause pour souffler"]], a: 0, w: ["A pausa de 1 min 30 é só quando houve contacto.", "La pause de 1 min 30 est seulement s’il y a eu contact."] },
@@ -438,10 +447,23 @@ BCF.modules.push(
       { t: ["Comprar ou oferecer", "Acheter ou offrir"], p: ["«Comprar» ou «Oferecer a um amigo» (outro e-mail).", "« Acheter » ou « Offrir à un ami » (autre e-mail)."] },
       { t: ["Pagar", "Payer"], p: ["Código promocional? «Tenho um código» antes de pagar.", "Code promo ? « J’ai un code » avant de payer."] }
     ] },
-    { key: ["Depois da compra: <b>«Os meus conteúdos» → «Produtos da caixa»</b>. Os guias e estudos só se veem aí.", "Après l’achat : <b>« Mes contenus » → « Produits de la box »</b>. Les guides et études ne se voient que là."] }
+    { shot: { f: "site-connexion.png", cap: ["O cliente liga-se ao espaço cliente (e-mail ou telefone)", "Le client se connecte à son espace (e-mail ou téléphone)"] } },
+    { shot: { f: "site-tarotistas.png", cap: ["Página inicial: «Conocer a los tarotistas»", "Page d’accueil : « Découvrir les tarologues »"] } },
+    { shot: { f: "site-tienda.png", cap: ["O separador «Tienda» (Loja) no menu", "L’onglet « Tienda » (Boutique) dans le menu"] } },
+    { shot: { f: "boutique-produits.png", cap: ["Os produtos: tiragens de tarot com o preço", "Les produits : tirages de tarot avec le prix"] } },
+    { shot: { f: "boutique-produit-detail.png", cap: ["A descrição completa do produto com «Comprar» e «Ofrecer a un amigo»", "La description complète du produit avec « Acheter » et « Offrir à un ami »"] } },
+    { shot: { f: "boutique-panier.png", cap: ["O cesto: «Ofrecer a un amigo», «Tengo un código promocional» e «Realizar el pago»", "Le panier : « Offrir à un ami », « J’ai un code promo » et « Payer »"] } },
+    { shot: { f: "boutique-code-promo.png", cap: ["O link para o código promocional, antes de pagar", "Le lien pour le code promo, avant de payer"] } },
+    { shot: { f: "boutique-offrir.png", cap: ["«Ofrecer a un amigo»: o e-mail do amigo e uma mensagem", "« Offrir à un ami » : l’e-mail de l’ami et un message"] } },
+    { shot: { f: "boutique-paiement.png", cap: ["A página de pagamento: cartão guardado ou outros meios (cartão, PayPal, Paysafecard, Bizum, Google Pay)", "La page de paiement : carte enregistrée ou autres moyens (carte, PayPal, Paysafecard, Bizum, Google Pay)"] } },
+    { key: ["Depois da compra: <b>«Os meus conteúdos» → «Produtos da caixa»</b>. Os guias e estudos só se veem aí.", "Après l’achat : <b>« Mes contenus » → « Produits de la box »</b>. Les guides et études ne se voient que là."] },
+    { shot: { f: "espace-mes-contenus-menu.png", cap: ["No espaço cliente, menu à esquerda → «Mis contenidos»", "Dans l’espace client, menu de gauche → « Mes contenus »"] } },
+    { shot: { f: "espace-mes-contenus.png", cap: ["«Mis contenidos» → «Productos a la carta»: as compras do cliente", "« Mes contenus » → « Produits à la carte » : les achats du client"] } }
   ] },
   { t: ["Os produtos", "Les produits"], b: [
+    { shot: { f: "boutique-astro-fr.png", cap: ["A Boutique Astro em França: −50% em todos os produtos para um novo cliente", "La Boutique Astro en France : −50% sur tous les produits pour un nouveau client"] } },
     { p: ["Cada <b>caixa</b> = uma consulta de <b>15 min (França)</b> ou <b>20 min (outros países)</b> com um especialista participante, por telefone, vídeo ou chat, + um guia, estudo ou tiragem.", "Chaque <b>box</b> = une consultation de <b>15 min (France)</b> ou <b>20 min (autres pays)</b> avec un expert participant, par téléphone, vidéo ou chat, + un guide, une étude ou un tirage."] },
+    { shot: { f: "box-horizon.png", cap: ["A Box Horizon 2025: horóscopo personalizado + consulta privada de 15 min (França)", "La Box Horizon 2025 : horoscope personnalisé + consultation privée de 15 min (France)"] } },
     { cards: [
       { i: "🎁", t: ["Caixas", "Box"], p: ["Horizonte, Tarot Amor, Tarot, Mercúrio retrógrado, Horas espelho, Compatibilidade, Numerológica, Love Box…", "Horizon, Tarot Amour, Tarot, Mercure rétrograde, Heures miroirs, Compatibilité, Numérologique, Love Box…"] },
       { i: "🃏", t: ["Tiragens", "Tirages"], p: ["Tarot do ano 11,90€ · Sim-Não 5,95€ · Anjos 8,99€ · Lenormand 9,99€ · Belline 9,99€ · Cruz celta 11€.", "Tarot de l’année 11,90€ · Oui-Non 5,95€ · Anges 8,99€ · Lenormand 9,99€ · Belline 9,99€ · Croix celtique 11€."] },
@@ -475,6 +497,7 @@ BCF.modules.push(
     { p: ["<b>Moradas</b>: bloco Compte → «Adresses» abre a morada de faturação (tipo, civilidade, nome, apelido, país). Para corrigir: «Éditer». É aqui que se muda o país de faturação (ex.: para ver Multibanco e MB Way em Portugal).", "<b>Adresses</b> : bloc Compte → « Adresses » ouvre l’adresse de facturation (type, civilité, nom, prénom, pays). Pour corriger : « Éditer ». C’est ici qu’on change le pays de facturation (ex. : pour voir Multibanco et MB Way au Portugal)."] },
     { shot: { f: "actions-adresses.png", cap: ["O link «Adresses» no bloco Compte", "Le lien « Adresses » dans le bloc Compte"] } },
     { shot: { f: "adresse-facturation.png", cap: ["A morada de faturação e o botão «Éditer»", "L’adresse de facturation et le bouton « Éditer »"] } },
+    { shot: { f: "adresse-editer-pays.png", cap: ["Em «Éditer»: escolher o país (ex.: Portugal) e «Enregistrer»", "Dans « Éditer » : choisir le pays (ex. Portugal) et « Enregistrer »"] } },
     { warn: ["O <b>pseudónimo</b> (identificador de ligação) <b>não pode</b> ser modificado.", "Le <b>pseudo</b> (identifiant de connexion) <b>ne peut pas</b> être modifié."] },
     { p: ["O cliente recebe um e-mail automático quando o e-mail, o telefone principal ou o telemóvel mudam.", "Le client reçoit un e-mail automatique quand l’e-mail, le téléphone principal ou le mobile changent."] }
   ] },
