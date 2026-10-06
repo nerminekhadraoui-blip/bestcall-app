@@ -338,6 +338,7 @@ BCF.modules.push(
       { c: "s-wait", k: ["Cinzento", "Gris"], p: ["Inscrito, mas ainda sem pontos suficientes.", "Inscrit, mais pas encore assez de points."] },
       { c: "s-ok", k: ["Azul", "Bleu"], p: ["Inscrito com pontos trocáveis → propor uma troca.", "Inscrit avec des points échangeables → proposer un échange."] }
     ] },
+    { shot: { f: "reward-non-inscrit.png", cap: ["Laranja: «non inscrit - non éligible», faltam e-mail, telemóvel ou data de nascimento. «Discours» dá a frase a dizer", "Orange : « non inscrit - non éligible », il manque e-mail, mobile ou date de naissance. « Discours » donne la phrase à dire"] } },
     { shot: { f: "fiche-bandeau-reward.png", cap: ["Faixa azul «Wengo Reward [inscrit]» na ficha: pontos disponíveis e recompensas", "Bandeau bleu « Wengo Reward [inscrit] » sur la fiche : points disponibles et récompenses"] } },
     { shot: { f: "reward-inscrit.png", cap: ["Cliente inscrito com 784 pontos: várias recompensas disponíveis", "Client inscrit avec 784 points : plusieurs récompenses disponibles"] } },
     { key: ["Inscrição gratuita. Precisa de: <b>e-mail válido, número de telemóvel, data de nascimento</b>.", "Inscription gratuite. Il faut : <b>e-mail valide, numéro de mobile, date de naissance</b>."] }
@@ -365,13 +366,16 @@ BCF.modules.push(
     { p: ["Pontos não creditados? Página do programa → bloco <b>«Registos de erros / Motivos de não crédito»</b>: tetos, transação inelegível, fatura não paga, gesto comercial, 3 avaliações já dadas no mês, avaliação já dada a este especialista, consulta demasiado curta.", "Points non crédités ? Page du programme → bloc <b>« Logs d’erreurs / Motifs de non-crédit »</b> : plafonds, transaction inéligible, facture impayée, geste commercial, 3 avis déjà laissés ce mois, avis déjà laissé à cet expert, consultation trop courte."] }
   ] },
   { t: ["Inscrever e trocar", "Inscrire et échanger"], b: [
+    { shot: { f: "reward-oui-fiche.png", cap: ["Nas informações gerais: «Wengo Reward: Oui» = inscrito", "Dans les infos générales : « Wengo Reward : Oui » = inscrit"] } },
     { steps: [
-      { t: ["Abrir «Programme de fidélité»", "Ouvrir « Programme de fidélité »"], p: ["Botão de ação na ficha Bobi.", "Bouton d’action sur la fiche Bobi."] },
+      { t: ["Abrir o programa", "Ouvrir le programme"], p: ["Na faixa azul, clique em «voir le détail».", "Dans le bandeau bleu, clique sur « voir le détail »."] },
       { t: ["Completar as informações", "Compléter les infos"], p: ["Links clicáveis para adicionar e-mail, telemóvel, data de nascimento.", "Liens cliquables pour ajouter e-mail, mobile, date de naissance."] },
       { t: ["Inscrever", "Inscrire"], p: ["Botão de inscrição no Wengo Reward.", "Bouton d’inscription à Wengo Reward."] },
       { t: ["Ver o saldo", "Voir le solde"], p: ["Total, pontos do mês, pontos usados. Bloco «Opérations»: créditos e débitos.", "Total, points du mois, points utilisés. Bloc « Opérations » : crédits et débits."] },
       { t: ["Trocar", "Échanger"], p: ["«Échanger des points»: recompensas a preto = possíveis, a cinzento = pontos insuficientes. Uma nota é criada automaticamente.", "« Échanger des points » : récompenses en noir = possibles, en gris = pas assez de points. Une note est créée automatiquement."] }
     ] },
+    { shot: { f: "reward-voir-detail.png", cap: ["«voir le détail» abre a página do programa de fidelidade", "« voir le détail » ouvre la page du programme de fidélité"] } },
+    { shot: { f: "programme-fidelite.png", cap: ["A página do programa: saldo de pontos, separadores Échanger / Créditer / Historique / Logs de rejet, e as recompensas (recargas Wallet, relatórios astrológicos)", "La page du programme : solde de points, onglets Échanger / Créditer / Historique / Logs de rejet, et les récompenses (recharges Wallet, rapports astrologiques)"] } },
     { cards: [
       { i: "✦", t: ["Estudos e tiragens", "Études et tirages"], p: ["Caixas (documento + minutos) ou horóscopos.", "Box (document + minutes) ou horoscopes."] },
       { i: "⏱", t: ["Vales de compra", "Bons d’achat"], p: ["Pontos → minutos de consulta (chamada, chat, vídeo, RDV ou MER).", "Points → minutes de consultation (appel, chat, vidéo, RDV ou MER)."] },
@@ -451,8 +455,20 @@ BCF.modules.push(
     { shot: { f: "infos-detaillees.png", cap: ["Informations détaillées: «Identité vérifiée: Non»", "Informations détaillées : « Identité vérifiée : Non »"] } },
     { compare: [
       { cls: "bad", h: ["Identidade verificada: NÃO", "Identité vérifiée : NON"], tag: ["Pedir documento", "Demander la pièce"], items: [["Explicar que é obrigatório por razões legais", "Expliquer que c’est obligatoire pour des raisons légales"], ["Enviar o pedido de documento pelo Bobi: e-mail, ou SMS se não houver e-mail", "Envoyer la demande de pièce via Bobi : e-mail, ou SMS s’il n’y a pas d’e-mail"]] },
-      { cls: "good", h: ["Identidade verificada: SIM", "Identité vérifiée : OUI"], tag: ["Desbloquear", "Débloquer"], items: [["Clicar no estado", "Cliquer sur le statut"], ["«Modifier le profil»", "« Modifier le profil »"], ["Botão verde «Débloquer client»", "Bouton vert « Débloquer client »"], ["O cliente recebe um e-mail automático", "Le client reçoit un e-mail automatique"]] }
-    ] }
+      { cls: "good", h: ["Identidade verificada: SIM", "Identité vérifiée : OUI"], tag: ["Desbloquear", "Débloquer"], items: [["«détail et gestion profil conso»", "« détail et gestion profil conso »"], ["«Modifier le profil»", "« Modifier le profil »"], ["Botão verde «Débloquer le client»", "Bouton vert « Débloquer le client »"], ["O cliente recebe um e-mail automático", "Le client reçoit un e-mail automatique"]] }
+    ] },
+    { p: ["<b>Pedir o documento</b>: «Envoyer un mail / un SMS» → categoria <b>Compte client</b> → <b>«[Demandes spécifiques] Demande de pièce d’identité pour consommation bloquée»</b>.", "<b>Demander la pièce</b> : « Envoyer un mail / un SMS » → catégorie <b>Compte client</b> → <b>« [Demandes spécifiques] Demande de pièce d’identité pour consommation bloquée »</b>."] },
+    { shot: { f: "message-piece-identite.png", cap: ["A mensagem de pedido de documento de identidade, com o e-mail e o SMS", "Le message de demande de pièce d’identité, avec l’e-mail et le SMS"] } },
+    { shot: { f: "identite-oui.png", cap: ["Quando o documento é validado: «Identité vérifiée: Oui»", "Une fois la pièce validée : « Identité vérifiée : Oui »"] } },
+    { steps: [
+      { t: ["«détail et gestion profil conso»", "« détail et gestion profil conso »"], p: ["Link ao lado de «Consommation suspendue: Oui» na saúde da conta.", "Lien à côté de « Consommation suspendue : Oui » dans la santé du compte."] },
+      { t: ["Ver o «Suivi consommation»", "Voir le « Suivi consommation »"], p: ["Consumo do mês e perfil atual (ex.: hardblock com limite de 1500€).", "Consommation du mois et profil actuel (ex. : hardblock avec seuil à 1500€)."] },
+      { t: ["«Modifier le profil»", "« Modifier le profil »"], p: ["Abre a escolha do novo perfil.", "Ouvre le choix du nouveau profil."] },
+      { t: ["«Débloquer le client»", "« Débloquer le client »"], p: ["O botão verde. O cliente recebe um e-mail.", "Le bouton vert. Le client reçoit un e-mail."] }
+    ] },
+    { shot: { f: "lien-profil-conso.png", cap: ["O link «détail et gestion profil conso»", "Le lien « détail et gestion profil conso »"] } },
+    { shot: { f: "suivi-conso.png", cap: ["«Suivi consommation»: 1659,85€ no mês, perfil hardblock (limite 1500€), consumo suspenso → «Modifier le profil»", "« Suivi consommation » : 1659,85€ ce mois, profil hardblock (seuil 1500€), conso suspendue → « Modifier le profil »"] } },
+    { shot: { f: "debloquer-client.png", cap: ["O botão verde «Débloquer le client»", "Le bouton vert « Débloquer le client »"] } }
   ] },
   { t: ["Pedido de supressão da conta", "Demande de suppression du compte"], b: [
     { steps: [
@@ -460,6 +476,7 @@ BCF.modules.push(
       { t: ["«Compte client»", "« Compte client »"], p: ["Categoria.", "Catégorie."] },
       { t: ["Assunto", "Sujet"], p: ["«Demande d’informations pour la suppression du compte». O cliente responde ao e-mail.", "« Demande d’informations pour la suppression du compte ». Le client répond à l’e-mail."] }
     ] },
+    { shot: { f: "message-suppression.png", cap: ["Categoria «Compte client», mensagem «Demande d’informations pour la suppression de compte»", "Catégorie « Compte client », message « Demande d’informations pour la suppression de compte »"] } },
     { tip: ["Para o encerramento definitivo, ver o módulo Reclamações: dívidas e saldo da Wallet a tratar antes.", "Pour la clôture définitive, voir le module Réclamations : impayés et solde Wallet à traiter avant."] }
   ] }],
   quiz: [
@@ -474,7 +491,9 @@ BCF.modules.push(
   desc: ["Seguir, registar e tipos de reclamação.", "Suivre, enregistrer et types de réclamation."],
   lessons: [
   { t: ["Seguir uma reclamação", "Suivre une réclamation"], b: [
-    { p: ["Ficha → seta «Réclamations» → «Réclamation en cours» → «Liste des réclamations». Veja a data, o conselheiro que a transmitiu e o conteúdo. Uma nota é adicionada automaticamente quando vai para o N2.", "Fiche → flèche « Réclamations » → « Réclamation en cours » → « Liste des réclamations ». Regarde la date, le conseiller qui l’a transmise et le contenu. Une note est ajoutée automatiquement au passage N2."] },
+    { p: ["Ficha → bloco Ações → Historique → <b>«Réclamations»</b> (ou seta «Réclamations» → «Réclamation en cours» → «Liste des réclamations»). Veja a data, o conselheiro que a transmitiu e o conteúdo. Uma nota é adicionada automaticamente quando vai para o N2.", "Fiche → flèche « Réclamations » → « Réclamation en cours » → « Liste des réclamations ». Regarde la date, le conseiller qui l’a transmise et le contenu. Une note est ajoutée automatiquement au passage N2."] },
+    { shot: { f: "acces-reclamations.png", cap: ["Bloco Ações → Historique → «Réclamations»", "Bloc Actions → Historique → « Réclamations »"] } },
+    { shot: { f: "liste-reclamations.png", cap: ["A lista: data, tipo, operador, mensagem, especialista", "La liste : date, type, opérateur, message, expert"] } },
     { key: ["Prazo de tratamento: <b>24 a 48h úteis</b>. Ligar para saber o ponto da situação só atrasa. O serviço de e-mail fecha ao fim de semana e feriados.", "Délai de traitement : <b>24 à 48h ouvrées</b>. Appeler pour avoir des nouvelles ne fait que retarder. Le service e-mail est fermé le week-end et les jours fériés."] },
     { p: ["Mais de 48h úteis sem resposta? Peça ao cliente para verificar o e-mail e o spam; se necessário, relance a reclamação.", "Plus de 48h ouvrées sans réponse ? Demande au client de vérifier ses e-mails et ses spams ; si besoin, relance la réclamation."] },
     { cards: [
@@ -487,10 +506,14 @@ BCF.modules.push(
     { steps: [
       { t: ["Verificar as reclamações abertas", "Vérifier les réclamations ouvertes"], p: ["Evitar duplicados sobre o mesmo assunto.", "Éviter les doublons sur le même sujet."] },
       { t: ["Verificar o e-mail do cliente", "Vérifier l’e-mail du client"], p: ["Sem e-mail válido, o cliente não recebe a resposta.", "Sans e-mail valide, le client ne reçoit pas la réponse."] },
-      { t: ["«Enregistrer une réclamation»", "« Enregistrer une réclamation »"], p: ["Escolher o tipo certo para o ticket ir à equipa certa.", "Choisir le bon type pour que le ticket aille à la bonne équipe."] },
+      { t: ["«Déposer une réclamation»", "« Déposer une réclamation »"], p: ["Bloco Ações → Contact client. Escolher o tipo certo para o ticket ir à equipa certa.", "Bloc Actions → Contact client. Choisir le bon type pour que le ticket aille à la bonne équipe."] },
       { t: ["Preencher e guardar", "Remplir et enregistrer"], p: ["N.º e data da transação, especialista, descrição precisa. «Se eu reler, percebe-se?»", "N° et date de transaction, expert, description précise. « Si je relis, c’est compréhensible ? »"] },
       { t: ["Informar o cliente", "Informer le client"], p: ["Resposta por e-mail em 48h úteis; não precisa de ligar antes.", "Réponse par e-mail sous 48h ouvrées ; pas besoin d’appeler avant."] }
-    ] }
+    ] },
+    { shot: { f: "deposer-reclamation.png", cap: ["O botão «Déposer une réclamation»", "Le bouton « Déposer une réclamation »"] } },
+    { shot: { f: "formulaire-reclamation.png", cap: ["O formulário: tipo, nome, e-mail, telefones (pré-preenchidos), especialista, data e «Précisions / Motif»", "Le formulaire : type, nom, e-mail, téléphones (pré-remplis), expert, date et « Précisions / Motif »"] } },
+    { p: ["Os tipos que o conselheiro usa: <b>Remboursement/Facturation</b>, <b>Insatisfaction Wengo</b>, <b>Insatisfaction lié à un Expert</b>, <b>Réactivation de compte (N1)</b> e <b>Autre motif d’escalade</b>.", "Les types qu’utilise le conseiller : <b>Remboursement/Facturation</b>, <b>Insatisfaction Wengo</b>, <b>Insatisfaction lié à un Expert</b>, <b>Réactivation de compte (N1)</b> et <b>Autre motif d’escalade</b>."] },
+    { shot: { f: "types-reclamation.png", cap: ["A lista dos tipos: os riscados não são usados pelos conselheiros", "La liste des types : ceux barrés ne sont pas utilisés par les conseillers"] } }
   ] },
   { t: ["Pedido de reembolso", "Demande de remboursement"], b: [
     { lead: ["Aceite só se a promoção não foi aplicada, ou se a consulta durou <b>menos de 4 minutos</b> (problema técnico). Diga-o logo ao cliente.", "Accepté seulement si la promo n’a pas été appliquée, ou si la consultation a duré <b>moins de 4 minutes</b> (problème technique). Dis-le tout de suite au client."] },
@@ -514,6 +537,7 @@ BCF.modules.push(
   quiz: [
     { q: ["Consulta cortada aos 3 min por problema técnico.", "Consultation coupée à 3 min par un problème technique."], o: [["Reembolso possível: reclamação", "Remboursement possible : réclamation"], ["Sem reembolso", "Pas de remboursement"]], a: 0, w: ["Menos de 4 min = reembolso aceite.", "Moins de 4 min = remboursement accepté."] },
     { q: ["O cliente não gostou da especialista e quer o dinheiro de volta.", "Le client n’a pas aimé l’experte et veut être remboursé."], o: [["Prometo o reembolso", "Je promets le remboursement"], ["Explico que não há reembolso e proponho outra especialista", "J’explique qu’il n’y a pas de remboursement et propose une autre experte"]], a: 1, w: ["Insatisfação com especialista não dá direito a reembolso.", "L’insatisfaction expert ne donne pas droit à remboursement."] },
+    { q: ["Que tipo de reclamação para um reembolso?", "Quel type de réclamation pour un remboursement ?"], o: [["Remboursement/Facturation", "Remboursement/Facturation"], ["Impayé/Recouvrement", "Impayé/Recouvrement"], ["Stop Contact", "Stop Contact"]], a: 0, w: ["Os tipos riscados na lista não são usados pelos conselheiros.", "Les types barrés dans la liste ne sont pas utilisés par les conseillers."] },
     { q: ["O cliente liga pela 3.ª vez para saber da reclamação de ontem.", "Le client appelle pour la 3e fois pour sa réclamation d’hier."], o: [["Crio outra reclamação", "Je crée une autre réclamation"], ["Explico o prazo de 48h úteis e que ligar atrasa", "J’explique le délai de 48h ouvrées et qu’appeler retarde"]], a: 1, w: ["E evite duplicados.", "Et évite les doublons."] },
     { q: ["Encerrar a conta de um cliente com 15€ na Wallet.", "Clôturer le compte d’un client avec 15€ dans son Wallet."], o: [["Proponho uma consulta; se preferir, reembolso via N2", "Je propose une consultation ; s’il préfère, remboursement via N2"], ["Encerro e o saldo perde-se", "Je clôture et le solde est perdu"]], a: 0, w: ["O N2 reembolsa o saldo e encerra.", "Le N2 rembourse le solde et clôture."] }
   ]
