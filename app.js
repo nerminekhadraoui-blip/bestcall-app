@@ -125,7 +125,9 @@
   function dayWorkedMinutes(d) {
     if (!d || d.repos) return 0;
     var mins = durationMinutes(d.debut, d.fin);
-    if (d.pauseDebut && d.pauseFin) mins -= durationMinutes(d.pauseDebut, d.pauseFin);
+    if (d.pauseDebut && d.pauseFin && d.pauseDebut !== d.pauseFin) {
+      mins -= durationMinutes(d.pauseDebut, d.pauseFin);
+    }
     return Math.max(0, mins);
   }
   function computeSalary(jours, tauxSem, tauxDim) {
