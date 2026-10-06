@@ -916,7 +916,9 @@
         toast("Jour mis à jour.");
         closeModals();
         loadOwnPlanning();
-        return sendPlanningChangeEmail(jDef.label, ancien, nouveau, message);
+        // Note : plus d'email à la direction sur une simple modification de
+        // journée/pause (trop de volume) — seuls les signalements
+        // (absence, retard, maladie, congé) envoient un email (sendSignalEmail).
       })
       .catch(function (e) {
         $("edit-day-error").textContent = "Erreur : " + (e && e.code || e);
