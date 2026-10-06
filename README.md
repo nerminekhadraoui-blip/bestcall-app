@@ -13,6 +13,8 @@ Application indépendante (Firebase Auth + Firestore + Hosting) — 100% gratuit
 - **Plannings hebdomadaires** avec calcul automatique du salaire (heures normales vs dimanche/férié).
 - **Signalement de retard/absence** par un conseiller → enregistré + email automatique à la direction (via EmailJS).
 
+- **Formation (Academia BestCall)** : onglet "Formation" pour tous les rôles. 20 modules bilingues PT/FR tirés du guide des conseillers, avec captures, quiz, fiche mémo et contacts. La progression de chaque personne est enregistrée dans Firestore ; Marta et l'admin voient un tableau de suivi des conseillères en haut de l'onglet.
+
 ## Étapes restantes avant mise en ligne
 
 ### 1. Finir EmailJS
@@ -55,3 +57,24 @@ Firebase te donnera une URL du type `https://gestion-bestcall.web.app` — c'est
 - Écran "Comptes" pour que toi et Marta puissiez créer/gérer les comptes direction depuis l'interface (pas seulement via la console Firebase).
 - Saisie des heures réellement travaillées (vs planning théorique) pour un calcul de salaire encore plus précis.
 - Import automatique des données actuelles depuis le Google Sheet existant.
+
+## Onglet Formation
+
+Fichiers dans `formation/` :
+- `contenu-1.js` et `contenu-2.js` : tout le texte de la formation (chaque phrase = `["português", "français"]`), les quiz, les codes d'erreur, la fiche mémo et les contacts.
+- `formation.js` : le moteur (parcours, leçons, quiz, fiche mémo, suivi).
+- `formation.css` : le style, préfixé `.fm` pour ne rien casser ailleurs.
+- `img/` : les captures d'écran. Pour en ajouter une, dépose le fichier ici et référence-le dans un module avec `{ shot: { f: "nom.png", cap: ["légende PT", "légende FR"] } }`. Les emails, numéros et pseudos clients ont été floutés : fais de même pour les prochaines.
+
+### Règle Firestore à ajouter (obligatoire pour enregistrer la progression)
+Dans la console Firebase → Firestore Database → **Règles**, ajoute ce bloc à l'intérieur de `match /databases/{database}/documents { ... }`, puis **Publier** :
+
+```
+match /formation/{uid} {
+  allow read, write: if request.auth != null && request.auth.uid == uid;
+  allow read: if request.auth != null
+    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'direction'];
+}
+```
+
+Sans cette règle, la formation fonctionne quand même, mais la progression reste seulement dans le navigateur de la personne et le tableau de suivi reste vide.

@@ -16,17 +16,20 @@
       { view: "conseillers", label: "Conseillers" },
       { view: "plannings", label: "Plannings" },
       { view: "signalements", label: "Signalements" },
-      { view: "paie", label: "Paie" }
+      { view: "paie", label: "Paie" },
+      { view: "formation", label: "Formation" }
     ],
     direction: [
       { view: "conseillers", label: "Conseillers" },
       { view: "plannings", label: "Plannings" },
       { view: "signalements", label: "Signalements" },
-      { view: "paie", label: "Paie" }
+      { view: "paie", label: "Paie" },
+      { view: "formation", label: "Formation" }
     ],
     conseiller: [
       { view: "mon-planning", label: "Mon planning" },
-      { view: "signaler", label: "Signaler" }
+      { view: "signaler", label: "Signaler" },
+      { view: "formation", label: "Formation" }
     ]
   };
 
@@ -222,6 +225,7 @@
       badge.classList.toggle("is-admin", state.role === "admin" || state.role === "direction");
       renderNav();
       wireViewForRole();
+      initFormation();
     });
   });
 
@@ -251,6 +255,40 @@
           sec.hidden = sec.id !== "view-" + view;
         });
       });
+    });
+  }
+
+  // ---------- formation ----------
+  // Progression stockée dans Firestore : collection "formation", un document par utilisateur (id = uid).
+  function initFormation() {
+    if (!window.BCFormation || !$("formation-root")) return;
+    var ref = db.collection("formation").doc(state.uid);
+    var isManager = state.role === "admin" || state.role === "direction";
+    BCFormation.mount($("formation-root"), {
+      imgBase: "./formation/img/",
+      userKey: state.uid,
+      store: {
+        load: function () { return ref.get().then(function (s) { return s.exists ? s.data() : null; }); },
+        save: function (d) {
+          d.email = state.email || "";
+          d.role = state.role;
+          d.conseillerId = state.conseillerId || null;
+          return ref.set(d, { merge: true });
+        }
+      },
+      onHome: function (slot) {
+        if (!isManager || !slot) return;
+        db.collection("formation").get().then(function (snap) {
+          var rows = snap.docs.map(function (d) {
+            var x = d.data() || {};
+            var c = (state.conseillers || []).find(function (k) { return k._id === x.conseillerId; });
+            var nom = c ? ((c.prenom || "") + " " + (c.nom || "")).trim() : (x.email || d.id);
+            return { nom: nom, done: x.done || 0, updatedAt: x.updatedAt, role: x.role };
+          }).filter(function (r) { return r.role === "conseiller"; });
+          rows.sort(function (a, b) { return (b.done - a.done) || a.nom.localeCompare(b.nom); });
+          BCFormation.renderAdmin(slot, rows);
+        }).catch(function (e) { console.warn("Suivi formation indisponible (règles Firestore ?)", e); });
+      }
     });
   }
 

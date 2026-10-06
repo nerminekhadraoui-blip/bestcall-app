@@ -157,6 +157,7 @@ td.cell-repos{background:var(--surface-2);}
   .grid-days{grid-template-columns:70px 1fr 1fr auto auto;font-size:11.5px;}
 }
 </style>
+<link rel="stylesheet" href="./formation/formation.css?v=1">
 </head>
 <body>
 
@@ -333,6 +334,10 @@ td.cell-repos{background:var(--surface-2);}
         </table>
       </div>
     </section>
+    <!-- ===== FORMATION (tous les rôles) ===== -->
+    <section id="view-formation" data-roles="admin,direction,conseiller" hidden>
+      <div id="formation-root"></div>
+    </section>
   </main>
 </div>
 
@@ -424,6 +429,9 @@ td.cell-repos{background:var(--surface-2);}
 
 <div class="toast" id="toast"></div>
 
+<script src="./formation/contenu-1.js?v=1" charset="utf-8"></script>
+<script src="./formation/contenu-2.js?v=1" charset="utf-8"></script>
+<script src="./formation/formation.js?v=1" charset="utf-8"></script>
 <script src="./config.js?v=4"></script>
 <script src="./app.js?v=4"></script>
 </body>
