@@ -29,6 +29,7 @@
     conseiller: [
       { view: "mon-planning", label: "Mon planning" },
       { view: "signaler", label: "Signaler" },
+      { view: "facturation", label: "Facturation" },
       { view: "formation", label: "Formation" }
     ]
   };
@@ -62,6 +63,7 @@
     monthViewYear: new Date().getFullYear(),
     monthViewMonth: new Date().getMonth(),
     editingDayKey: null,
+    fact: { mois: null, plannings: [], signalements: [], conseiller: null, prime: null },
     unsub: {}
   };
 
@@ -310,6 +312,7 @@
         loadPaie();
       });
       $("btn-export-paie").addEventListener("click", exportPaieCsv);
+      $("btn-facture").addEventListener("click", downloadFacture);
     } else if (state.role === "conseiller") {
       $("week-input-conseiller").value = state.weekValue;
       $("week-input-conseiller").addEventListener("change", function () {
@@ -319,6 +322,7 @@
       loadOwnPlanning();
       loadOwnAnnualView();
       subscribeMesSignalements();
+      subscribeFacturation();
     }
   }
 
@@ -738,71 +742,20 @@
       db.collection("primesMensuelles").where("mois", "==", mois).get()
     ]).then(function (results) {
       if (state.moisPaie !== mois) return; // l'utilisateur a changé de mois entre temps
-      var planningsSnap = results[0], signalementsSnap = results[1], primesSnap = results[2];
-
-      // absences déclarées (jours à exclure) pour ce mois, par conseiller
-      var absencesParConseiller = {}; // conseillerId -> Set(dateStr)
-      signalementsSnap.docs.forEach(function (d) {
-        var s = d.data();
-        if (!s.date || TYPES_DEDUCTIBLES.indexOf(s.type) === -1) return;
-        var finRange = s.dateFin || s.date;
-        // ignore complètement si toute la période est hors du mois affiché
-        if (finRange.slice(0, 7) < mois || s.date.slice(0, 7) > mois) return;
-        if (!absencesParConseiller[s.conseillerId]) absencesParConseiller[s.conseillerId] = {};
-        var cur = new Date(s.date + "T00:00:00Z");
-        var fin = new Date(finRange + "T00:00:00Z");
-        while (cur <= fin) {
-          var dStr = toDateStr(cur);
-          if (dStr.slice(0, 7) === mois) absencesParConseiller[s.conseillerId][dStr] = true;
-          cur.setUTCDate(cur.getUTCDate() + 1);
-        }
-      });
-
-      // primes variables saisies pour ce mois
-      var primesVariables = {};
-      primesSnap.docs.forEach(function (d) {
-        var p = d.data();
-        primesVariables[p.conseillerId] = p.primeVariable || 0;
-      });
-
-      // regrouper les plannings du mois par conseiller
-      var planningsParConseiller = {};
-      planningsSnap.docs.forEach(function (d) {
-        var p = d.data();
-        if (!p.semaine || !p.jours) return;
-        var monday = isoWeekMonday(p.semaine);
-        if (monthOfDate(monday) !== mois) return;
-        (planningsParConseiller[p.conseillerId] = planningsParConseiller[p.conseillerId] || []).push(p);
-      });
+      var plannings = results[0].docs.map(function (d) { return d.data(); });
+      var signalements = results[1].docs.map(function (d) { return d.data(); });
+      var primes = {};
+      results[2].docs.forEach(function (d) { var p = d.data(); primes[p.conseillerId] = p.primeVariable; });
 
       var actifs = state.conseillers.filter(function (c) { return (c.statut || "actif") === "actif"; });
+      // calcul jour par jour (date réelle) : une semaine à cheval sur deux mois est bien découpée
       state.paieRows = actifs.map(function (c) {
-        var minNormales = 0, minDim = 0, minAbsence = 0;
-        var absSet = absencesParConseiller[c._id] || {};
-        (planningsParConseiller[c._id] || []).forEach(function (p) {
-          JOURS.forEach(function (j, idx) {
-            var day = p.jours[j.key];
-            if (!day || day.repos) return;
-            var dateStr = toDateStr(dateForDayInWeek(p.semaine, idx));
-            var mins = dayWorkedMinutes(day);
-            var estDim = j.key === "dimanche" || day.ferie;
-            if (absSet[dateStr]) {
-              minAbsence += mins;
-              return; // journée absente : non comptée dans les heures travaillées
-            }
-            if (estDim) minDim += mins; else minNormales += mins;
-          });
+        return BCPay.computeMonth({
+          conseiller: c, mois: mois,
+          plannings: plannings.filter(function (p) { return p.conseillerId === c._id; }),
+          signalements: signalements.filter(function (x) { return x.conseillerId === c._id; }),
+          prime: primes.hasOwnProperty(c._id) ? primes[c._id] : null
         });
-        var gainsHoraires = (minNormales / 60) * (c.tauxHoraireSemaine || 0) + (minDim / 60) * (c.tauxHoraireDimancheFerie || 0);
-        var primeVariable = primesVariables.hasOwnProperty(c._id) ? primesVariables[c._id] : 0;
-        var primeLangue = c.primeLangue || 0;
-        var primeTeletravail = c.primeTeletravail || 0;
-        var total = gainsHoraires + primeLangue + primeTeletravail + primeVariable;
-        return {
-          conseiller: c, minNormales: minNormales, minDim: minDim, minAbsence: minAbsence,
-          gainsHoraires: gainsHoraires, primeLangue: primeLangue, primeTeletravail: primeTeletravail,
-          primeVariable: primeVariable, total: total
-        };
       });
 
       renderPaieTable();
@@ -810,6 +763,17 @@
       console.error(err);
       tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state">Erreur de chargement.</div></td></tr>';
     });
+  }
+
+  function downloadFacture() {
+    var rows = state.paieRows || [];
+    if (rows.length === 0) { toast("Rien à exporter pour ce mois."); return; }
+    var btn = $("btn-facture");
+    btn.disabled = true;
+    BCPay.downloadInvoice(rows, state.moisPaie)
+      .then(function () { toast("Facture téléchargée. Complète la ligne Best Sup avant l'envoi."); })
+      .catch(function (e) { console.error(e); toast("Impossible de générer la facture."); })
+      .finally(function () { btn.disabled = false; });
   }
 
   function renderPaieTable() {
@@ -833,7 +797,7 @@
         '<td>' + fmtEuros(r.gainsHoraires) + '</td>' +
         '<td>' + fmtEuros(r.primeLangue) + '</td>' +
         '<td>' + fmtEuros(r.primeTeletravail) + '</td>' +
-        '<td><input type="number" step="0.01" class="f-prime-variable" data-idx="' + i + '" value="' + r.primeVariable + '" style="width:90px;"></td>' +
+        '<td><input type="number" step="0.01" class="f-prime-variable" data-idx="' + i + '" value="' + (r.primeVariableSet ? r.primeVariable : "") + '" placeholder="—" title="Vide = pas encore de prime" style="width:90px;"></td>' +
         '<td>' + (r.minAbsence > 0 ? fmtHours(r.minAbsence) : "—") + '</td>' +
         '<td><strong>' + fmtEuros(r.total) + '</strong></td>' +
         '</tr>';
@@ -845,6 +809,7 @@
         var row = state.paieRows[idx];
         var val = parseFloat(input.value) || 0;
         row.primeVariable = val;
+        row.primeVariableSet = input.value !== "";
         row.total = row.gainsHoraires + row.primeLangue + row.primeTeletravail + val;
         var docId = state.moisPaie + "_" + row.conseiller._id;
         db.collection("primesMensuelles").doc(docId).set({
@@ -884,6 +849,49 @@
   // ======================================================
   // CONSEILLER — mon planning
   // ======================================================
+  // ======================================================
+  // CONSEILLER — facturation (estimation de ce qu'il va toucher)
+  // Tout est écouté en direct : un changement d'horaire, de pause,
+  // une absence ou la prime saisie par Marta mettent l'écran à jour.
+  // ======================================================
+  function subscribeFacturation() {
+    if (!state.conseillerId || !window.BCPay) return;
+    var f = state.fact;
+    f.mois = currentMonth();
+    var el = $("facturation-root");
+    BCPay.renderConseiller(el, "loading", f.mois, changeFactMonth);
+    state.unsub.factPlannings = db.collection("plannings").where("conseillerId", "==", state.conseillerId)
+      .onSnapshot(function (snap) { f.plannings = snap.docs.map(function (d) { return d.data(); }); f.ready1 = true; renderFacturation(); },
+        function (e) { console.error(e); BCPay.renderConseiller(el, "error", f.mois, changeFactMonth); });
+    state.unsub.factSignal = db.collection("signalements").where("conseillerId", "==", state.conseillerId)
+      .onSnapshot(function (snap) { f.signalements = snap.docs.map(function (d) { return d.data(); }); f.ready2 = true; renderFacturation(); },
+        function (e) { console.error(e); f.ready2 = true; renderFacturation(); });
+    state.unsub.factConseiller = db.collection("conseillers").doc(state.conseillerId)
+      .onSnapshot(function (d) { f.conseiller = d.data() || {}; f.ready3 = true; renderFacturation(); },
+        function (e) { console.error(e); BCPay.renderConseiller(el, "error", f.mois, changeFactMonth); });
+    subscribeFactPrime();
+    window.addEventListener("bc-lang", renderFacturation);
+  }
+  function subscribeFactPrime() {
+    var f = state.fact;
+    if (state.unsub.factPrime) state.unsub.factPrime();
+    f.prime = null;
+    // la prime variable n'existe que si Marta l'a saisie dans Paie pour ce mois
+    state.unsub.factPrime = db.collection("primesMensuelles")
+      .where("conseillerId", "==", state.conseillerId).where("mois", "==", f.mois)
+      .onSnapshot(function (snap) {
+        f.prime = snap.empty ? null : snap.docs[0].data().primeVariable;
+        renderFacturation();
+      }, function (e) { console.warn("Prime variable illisible (règle Firestore ?)", e); f.prime = null; renderFacturation(); });
+  }
+  function changeFactMonth(m) { state.fact.mois = m; subscribeFactPrime(); renderFacturation(); }
+  function renderFacturation() {
+    var f = state.fact;
+    if (!f.ready1 || !f.ready3) return;
+    var r = BCPay.computeMonth({ conseiller: f.conseiller, plannings: f.plannings, signalements: f.signalements, prime: f.prime, mois: f.mois });
+    BCPay.renderConseiller($("facturation-root"), r, f.mois, changeFactMonth);
+  }
+
   function loadOwnPlanning() {
     if (!state.conseillerId) return;
     var docId = state.weekValue + "_" + state.conseillerId;
@@ -947,11 +955,21 @@
     btn.disabled = true;
     var jourUpdate = {};
     jourUpdate[dayKey] = nouveau;
+    var dayIdx = JOURS.findIndex(function (j) { return j.key === dayKey; });
     var fieldUpdate = {
       conseillerId: state.conseillerId,
       semaine: state.weekValue,
       jours: jourUpdate,
-      misAJourLe: new Date().toISOString()
+      misAJourLe: new Date().toISOString(),
+      // journal des changements : sert à l'onglet Facturation (impact en heures et en euros)
+      historique: firebase.firestore.FieldValue.arrayUnion({
+        jour: dayKey,
+        date: toDateStr(dateForDayInWeek(state.weekValue, dayIdx)),
+        avant: ancien,
+        apres: nouveau,
+        message: message,
+        at: new Date().toISOString()
+      })
     };
     db.collection("plannings").doc(docId).set(fieldUpdate, { merge: true })
       .then(function () {

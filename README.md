@@ -84,3 +84,21 @@ Sans cette règle, la formation fonctionne quand même, mais la progression rest
 Toute l'appli est traduisible en portugais : bouton **PT / FR** sur l'écran de connexion et en bas du menu de gauche. Le choix est mémorisé dans le navigateur et s'applique aussi à l'onglet Formation. Un conseiller qui n'a encore rien choisi voit l'appli en portugais.
 
 Les traductions sont dans `i18n.js` : pour un nouveau texte ajouté dans l'appli, ajoute une ligne `"texte français": "texto em português"` dans `DICT`.
+
+## Facturation (conseillers) et facture mensuelle (admin / direction)
+
+- **Onglet « Facturation » des conseillers** : estimation du mois en direct (heures × taux, dimanches/fériés, primes de langue et de télétravail, prime variable seulement quand Marta l'a saisie dans Paie), détail jour par jour, absences déduites, et l'impact en heures et en euros de chaque modification faite dans « Mon planning » (journal `historique` enregistré dans le document du planning).
+- **Bouton « Facture du mois » dans Paie** : télécharge un fichier Excel au format du modèle « Fatura MyBestPro » (heures, valeur/heure, total par ligne, total à facturer, crédit commercial, total à payer). Il s'ouvre dans Google Sheets (Fichier → Ouvrir → Importer). La ligne **Best Sup** est laissée vide pour que Marta la remplisse.
+- Le calcul du mois se fait maintenant **jour par jour** (une semaine à cheval sur deux mois est bien répartie), pour Paie, la facture et l'onglet Facturation.
+
+### Règle Firestore à ajouter (prime variable visible par le conseiller)
+Dans Firestore → Règles, à l'intérieur de `match /databases/{database}/documents { ... }` :
+
+```
+match /primesMensuelles/{id} {
+  allow read: if request.auth != null
+    && resource.data.conseillerId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.conseillerId;
+}
+```
+
+Sans cette règle, l'onglet Facturation fonctionne mais affiche toujours « Pas encore fixée par Marta » pour la prime variable.

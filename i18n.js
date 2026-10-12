@@ -182,7 +182,14 @@
     "Mot de passe actuel": "Palavra-passe atual",
     "Nouveau mot de passe": "Nova palavra-passe",
     "Renseigne ton mot de passe actuel et un nouveau (6 caractères min).": "Indica a tua palavra-passe atual e uma nova (mín. 6 caracteres).",
-    "Mot de passe modifié.": "Palavra-passe alterada."
+    "Mot de passe modifié.": "Palavra-passe alterada.",
+
+    // --- facturation et facture ---
+    "Facturation": "Faturação",
+    "Facture du mois (Excel / Google Sheets)": "Fatura do mês (Excel / Google Sheets)",
+    "Facture téléchargée. Complète la ligne Best Sup avant l'envoi.": "Fatura descarregada. Completa a linha Best Sup antes de enviar.",
+    "Impossible de générer la facture.": "Não foi possível gerar a fatura.",
+    "Vide = pas encore de prime": "Vazio = ainda sem prémio"
   };
 
   var MOIS_FR = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
@@ -329,6 +336,7 @@
       if (fromUser) { userChose = true; try { localStorage.setItem(KEY, l); } catch (e) {} }
       applyAll();
       if (window.BCFormation && BCFormation.setLang) BCFormation.setLang(l);
+      try { window.dispatchEvent(new CustomEvent("bc-lang", { detail: l })); } catch (e) {}
     },
     // appelé après connexion : un conseiller sans préférence voit l'appli en portugais
     defaultForRole: function (role) {
