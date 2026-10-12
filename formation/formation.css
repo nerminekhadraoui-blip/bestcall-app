@@ -218,3 +218,15 @@
   .fm-nav .fm-btn{flex:1}
   .fm-hero{padding:20px}
 }
+
+/* ---- cas pratiques et FAQ ---- */
+.fm-case{border:1px solid var(--fm-line);border-left:4px solid var(--c);background:var(--fm-surface);border-radius:var(--fm-r);padding:14px 16px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.fm-case-s p{margin:4px 0 0}
+.fm-case-tag{font-family:"Manrope",sans-serif;font-weight:800;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--c)}
+.fm-case-q{font-weight:600}
+.fm-case-a{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;background:var(--fm-sunk);border-radius:var(--fm-r);padding:12px 14px 12px 32px;width:100%}
+.fm-case-a[hidden]{display:none}
+.fm-faq{display:flex;flex-direction:column;gap:6px}
+.fm-faq details{background:var(--fm-surface);border:1px solid var(--fm-line);border-radius:var(--fm-r);padding:10px 14px}
+.fm-faq summary{cursor:pointer;font-weight:600}
+.fm-faq details p{margin:8px 0 0;color:var(--fm-soft);font-size:14px}

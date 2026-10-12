@@ -30,6 +30,7 @@
     retry: ["Precisa de 2/3 de respostas certas. Releia as lições e tente de novo.", "Il faut 2/3 de bonnes réponses. Relis les leçons et réessaie."],
     again: ["Refazer o quiz", "Refaire le quiz"], reread: ["← Reler as lições", "← Relire les leçons"],
     right: ["Certo!", "Bonne réponse !"], wrong: ["Não é isso.", "Pas tout à fait."],
+    caseTag: ["Caso prático", "Cas pratique"], caseShow: ["Ver a solução", "Voir la solution"], caseHide: ["Esconder a solução", "Masquer la solution"],
     tip: ["Dica", "Astuce"], warn: ["Atenção", "Attention"], key: ["A reter", "À retenir"],
     shotTodo: ["Captura a adicionar", "Capture à ajouter"], zoom: ["Clique para ampliar", "Clique pour agrandir"],
     memoH: ["Os números a saber de cor", "Les chiffres à connaître par cœur"],
@@ -133,6 +134,11 @@
     if (b.table) return '<div class="fm-tw"><table><thead><tr>' + b.table.h.map(function (h) { return '<th>' + T(h) + '</th>'; }).join("") + '</tr></thead><tbody>' + b.table.r.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + T(c) + '</td>'; }).join("") + '</tr>'; }).join("") + '</tbody></table></div>';
     if (b.script) return '<div class="fm-script">' + b.script.map(function (s, i) { return '<div class="fm-line"><span class="fm-av">' + (i + 1) + '</span><div class="fm-bub"><i>' + T(s.s) + '</i><br><span class="fm-tag">' + T(s.tag) + '</span></div></div>'; }).join("") + '</div>';
     if (b.shot) return shot(b.shot);
+    if (b.case) return '<div class="fm-case"><div class="fm-case-s"><span class="fm-case-tag">' + u("caseTag") + '</span><p>' + T(b.case.s) + '</p>' +
+      (b.case.q ? '<p class="fm-case-q">' + T(b.case.q) + '</p>' : '') + '</div>' +
+      '<button type="button" class="fm-btn ghost fm-case-btn">' + u("caseShow") + '</button>' +
+      '<ol class="fm-case-a" hidden>' + b.case.a.map(function (x) { return '<li>' + T(x) + '</li>'; }).join("") + '</ol></div>';
+    if (b.faq) return '<div class="fm-faq">' + b.faq.map(function (f) { return '<details><summary>' + T(f.q) + '</summary><p>' + T(f.a) + '</p></details>'; }).join("") + '</div>';
     if (b.chips) return '<div class="fm-chips">' + b.chips.map(function (c) { return '<div class="fm-chiprow"><span class="fm-chip ' + c.c + '">' + T(c.k) + '</span><span>' + T(c.p) + '</span></div>'; }).join("") + '</div>';
     if (b.classifier) return '<div class="fm-widget" id="fm-clf"><h4>' + u("clfH") + '</h4><div class="fm-sub">' + u("clfS") + '</div><div class="fm-form">' +
       '<label for="fm-cTot">' + u("clfTot") + '<input id="fm-cTot" type="number" min="0" value="2"></label>' +
@@ -173,6 +179,9 @@
         ph.innerHTML = '<i style="width:60%"></i><i></i><i style="width:40%"></i><small>' + esc(u("shotTodo")) + ' · img/' + esc(img.dataset.f) + '</small>';
         img.parentNode.replaceWith(ph);
       });
+    });
+    root.querySelectorAll(".fm-case-btn").forEach(function (bt) {
+      bt.onclick = function () { var a = bt.nextElementSibling; a.hidden = !a.hidden; bt.textContent = a.hidden ? u("caseShow") : u("caseHide"); };
     });
     root.querySelectorAll(".fm-zoom").forEach(function (bt) {
       bt.onclick = function () {
