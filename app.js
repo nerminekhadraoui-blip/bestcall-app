@@ -100,7 +100,7 @@
   function fmtHours(mins) { return (Math.round((mins / 60) * 10) / 10) + "h"; }
   function fmtEuros(n) { return (Math.round(n * 100) / 100).toFixed(2) + " €"; }
   function slugCode(code) { return (code || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
-  var TYPE_LABELS = { retard: "Retard", absence: "Absence", maladie: "Maladie", conge: "Congé" };
+  var TYPE_LABELS = { retard: "Retard", absence: "Absence", maladie: "Maladie", conge: "Congé", ajustement: "Ajustement d'horaire" };
   var TYPES_DEDUCTIBLES = ["absence", "maladie", "conge"];
   function currentMonth() {
     var d = new Date();
@@ -715,7 +715,7 @@
         '<td class="name-cell">' + esc(s.conseillerNom || "—") + '</td>' +
         '<td><span class="badge badge-signal">' + (TYPE_LABELS[s.type] || s.type) + '</span></td>' +
         '<td>' + esc(s.date || "—") + (s.dateFin ? " → " + esc(s.dateFin) : "") + '</td>' +
-        '<td>' + esc(s.message || "") + '</td>' +
+        '<td>' + esc(((ajustLabel(s) ? ajustLabel(s) + " " : "") + (s.message || "")).trim()) + '</td>' +
         '<td>' + declLe + '</td>' +
         '<td>' + (s.statut === "traite" ? "Traité" : "Nouveau") + '</td>' +
         '<td>' + (s.statut !== "traite" ? '<button class="btn btn-ghost btn-sm" data-traite="' + s._id + '">Marquer traité</button>' : '') + '</td>' +
@@ -1107,6 +1107,14 @@
     var date = $("s-date").value;
     var dateFin = $("s-date-fin").value || "";
     var message = $("s-message").value.trim();
+    var isAjust = type === "ajustement";
+    var ajustMin = 0;
+    if (isAjust) {
+      dateFin = "";
+      var dur = parseInt($("s-ajust-min").value, 10) || 0;
+      if (dur < 1) { var e0 = $("signal-error"); e0.textContent = "Indique une durée en minutes."; e0.hidden = false; return; }
+      ajustMin = $("s-ajust-sens").value === "plus" ? dur : -dur;
+    }
     var errEl = $("signal-error"), msgEl = $("signal-msg");
     errEl.hidden = true; msgEl.hidden = true;
     if (!date) { errEl.textContent = "Choisis une date de début."; errEl.hidden = false; return; }
@@ -1129,13 +1137,15 @@
           semaine: state.weekValue, createdAt: new Date().toISOString(), statut: "nouveau"
         };
         if (dateFin) payload.dateFin = dateFin;
+        if (isAjust) { payload.ajustementMin = ajustMin; payload.statut = "traite"; }
         return db.collection("signalements").add(payload);
       })
       .then(function () {
-        return sendSignalEmail(conseillerNom, type, date, dateFin, message);
+        // un ajustement d'horaire n'envoie PAS d'email : il est juste pris en compte dans le calcul des heures
+        return isAjust ? null : sendSignalEmail(conseillerNom, type, date, dateFin, message);
       })
       .then(function () {
-        msgEl.textContent = "Signalement envoyé, Marta a été notifiée.";
+        msgEl.textContent = isAjust ? "Ajustement enregistré : tes heures sont recalculées automatiquement." : "Signalement envoyé, Marta a été notifiée.";
         msgEl.hidden = false;
         $("s-message").value = "";
         $("s-date-fin").value = "";
@@ -1145,6 +1155,18 @@
         errEl.hidden = false;
       })
       .finally(function () { btn.disabled = false; });
+  });
+
+  function ajustLabel(s) {
+    if (s.type !== "ajustement") return "";
+    var m = +s.ajustementMin || 0, h = Math.floor(Math.abs(m) / 60), mm = Math.abs(m) % 60;
+    return (m < 0 ? "−" : "+") + (h ? h + "h" : "") + (mm ? (h ? String(mm).padStart(2, "0") : mm + " min") : "");
+  }
+  var sType = $("s-type");
+  if (sType) sType.addEventListener("change", function () {
+    var aj = sType.value === "ajustement";
+    $("s-ajust-row").hidden = !aj;
+    $("s-date-fin").closest(".field").hidden = aj;
   });
 
   function sendSignalEmail(conseillerNom, type, date, dateFin, message) {
@@ -1171,7 +1193,7 @@
         if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state">Aucun signalement pour l\'instant.</div></td></tr>'; return; }
         tbody.innerHTML = rows.map(function (s) {
           var declLe = s.createdAt ? new Date(s.createdAt).toLocaleString("fr-FR") : "—";
-          return '<tr><td>' + (TYPE_LABELS[s.type] || s.type) + '</td><td>' + esc(s.date) + (s.dateFin ? " → " + esc(s.dateFin) : "") + '</td><td>' + esc(s.message || "") + '</td><td>' + declLe + '</td></tr>';
+          return '<tr><td>' + (TYPE_LABELS[s.type] || s.type) + '</td><td>' + esc(s.date) + (s.dateFin ? " → " + esc(s.dateFin) : "") + '</td><td>' + esc(((ajustLabel(s) ? ajustLabel(s) + " " : "") + (s.message || "")).trim()) + '</td><td>' + declLe + '</td></tr>';
         }).join("");
       }, function (err) { console.error(err); });
   }

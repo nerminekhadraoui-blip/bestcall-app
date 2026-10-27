@@ -55,6 +55,13 @@
       while (cur <= fin) { var k = iso(cur); if (k.slice(0, 7) === mois) abs[k] = s.type; cur.setUTCDate(cur.getUTCDate() + 1); }
     });
 
+    // ajustements d'horaire (partir plus tôt / plus tard…) : date -> minutes (+/-)
+    var ajust = {};
+    (o.signalements || []).forEach(function (s) {
+      if (!s || s.type !== "ajustement" || !s.date || s.date.slice(0, 7) !== mois) return;
+      ajust[s.date] = (ajust[s.date] || 0) + (+s.ajustementMin || 0);
+    });
+
     var days = [], modifs = [];
     (o.plannings || []).forEach(function (p) {
       if (!p || !p.semaine || !p.jours) return;
@@ -65,13 +72,16 @@
         if (date.slice(0, 7) !== mois) return;
         var d = p.jours[key];
         var mins = worked(d);
+        var base = mins, adj = 0;
+        if (mins > 0 && ajust[date]) { adj = Math.max(-mins, ajust[date]); mins += adj; }
         var estDim = key === "dimanche" || !!(d && d.ferie);
         var taux = estDim ? tauxDim : tauxSem;
         var absent = abs[date] && mins > 0 ? abs[date] : null;
         days.push({
-          date: date, key: key, jour: d || { repos: true }, mins: mins, estDim: estDim, taux: taux,
+          adj: adj, date: date, key: key, jour: d || { repos: true }, mins: mins, estDim: estDim, taux: taux,
           absent: absent, payes: absent ? 0 : mins, montant: absent ? 0 : (mins / 60) * taux, perdu: absent ? (mins / 60) * taux : 0
         });
+        if (adj) modifs.push({ date: date, at: "", jour: key, ajust: true, avantTxt: horaire(d), apresTxt: (adj < 0 ? "−" : "+") + hrs(Math.abs(adj)), diffMin: adj, diffEur: (adj / 60) * taux, message: "" });
       });
       // historique des changements faits par le conseiller (Mon planning → Modifier)
       (p.historique || []).forEach(function (h) {
@@ -131,7 +141,7 @@
     cBefore: ["Antes", "Avant"], cAfter: ["Depois", "Après"], cImpact: ["Impacto", "Impact"], cReason: ["Motivo", "Motif"],
     rest: ["Folga", "Repos"], ferie: ["feriado", "férié"],
     noPlan: ["Ainda não há horário para este mês.", "Pas encore de planning pour ce mois."],
-    types: { absence: ["Ausência", "Absence"], maladie: ["Baixa médica", "Maladie"], conge: ["Férias", "Congé"] },
+    types: { ajustement: ["Ajuste de horário", "Ajustement d’horaire"], absence: ["Ausência", "Absence"], maladie: ["Baixa médica", "Maladie"], conge: ["Férias", "Congé"] },
     rules: ["As regras", "Les règles"],
     rule1: ["Cada hora de segunda a sábado é paga à tua taxa normal; domingos e feriados à taxa domingo/feriado.", "Chaque heure du lundi au samedi est payée à ton taux normal ; dimanches et jours fériés au taux dimanche/férié."],
     rule2: ["As pausas não são pagas: uma pausa mais longa retira tempo, uma pausa mais curta acrescenta.", "Les pauses ne sont pas payées : une pause plus longue enlève du temps, une pause plus courte en ajoute."],
@@ -210,7 +220,7 @@
       '<div class="table-wrap"><table><thead><tr><th>' + t("cDate") + '</th><th>' + t("cBefore") + '</th><th>' + t("cAfter") + '</th><th>' + t("cH") + '</th><th>' + t("cImpact") + '</th><th>' + t("cReason") + '</th></tr></thead><tbody>' +
       r.modifs.map(function (m) {
         var cls = m.diffEur > 0 ? "pay-plus" : m.diffEur < 0 ? "pay-minus" : "";
-        return '<tr><td>' + dayLabel(m.date, m.jour) + '</td><td>' + esc(horaireTxt(m.avant)) + '</td><td>' + esc(horaireTxt(m.apres)) + '</td><td class="' + cls + '">' + signed(m.diffMin, hrs) + '</td><td class="' + cls + '">' + signed(Math.round(m.diffEur * 100) / 100, money) + '</td><td>' + esc(m.message) + '</td></tr>';
+        return '<tr><td>' + dayLabel(m.date, m.jour) + '</td><td>' + esc(m.ajust ? m.avantTxt : horaireTxt(m.avant)) + '</td><td>' + esc(m.ajust ? m.apresTxt : horaireTxt(m.apres)) + '</td><td class="' + cls + '">' + signed(m.diffMin, hrs) + '</td><td class="' + cls + '">' + signed(Math.round(m.diffEur * 100) / 100, money) + '</td><td>' + esc(m.message) + '</td></tr>';
       }).join("") + '</tbody></table></div>' : '<p class="pay-note">' + t("modifsNone") + '</p>');
 
     var dayRows = r.days.length ? '<div class="table-wrap"><table><thead><tr><th>' + t("cDate") + '</th><th>' + t("cHor") + '</th><th>' + t("cH") + '</th><th>' + t("cTaux") + '</th><th>' + t("cAmt") + '</th></tr></thead><tbody>' +
