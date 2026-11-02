@@ -191,6 +191,9 @@
     "Date(s)": "Data(s)",
     "Détail": "Detalhe",
     "Déclaré le": "Comunicado em",
+    "Verrouillé": "Bloqueado",
+    "Les jours passés ne sont plus modifiables.": "Os dias passados já não podem ser alterados.",
+    "Ce jour est passé : il n'est plus modifiable.": "Este dia já passou: já não pode ser alterado.",
     "Aucun signalement pour l'instant.": "Ainda nenhuma comunicação.",
 
     // --- mot de passe ---

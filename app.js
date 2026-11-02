@@ -932,13 +932,27 @@
       renderOwnPlanning(jours);
     }).catch(function (err) { console.error(err); });
   }
+  // Jours passés non modifiables par la conseillère. Octobre 2026 et avant restent ouverts pour l'instant :
+  // pour les verrouiller aussi, mets PAST_LOCK_FROM = "2026-10-01" (ou plus tôt).
+  var PAST_LOCK_FROM = "2026-11-01";
+  function todayStr() {
+    var n = new Date();
+    return n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0");
+  }
+  function isDayLocked(dayKey) {
+    var idx = JOURS.findIndex(function (j) { return j.key === dayKey; });
+    var ds = toDateStr(dateForDayInWeek(state.weekValue, idx));
+    return ds >= PAST_LOCK_FROM && ds < todayStr();
+  }
   function renderOwnPlanning(jours) {
     state.ownJours = jours;
     var tbody = $("mon-planning-tbody");
     var totalMin = 0;
     tbody.innerHTML = JOURS.map(function (j) {
       var d = jours[j.key];
-      var editBtn = '<button class="btn btn-ghost btn-sm" data-edit-day="' + j.key + '">Modifier</button>';
+      var editBtn = isDayLocked(j.key)
+        ? '<span class="day-off" title="Les jours passés ne sont plus modifiables.">Verrouillé</span>'
+        : '<button class="btn btn-ghost btn-sm" data-edit-day="' + j.key + '">Modifier</button>';
       if (!d || d.repos) return '<tr class="row-repos"><td>' + j.label + '</td><td><span class="day-off">Repos</span></td><td>—</td><td>0h</td><td>' + editBtn + '</td></tr>';
       var mins = dayWorkedMinutes(d);
       totalMin += mins;
@@ -953,6 +967,7 @@
   }
 
   function openEditDayModal(dayKey) {
+    if (isDayLocked(dayKey)) { toast("Ce jour est passé : il n'est plus modifiable."); return; }
     var jDef = JOURS.find(function (j) { return j.key === dayKey; });
     var current = (state.ownJours && state.ownJours[dayKey]) || { debut: "09:00", fin: "17:00", repos: false, ferie: false, pauseDebut: "", pauseFin: "" };
     state.editingDayKey = dayKey;
@@ -971,6 +986,7 @@
   $("btn-save-edit-day").addEventListener("click", function () {
     if (!state.editingDayKey || !state.conseillerId) return;
     var dayKey = state.editingDayKey;
+    if (isDayLocked(dayKey)) { toast("Ce jour est passé : il n'est plus modifiable."); closeModals(); return; }
     var jDef = JOURS.find(function (j) { return j.key === dayKey; });
     var ancien = (state.ownJours && state.ownJours[dayKey]) || { repos: true };
     var nouveau = {
