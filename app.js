@@ -1120,6 +1120,15 @@
     if (!date) { errEl.textContent = "Choisis une date de début."; errEl.hidden = false; return; }
     if (dateFin && dateFin < date) { errEl.textContent = "La date de fin doit être après la date de début."; errEl.hidden = false; return; }
 
+    // vérification : absence/maladie/congé = JOURNÉE COMPLÈTE (pas quelques heures)
+    if (TYPES_DEDUCTIBLES.indexOf(type) !== -1 && looksPartial(message)) {
+      if (!confirm("Ton message semble indiquer que tu pars quelques heures plus tôt ou que tu es absente seulement une partie de la journée.\n\nUne absence, une maladie ou un congé met TOUTE la journée en repos.\n\nOK = oui, c'est une journée complète.\nAnnuler = non, je corrige (choisis « Horaire modifié » et modifie ton planning).")) {
+        errEl.textContent = "Déclaration non envoyée. Pour partir plus tôt ou plus tard, choisis « Horaire modifié » et modifie ton planning.";
+        errEl.hidden = false;
+        return;
+      }
+    }
+
     var conseillerNom = "";
     var btn = $("btn-send-signal");
     btn.disabled = true;
@@ -1161,6 +1170,9 @@
       .finally(function () { btn.disabled = false; });
   });
 
+  // Le message laisse-t-il penser à une absence PARTIELLE (partie 1h plus tôt, demi-journée, à 16h…) ?
+  var PARTIAL_RE = /(\d{1,2}\s?(h|:)\s?\d{0,2}|heures?\b|minutes?\b|\bmin\b|plus t[oô]t|en avance|\bavance\b|demi|matin|apr[eè]s-?midi|retard|cedo|antecip|\bhoras?\b|manh[aã]|\btarde\b|\bearly\b|\bhours?\b|(part\w*|quitt\w*|sort\w*|sai\w*|sair)\s+(une?|1|\d|à|a|plus|mais)\b)/i;
+  function looksPartial(message) { return PARTIAL_RE.test(message || ""); }
   var AUTO_REPOS_FROM = "2026-11-01"; // octobre et avant : on ne touche pas aux plannings passés
   function markRestDays(type, date, dateFin, message) {
     if (TYPES_DEDUCTIBLES.indexOf(type) === -1) return Promise.resolve();

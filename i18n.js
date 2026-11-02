@@ -185,6 +185,8 @@
     "La date de fin doit être après la date de début.": "A data de fim tem de ser depois da data de início.",
     "Signalement envoyé, Marta a été notifiée.": "Comunicação enviada, a Marta foi notificada.",
     "Signalement envoyé, Marta a été notifiée. Ton planning est passé en repos pour ces jours.": "Comunicação enviada, a Marta foi notificada. O teu horário passou a folga nesses dias.",
+    "Déclaration non envoyée. Pour partir plus tôt ou plus tard, choisis « Horaire modifié » et modifie ton planning.": "Comunicação não enviada. Para sair mais cedo ou mais tarde, escolhe « Horário alterado » e altera o teu horário.",
+    "Ton message semble indiquer que tu pars quelques heures plus tôt ou que tu es absente seulement une partie de la journée.\n\nUne absence, une maladie ou un congé met TOUTE la journée en repos.\n\nOK = oui, c'est une journée complète.\nAnnuler = non, je corrige (choisis « Horaire modifié » et modifie ton planning).": "A tua mensagem parece indicar que sais algumas horas mais cedo ou que estás ausente apenas parte do dia.\n\nUma ausência, baixa ou férias coloca o dia INTEIRO em folga.\n\nOK = sim, é um dia completo.\nCancelar = não, vou corrigir (escolhe « Horário alterado » e altera o teu horário).",
     "Aucun signalement pour l'instant.": "Ainda nenhuma comunicação.",
 
     // --- mot de passe ---
