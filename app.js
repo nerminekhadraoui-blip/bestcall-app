@@ -100,7 +100,7 @@
   function fmtHours(mins) { return (Math.round((mins / 60) * 10) / 10) + "h"; }
   function fmtEuros(n) { return (Math.round(n * 100) / 100).toFixed(2) + " €"; }
   function slugCode(code) { return (code || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
-  var TYPE_LABELS = { retard: "Retard", absence: "Absence", maladie: "Maladie", conge: "Congé", ajustement: "Ajustement d'horaire" };
+  var TYPE_LABELS = { retard: "Retard", absence: "Absence", maladie: "Maladie", conge: "Congé", ajustement: "Horaire modifié" };
   var TYPES_DEDUCTIBLES = ["absence", "maladie", "conge"];
   function currentMonth() {
     var d = new Date();
@@ -1145,7 +1145,7 @@
         return isAjust ? null : sendSignalEmail(conseillerNom, type, date, dateFin, message);
       })
       .then(function () {
-        msgEl.textContent = isAjust ? "Ajustement enregistré : tes heures sont recalculées automatiquement." : "Signalement envoyé, Marta a été notifiée.";
+        msgEl.textContent = isAjust ? "Déclaration enregistrée. Pense à modifier aussi ton planning pour que tes heures soient justes." : "Signalement envoyé, Marta a été notifiée.";
         msgEl.hidden = false;
         $("s-message").value = "";
         $("s-date-fin").value = "";

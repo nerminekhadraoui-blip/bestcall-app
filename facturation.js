@@ -11,6 +11,9 @@
 
   var JOURS = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"];
   var DEDUCTIBLES = ["absence", "maladie", "conge"];
+  // Depuis novembre 2026, les déclarations (absence, congé, ajustement…) sont INFORMATIVES :
+  // seuls les horaires du planning comptent pour la paie. Les mois jusqu'à celui-ci gardent l'ancien calcul.
+  var LAST_SIGNAL_IMPACT_MONTH = "2026-10";
 
   // ---------- petits outils ----------
   function tmin(t) { if (!t) return 0; var p = t.split(":"); return (+p[0]) * 60 + (+p[1]); }
@@ -49,7 +52,9 @@
 
     // absences déductibles : date -> type
     var abs = {};
+    var signalsCount = mois <= LAST_SIGNAL_IMPACT_MONTH;
     (o.signalements || []).forEach(function (s) {
+      if (!signalsCount) return;
       if (!s || !s.date || DEDUCTIBLES.indexOf(s.type) === -1) return;
       var cur = new Date(s.date + "T00:00:00Z"), fin = new Date((s.dateFin || s.date) + "T00:00:00Z");
       while (cur <= fin) { var k = iso(cur); if (k.slice(0, 7) === mois) abs[k] = s.type; cur.setUTCDate(cur.getUTCDate() + 1); }
@@ -58,6 +63,7 @@
     // ajustements d'horaire (partir plus tôt / plus tard…) : date -> minutes (+/-)
     var ajust = {};
     (o.signalements || []).forEach(function (s) {
+      if (!signalsCount) return;
       if (!s || s.type !== "ajustement" || !s.date || s.date.slice(0, 7) !== mois) return;
       ajust[s.date] = (ajust[s.date] || 0) + (+s.ajustementMin || 0);
     });
@@ -145,7 +151,7 @@
     rules: ["As regras", "Les règles"],
     rule1: ["Cada hora de segunda a sábado é paga à tua taxa normal; domingos e feriados à taxa domingo/feriado.", "Chaque heure du lundi au samedi est payée à ton taux normal ; dimanches et jours fériés au taux dimanche/férié."],
     rule2: ["As pausas não são pagas: uma pausa mais longa retira tempo, uma pausa mais curta acrescenta.", "Les pauses ne sont pas payées : une pause plus longue enlève du temps, une pause plus courte en ajoute."],
-    rule3: ["Uma ausência, baixa ou férias comunicada em « Comunicar » retira as horas desse dia.", "Une absence, maladie ou un congé déclaré dans « Signaler » enlève les heures de ce jour-là."],
+    rule3: ["Para as horas e os dias, conta o teu horário em « O meu horário »: se saíres mais cedo, ausente-te ou tiveres férias, altera também o teu horário. As comunicações em « Comunicar » servem só de registo para a Marta.", "Pour les heures et les jours, c’est ton planning qui compte : si tu pars plus tôt, t’absentes ou prends un congé, modifie aussi ton planning. Les déclarations dans « Signaler » servent seulement de trace pour Marta."],
     rule4: ["Os prémios de língua e de teletrabalho são fixos por mês.", "Les primes de langue et de télétravail sont fixes chaque mois."],
     loading: ["A carregar…", "Chargement…"],
     err: ["Não foi possível carregar a faturação. Tenta mais tarde ou fala com a Nermine.", "Impossible de charger la facturation. Réessaie plus tard ou contacte Nermine."]
