@@ -750,12 +750,19 @@
       var actifs = state.conseillers.filter(function (c) { return (c.statut || "actif") === "actif"; });
       // calcul jour par jour (date réelle) : une semaine à cheval sur deux mois est bien découpée
       state.paieRows = actifs.map(function (c) {
-        return BCPay.computeMonth({
+        var sigs = signalements.filter(function (x) { return x.conseillerId === c._id; });
+        var r = BCPay.computeMonth({
           conseiller: c, mois: mois,
           plannings: plannings.filter(function (p) { return p.conseillerId === c._id; }),
-          signalements: signalements.filter(function (x) { return x.conseillerId === c._id; }),
+          signalements: sigs,
           prime: primes.hasOwnProperty(c._id) ? primes[c._id] : null
         });
+        // déclarations dont la période touche ce mois (pour le bouton « Détails »)
+        r.signalementsMois = sigs.filter(function (s) {
+          if (!s.date) return false;
+          return s.date.slice(0, 7) <= mois && (s.dateFin || s.date).slice(0, 7) >= mois;
+        }).sort(function (x, y) { return x.date < y.date ? -1 : 1; });
+        return r;
       });
 
       renderPaieTable();
@@ -798,11 +805,14 @@
         '<td>' + fmtEuros(r.primeLangue) + '</td>' +
         '<td>' + fmtEuros(r.primeTeletravail) + '</td>' +
         '<td><input type="number" step="0.01" class="f-prime-variable" data-idx="' + i + '" value="' + (r.primeVariableSet ? r.primeVariable : "") + '" placeholder="—" title="Vide = pas encore de prime" style="width:90px;"></td>' +
-        '<td>' + (r.minAbsence > 0 ? fmtHours(r.minAbsence) : "—") + '</td>' +
+        '<td>' + signalCell(r, i) + '</td>' +
         '<td><strong>' + fmtEuros(r.total) + '</strong></td>' +
         '</tr>';
     }).join("");
 
+    tbody.querySelectorAll("[data-sig]").forEach(function (btn) {
+      btn.addEventListener("click", function () { openSignalDetails(+btn.getAttribute("data-sig")); });
+    });
     tbody.querySelectorAll(".f-prime-variable").forEach(function (input) {
       input.addEventListener("change", function () {
         var idx = +input.getAttribute("data-idx");
@@ -818,6 +828,28 @@
           .catch(function () { toast("Enregistrement impossible."); });
       });
     });
+  }
+
+  function signalCell(r, i) {
+    var n = (r.signalementsMois || []).length;
+    if (!n) return "—";
+    var ded = r.minAbsence > 0 ? ' <span style="color:var(--muted);font-size:12px;">(−' + fmtHours(r.minAbsence) + ' déduites)</span>' : "";
+    return '<button class="btn btn-ghost btn-sm" data-sig="' + i + '">Détails (' + n + ')</button>' + ded;
+  }
+  function openSignalDetails(idx) {
+    var r = state.paieRows[idx];
+    if (!r) return;
+    var c = r.conseiller;
+    $("sig-details-title").textContent = "Signalements — " + ((c.prenom || "") + " " + (c.nom || "")).trim();
+    $("sig-details-sub").textContent = "Mois : " + state.moisPaie + ". Informatif : seul le planning compte pour les heures (depuis novembre 2026).";
+    $("sig-details-tbody").innerHTML = (r.signalementsMois || []).map(function (s) {
+      var declLe = s.createdAt ? new Date(s.createdAt).toLocaleString("fr-FR") : "—";
+      var detail = ((ajustLabel(s) ? ajustLabel(s) + " " : "") + (s.message || "")).trim();
+      return '<tr><td>' + esc(s.date) + (s.dateFin ? " → " + esc(s.dateFin) : "") + '</td>' +
+        '<td><span class="badge badge-signal">' + (TYPE_LABELS[s.type] || s.type) + '</span></td>' +
+        '<td>' + esc(detail) + '</td><td>' + declLe + '</td></tr>';
+    }).join("");
+    showModal("modal-signalements");
   }
 
   function exportPaieCsv() {
@@ -1275,7 +1307,7 @@
   // ---------- modal plumbing ----------
   function showModal(id) {
     $("modal-overlay").hidden = false;
-    ["modal-conseiller", "modal-planning", "modal-password", "modal-edit-day"].forEach(function (m) { $(m).hidden = (m !== id); });
+    ["modal-conseiller", "modal-planning", "modal-password", "modal-edit-day", "modal-signalements"].forEach(function (m) { $(m).hidden = (m !== id); });
   }
   function closeModals() {
     $("modal-overlay").hidden = true;
@@ -1283,6 +1315,7 @@
     state.planningTarget = null;
     state.editingDayKey = null;
   }
+  $("btn-close-sig-details") && $("btn-close-sig-details").addEventListener("click", closeModals);
   document.addEventListener("click", function (e) { if (e.target && e.target.id === "modal-overlay") closeModals(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModals(); });
 })();
