@@ -1141,11 +1141,15 @@
         return db.collection("signalements").add(payload);
       })
       .then(function () {
+        // absence / maladie / congé : les jours concernés passent automatiquement en « repos » dans le planning
+        return markRestDays(type, date, dateFin, message);
+      })
+      .then(function () {
         // un ajustement d'horaire n'envoie PAS d'email : il est juste pris en compte dans le calcul des heures
         return isAjust ? null : sendSignalEmail(conseillerNom, type, date, dateFin, message);
       })
       .then(function () {
-        msgEl.textContent = isAjust ? "Déclaration enregistrée. Pense à modifier aussi ton planning pour que tes heures soient justes." : "Signalement envoyé, Marta a été notifiée.";
+        msgEl.textContent = isAjust ? "Déclaration enregistrée. Pense à modifier aussi ton planning pour que tes heures soient justes." : (TYPES_DEDUCTIBLES.indexOf(type) !== -1 ? "Signalement envoyé, Marta a été notifiée. Ton planning est passé en repos pour ces jours." : "Signalement envoyé, Marta a été notifiée.");
         msgEl.hidden = false;
         $("s-message").value = "";
         $("s-date-fin").value = "";
@@ -1156,6 +1160,42 @@
       })
       .finally(function () { btn.disabled = false; });
   });
+
+  var AUTO_REPOS_FROM = "2026-11-01"; // octobre et avant : on ne touche pas aux plannings passés
+  function markRestDays(type, date, dateFin, message) {
+    if (TYPES_DEDUCTIBLES.indexOf(type) === -1) return Promise.resolve();
+    var cur = new Date(date + "T00:00:00Z"), fin = new Date((dateFin || date) + "T00:00:00Z");
+    var byWeek = {}, guard = 0;
+    while (cur <= fin && guard++ < 400) {
+      var ds = toDateStr(cur);
+      if (ds >= AUTO_REPOS_FROM) {
+        var wk = toIsoWeekString(cur);
+        (byWeek[wk] = byWeek[wk] || []).push({ key: JOURS[(cur.getUTCDay() + 6) % 7].key, date: ds });
+      }
+      cur.setUTCDate(cur.getUTCDate() + 1);
+    }
+    return Promise.all(Object.keys(byWeek).map(function (wk) {
+      var ref = db.collection("plannings").doc(wk + "_" + state.conseillerId);
+      return ref.get().then(function (snap) {
+        if (!snap.exists) return;
+        var jours = (snap.data() || {}).jours || {};
+        var upd = {}, hist = [];
+        byWeek[wk].forEach(function (it) {
+          var ancien = jours[it.key];
+          if (!ancien || ancien.repos) return;
+          var nouveau = Object.assign({}, ancien, { repos: true });
+          upd[it.key] = nouveau;
+          hist.push({ jour: it.key, date: it.date, avant: ancien, apres: nouveau,
+            message: (TYPE_LABELS[type] || type) + (message ? " — " + message : ""), at: new Date().toISOString() });
+        });
+        if (!hist.length) return;
+        return ref.set({
+          conseillerId: state.conseillerId, semaine: wk, jours: upd, misAJourLe: new Date().toISOString(),
+          historique: firebase.firestore.FieldValue.arrayUnion.apply(null, hist)
+        }, { merge: true });
+      });
+    })).catch(function (e) { console.warn("Mise en repos automatique impossible", e); });
+  }
 
   function ajustLabel(s) {
     if (s.type !== "ajustement") return "";

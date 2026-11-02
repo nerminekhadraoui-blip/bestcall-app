@@ -172,7 +172,7 @@
     "Message (raison, heure d'arrivée prévue…)": "Mensagem (motivo, hora de chegada prevista…)",
     "Ex : arrivée prévue à 10h, embouteillage": "Ex.: chegada prevista às 10h, trânsito",
     "Horaire modifié (parti plus tôt / plus tard…)": "Horário alterado (saí mais cedo / mais tarde…)",
-    "Important : cette déclaration sert seulement de trace pour Marta. Pour que tes heures et ta paie soient justes, modifie aussi ton planning (Mon planning > Modifier le jour) : horaire réel, ou « Journée de repos » en cas d'absence ou de congé.": "Importante: esta comunicação serve apenas de registo para a Marta. Para que as tuas horas e o teu pagamento fiquem certos, altera também o teu horário (O meu horário > Modificar o dia): horário real, ou « Dia de folga » em caso de ausência ou férias.",
+    "Important : cette déclaration sert seulement de trace pour Marta. Pour que tes heures et ta paie soient justes, modifie aussi ton planning (Mon planning > Modifier le jour) : horaire réel en cas de départ anticipé. Les absences, maladies et congés passent automatiquement ton planning en repos.": "Importante: esta comunicação serve apenas de registo para a Marta. Para que as tuas horas e o teu pagamento fiquem certos, altera também o teu horário (O meu horário > Modificar o dia): horário real em caso de saída antecipada. As ausências, baixas e férias passam automaticamente o teu horário a folga.",
     "Ce jour-là, je travaille…": "Nesse dia, trabalho…",
     "Moins (partir plus tôt / arriver plus tard)": "Menos (sair mais cedo / chegar mais tarde)",
     "Plus (partir plus tard / arriver plus tôt)": "Mais (sair mais tarde / chegar mais cedo)",
@@ -184,6 +184,7 @@
     "Choisis une date de début.": "Escolhe uma data de início.",
     "La date de fin doit être après la date de début.": "A data de fim tem de ser depois da data de início.",
     "Signalement envoyé, Marta a été notifiée.": "Comunicação enviada, a Marta foi notificada.",
+    "Signalement envoyé, Marta a été notifiée. Ton planning est passé en repos pour ces jours.": "Comunicação enviada, a Marta foi notificada. O teu horário passou a folga nesses dias.",
     "Aucun signalement pour l'instant.": "Ainda nenhuma comunicação.",
 
     // --- mot de passe ---
