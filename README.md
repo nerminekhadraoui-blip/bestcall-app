@@ -102,3 +102,26 @@ match /primesMensuelles/{id} {
 ```
 
 Sans cette règle, l'onglet Facturation fonctionne mais affiche toujours « Pas encore fixée par Marta » pour la prime variable.
+
+
+## BestCall Academy (onglet « Academy »)
+
+Fichiers dans `academy/` :
+- `dados.js` : les thèmes (vidéo Drive, résumé PT/FR, pas à pas, règles « Attention », mini-quiz) et les 75 flashcards « Suporte Wengo » de Marta.
+- `academy.js` : le moteur (accueil par familles, page thème avec la vidéo, flashcards en rappel actif, formulaire admin).
+- `academy.css` : le style (préfixe `.ac`).
+
+Les vidéos restent dans le Drive de Marta : l'appli les lit avec le lecteur Drive. Pour qu'une conseillère les voie, le dossier Drive doit être partagé avec son compte Google (ou avec tout le domaine).
+
+Ajouter une vidéo ou un lien sans toucher au code : onglet Academy → « + Ajouter une ressource » (admin/direction). Une vidéo Drive s'affiche en lecteur, les autres liens (NotebookLM, Gem, Google Doc) dans « Ressources ». On peut aussi créer un nouveau thème depuis ce formulaire.
+
+Accès limité (ex. Ece) : onglet Conseillers → « + Accès Formation / Academy ». Le compte a le rôle `formation` et ne voit que Formation et Academy.
+
+### Règle Firestore à ajouter
+```
+match /academy/{id} {
+  allow read: if request.auth != null;
+  allow write: if request.auth != null
+    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'direction'];
+}
+```

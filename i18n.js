@@ -29,6 +29,13 @@
     "Signalements": "Comunicações",
     "Paie": "Salários",
     "Formation": "Formação",
+    "Academy": "Academy",
+    "+ Accès Formation / Academy": "+ Acesso Formação / Academy",
+    "Accès Formation / Academy": "Acesso Formação / Academy",
+    "Crée un compte qui voit uniquement les onglets Formation et Academy (pas de planning, pas de paie). Exemple : Ece.": "Cria uma conta que só vê os separadores Formação e Academy (sem horário, sem pagamento). Exemplo: Ece.",
+    "Nom (optionnel)": "Nome (opcional)",
+    "Créer l'accès": "Criar o acesso",
+    "À communiquer à la personne": "A comunicar à pessoa",
     "Mon planning": "O meu horário",
     "Signaler": "Comunicar",
     "Administrateur": "Administrador",
@@ -257,7 +264,7 @@
   function skip(node) {
     var el = node.nodeType === 1 ? node : node.parentNode;
     if (!el || !el.closest) return true;
-    if (el.closest("#formation-root, script, style, .name-cell, .bc-lang, [data-no-i18n]")) return true;
+    if (el.closest("#formation-root, #academy-root, script, style, .name-cell, .bc-lang, [data-no-i18n]")) return true;
     return false;
   }
 
@@ -288,7 +295,7 @@
     doAttrs(root);
     var w = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {
       acceptNode: function (n) {
-        if (n.nodeType === 1 && n.matches && n.matches("#formation-root, script, style, .bc-lang")) return NodeFilter.FILTER_REJECT;
+        if (n.nodeType === 1 && n.matches && n.matches("#formation-root, #academy-root, script, style, .bc-lang")) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
       }
     });

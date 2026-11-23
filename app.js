@@ -17,20 +17,28 @@
       { view: "plannings", label: "Plannings" },
       { view: "signalements", label: "Signalements" },
       { view: "paie", label: "Paie" },
-      { view: "formation", label: "Formation" }
+      { view: "formation", label: "Formation" },
+      { view: "academy", label: "Academy" }
     ],
     direction: [
       { view: "conseillers", label: "Conseillers" },
       { view: "plannings", label: "Plannings" },
       { view: "signalements", label: "Signalements" },
       { view: "paie", label: "Paie" },
-      { view: "formation", label: "Formation" }
+      { view: "formation", label: "Formation" },
+      { view: "academy", label: "Academy" }
     ],
     conseiller: [
       { view: "mon-planning", label: "Mon planning" },
       { view: "signaler", label: "Signaler" },
       { view: "facturation", label: "Facturation" },
-      { view: "formation", label: "Formation" }
+      { view: "formation", label: "Formation" },
+      { view: "academy", label: "Academy" }
+    ],
+    // Accès limité (ex. Ece) : formation et Academy uniquement
+    formation: [
+      { view: "formation", label: "Formation" },
+      { view: "academy", label: "Academy" }
     ]
   };
 
@@ -229,12 +237,14 @@
       renderNav();
       wireViewForRole();
       initFormation();
+      initAcademy();
     });
   });
 
   function roleLabel(r) {
     if (r === "admin") return "Administrateur";
     if (r === "direction") return "Direction";
+    if (r === "formation") return "Formation";
     return "Conseiller";
   }
 
@@ -294,6 +304,53 @@
       }
     });
   }
+
+  // ---------- BestCall Academy ----------
+  // Contenu fixe dans academy/dados.js ; ressources ajoutées par Marta dans la collection Firestore "academy".
+  function initAcademy() {
+    if (!window.BCAcademy || !$("academy-root")) return;
+    var isManager = state.role === "admin" || state.role === "direction";
+    var col = db.collection("academy");
+    BCAcademy.mount($("academy-root"), {
+      userKey: state.uid,
+      isManager: isManager,
+      store: {
+        list: function () {
+          return col.get().then(function (snap) {
+            return snap.docs.map(function (d) { var x = d.data() || {}; x.id = d.id; return x; })
+              .sort(function (a, b) { return String(a.criadoEm || "").localeCompare(String(b.criadoEm || "")); });
+          });
+        },
+        add: function (o) { o.criadoPor = state.email || ""; return col.add(o); },
+        remove: function (id) { return col.doc(id).delete(); }
+      }
+    });
+  }
+
+  // ---------- accès Formation/Academy seul (sans fiche conseiller) ----------
+  function createFormationAccess() {
+    var errEl = $("access-error"), btn = $("btn-save-access");
+    var email = $("acc-email").value.trim().toLowerCase(), pw = $("acc-password").value;
+    errEl.hidden = true;
+    if (!email || email.indexOf("@") < 1) { errEl.textContent = "Email invalide."; errEl.hidden = false; return; }
+    if (!pw || pw.length < 6) { errEl.textContent = "Mot de passe temporaire requis (6 caractères min)."; errEl.hidden = false; return; }
+    btn.disabled = true;
+    var secondaryApp = firebase.initializeApp(firebaseConfig, "Secondary_" + Date.now());
+    secondaryApp.auth().createUserWithEmailAndPassword(email, pw)
+      .then(function (cred) { var uid = cred.user.uid; return secondaryApp.auth().signOut().then(function () { return uid; }); })
+      .then(function (uid) {
+        return db.collection("users").doc(uid).set({ email: email, role: "formation", nom: $("acc-nom").value.trim(), createdAt: new Date().toISOString() });
+      })
+      .then(function () { toast("Accès créé. Communique l'email et le mot de passe temporaire."); closeModals(); })
+      .catch(function (e) { errEl.textContent = "Erreur : " + translateAuthError(e); errEl.hidden = false; })
+      .finally(function () { btn.disabled = false; secondaryApp.delete().catch(function () {}); });
+  }
+  $("btn-add-access") && $("btn-add-access").addEventListener("click", function () {
+    $("acc-email").value = ""; $("acc-password").value = ""; $("acc-nom").value = ""; $("access-error").hidden = true;
+    showModal("modal-access");
+  });
+  $("btn-save-access") && $("btn-save-access").addEventListener("click", createFormationAccess);
+  $("btn-cancel-access") && $("btn-cancel-access").addEventListener("click", closeModals);
 
   function wireViewForRole() {
     if (state.role === "admin" || state.role === "direction") {
@@ -1323,7 +1380,7 @@
   // ---------- modal plumbing ----------
   function showModal(id) {
     $("modal-overlay").hidden = false;
-    ["modal-conseiller", "modal-planning", "modal-password", "modal-edit-day", "modal-signalements"].forEach(function (m) { $(m).hidden = (m !== id); });
+    ["modal-conseiller", "modal-planning", "modal-password", "modal-edit-day", "modal-signalements", "modal-access"].forEach(function (m) { $(m).hidden = (m !== id); });
   }
   function closeModals() {
     $("modal-overlay").hidden = true;
