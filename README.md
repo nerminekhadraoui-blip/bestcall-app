@@ -117,8 +117,17 @@ Ajouter une vidéo ou un lien sans toucher au code : onglet Academy → « + Ajo
 
 Accès limité (ex. Ece) : onglet Conseillers → « + Accès Formation / Academy ». Le compte a le rôle `formation` et ne voit que Formation et Academy.
 
-### Règle Firestore à ajouter
+Progression : chaque personne a un document `academyProgress/{uid}` (épisodes vus, quiz, flashcards, XP, défis du jour). L'onglet **Suivi** (admin/direction seulement) réunit formation, entraînement et Academia par conseillère.
+
+Formation → onglet **Entraînement** : toutes les questions des quiz + la banque `formation/treino.js`, en modes Éclair, Nouvelles, Mes erreurs, Par module. Ne compte pas pour la validation ; les stats sont dans `formation/{uid}.treino`.
+
+### Règles Firestore à ajouter
 ```
+match /academyProgress/{uid} {
+  allow read, write: if request.auth != null && request.auth.uid == uid;
+  allow read: if request.auth != null
+    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'direction'];
+}
 match /academy/{id} {
   allow read: if request.auth != null;
   allow write: if request.auth != null

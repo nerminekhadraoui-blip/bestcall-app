@@ -18,7 +18,8 @@
       { view: "signalements", label: "Signalements" },
       { view: "paie", label: "Paie" },
       { view: "formation", label: "Formation" },
-      { view: "academy", label: "Academy" }
+      { view: "academy", label: "Academy" },
+      { view: "suivi", label: "Suivi" }
     ],
     direction: [
       { view: "conseillers", label: "Conseillers" },
@@ -26,7 +27,8 @@
       { view: "signalements", label: "Signalements" },
       { view: "paie", label: "Paie" },
       { view: "formation", label: "Formation" },
-      { view: "academy", label: "Academy" }
+      { view: "academy", label: "Academy" },
+      { view: "suivi", label: "Suivi" }
     ],
     conseiller: [
       { view: "mon-planning", label: "Mon planning" },
@@ -227,6 +229,7 @@
       var data = docSnap.data();
       state.role = data.role;
       state.conseillerId = data.conseillerId || null;
+      state.userNom = data.nom || "";
       $("login-screen").hidden = true;
       $("app").className = "ready";
       $("user-email").textContent = state.email;
@@ -253,6 +256,9 @@
     var items = NAV[state.role] || [];
     var nav = $("nav");
     nav.innerHTML = items.map(function (it, i) {
+      if (it.view === "academy" && window.BCAcademy) {
+        return '<div class="nav-item is-academy' + (i === 0 ? " active" : "") + '" data-view="academy">' + BCAcademy.logo(20, "aca-nav-logo") + '<b>Academia</b></div>';
+      }
       return '<div class="nav-item' + (i === 0 ? " active" : "") + '" data-view="' + it.view + '">' + esc(it.label) + '</div>';
     }).join("");
     document.querySelectorAll("section[data-roles]").forEach(function (sec) {
@@ -264,6 +270,7 @@
         nav.querySelectorAll(".nav-item").forEach(function (n) { n.classList.remove("active"); });
         el.classList.add("active");
         var view = el.getAttribute("data-view");
+        if (view === "suivi") loadSuivi();
         document.querySelectorAll("section[data-roles]").forEach(function (sec) {
           sec.hidden = sec.id !== "view-" + view;
         });
@@ -311,9 +318,27 @@
     if (!window.BCAcademy || !$("academy-root")) return;
     var isManager = state.role === "admin" || state.role === "direction";
     var col = db.collection("academy");
+    var progRef = db.collection("academyProgress").doc(state.uid);
+    var namePromise = state.conseillerId
+      ? db.collection("conseillers").doc(state.conseillerId).get().then(function (s) { return s.exists ? (s.data().prenom || "") : ""; }).catch(function () { return ""; })
+      : Promise.resolve(state.userNom ? String(state.userNom).split(" ")[0] : "");
+    namePromise.then(function (prenom) { mountAcademy(prenom); });
+    function mountAcademy(prenom) {
     BCAcademy.mount($("academy-root"), {
       userKey: state.uid,
+      firstName: prenom,
       isManager: isManager,
+      emails: function () {
+        return (state.conseillers || []).filter(function (c) { return (c.statut || "actif") === "actif" && c.email; })
+          .map(function (c) { return String(c.email).trim(); });
+      },
+      progress: {
+        load: function () { return progRef.get().then(function (s) { return s.exists ? s.data() : null; }); },
+        save: function (d) {
+          d.email = state.email || ""; d.role = state.role; d.conseillerId = state.conseillerId || null;
+          return progRef.set(d, { merge: true });
+        }
+      },
       store: {
         list: function () {
           return col.get().then(function (snap) {
@@ -324,6 +349,43 @@
         add: function (o) { o.criadoPor = state.email || ""; return col.add(o); },
         remove: function (id) { return col.doc(id).delete(); }
       }
+    });
+    }
+  }
+
+  // ---------- suivi confidentiel (admin / direction) ----------
+  function loadSuivi() {
+    var el = $("suivi-root");
+    if (!el || !window.BCSuivi) return;
+    if (!(state.role === "admin" || state.role === "direction")) return;
+    BCSuivi.loading(el);
+    Promise.all([
+      db.collection("users").get(),
+      db.collection("formation").get(),
+      db.collection("academyProgress").get().catch(function () { return { docs: [] }; })
+    ]).then(function (res) {
+      var form = {}, acad = {};
+      res[1].docs.forEach(function (d) { form[d.id] = d.data(); });
+      res[2].docs.forEach(function (d) { acad[d.id] = d.data(); });
+      var byC = {};
+      (state.conseillers || []).forEach(function (c) { byC[c._id] = c; });
+      var people = [];
+      res[0].docs.forEach(function (d) {
+        var u = d.data() || {};
+        if (u.role !== "conseiller" && u.role !== "formation") return;
+        var c = u.conseillerId ? byC[u.conseillerId] : null;
+        if (c && (c.statut || "actif") !== "actif") return;
+        people.push({
+          key: d.id, role: u.role, email: u.email || "",
+          nom: c ? ((c.prenom || "") + " " + (c.nom || "")).trim() : (u.nom || u.email || d.id),
+          code: c ? (c.codeAgent || "") : "",
+          formation: form[d.id] || null, academy: acad[d.id] || null
+        });
+      });
+      BCSuivi.render(el, { people: people });
+    }).catch(function (e) {
+      console.warn(e);
+      el.innerHTML = '<div class="empty-state">Impossible de charger le suivi (règles Firestore à mettre à jour, voir README).</div>';
     });
   }
 
@@ -350,6 +412,7 @@
     showModal("modal-access");
   });
   $("btn-save-access") && $("btn-save-access").addEventListener("click", createFormationAccess);
+  $("btn-refresh-suivi") && $("btn-refresh-suivi").addEventListener("click", loadSuivi);
   $("btn-cancel-access") && $("btn-cancel-access").addEventListener("click", closeModals);
 
   function wireViewForRole() {
