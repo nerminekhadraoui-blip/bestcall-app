@@ -12,7 +12,16 @@
   "use strict";
 
   var UI = {
-    parcours: ["Percurso", "Parcours"], memo: ["Ficha memória", "Fiche mémo"],
+    parcours: ["Percurso", "Parcours"], memo: ["Ficha memória", "Fiche mémo"], treino: ["Treino", "Entraînement"],
+    trH: ["Treinar sem pressão", "S'entraîner sans pression"],
+    trP: ["Todas as perguntas dos quizzes + {n} perguntas novas. Não conta para a validação dos módulos: é para refrescar a memória quando quiseres.", "Toutes les questions des quiz + {n} nouvelles questions. Ça ne compte pas pour la validation des modules : c'est pour se rafraîchir la mémoire quand tu veux."],
+    trRapid: ["Relâmpago", "Éclair"], trRapidS: ["10 perguntas ao acaso de toda a formação", "10 questions au hasard de toute la formation"],
+    trNew: ["Só as novas", "Seulement les nouvelles"], trNewS: ["{n} perguntas que ainda não existiam nos quizzes", "{n} questions qui n'étaient pas dans les quiz"],
+    trMiss: ["As minhas falhas", "Mes erreurs"], trMissS: ["Refaz só as perguntas que erraste", "Refais seulement les questions ratées"], trMissNone: ["Nenhuma falha por agora 👏", "Aucune erreur pour l'instant 👏"],
+    trMod: ["Por módulo", "Par module"], trModS: ["Escolhe um módulo", "Choisis un module"],
+    trStats: ["{a} perguntas respondidas · {p} % certas · {m} a rever", "{a} questions répondues · {p} % justes · {m} à revoir"],
+    trNext: ["Seguinte →", "Suivante →"], trEnd: ["Ver o resultado", "Voir le résultat"], trDone: ["Série terminada", "Série terminée"],
+    trAgain: ["Outra série", "Une autre série"], trBackModes: ["← Modos de treino", "← Modes d'entraînement"], trQ: ["Pergunta", "Question"], trNewTag: ["Nova", "Nouvelle"],
     eyebrow: ["Academia BestCall · Wengo", "Academia BestCall · Wengo"],
     heroA: ["Aprenda o essencial ", "Apprends l’essentiel "], heroB: ["antes da reunião com a Marta", "avant la réunion avec Marta"],
     heroP: ["Faça os módulos pela ordem, ao seu ritmo. Cada módulo acaba com um quiz curto. Anote as suas dúvidas para as colocar na reunião de formação.", "Fais les modules dans l’ordre, à ton rythme. Chaque module se termine par un petit quiz. Note tes questions pour les poser pendant la réunion de formation."],
@@ -64,7 +73,7 @@
   }
   function summary() {
     var done = M().filter(function (m) { return S.quiz[m.id] && S.quiz[m.id].passed; }).length;
-    return { lang: S.lang, seen: S.seen, quiz: S.quiz, last: S.last, updatedAt: S.updatedAt, done: done, total: M().length };
+    return { lang: S.lang, seen: S.seen, quiz: S.quiz, last: S.last, updatedAt: S.updatedAt, done: done, total: M().length, treino: S.treino || null };
   }
 
   function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -78,8 +87,9 @@
   /* ---------- header ---------- */
   function header() {
     return '<div class="fm-top"><div class="fm-tabs">' +
-      '<button class="fm-tab" data-go="home" aria-current="' + (view.page !== "memo") + '">' + u("parcours") + '</button>' +
-      '<button class="fm-tab" data-go="memo" aria-current="' + (view.page === "memo") + '">' + u("memo") + '</button></div>' +
+      '<button class="fm-tab" data-go="home" aria-current="' + (view.page !== "memo" && view.page !== "treino") + '">' + u("parcours") + '</button>' +
+      '<button class="fm-tab" data-go="memo" aria-current="' + (view.page === "memo") + '">' + u("memo") + '</button>' +
+      '<button class="fm-tab" data-go="treino" aria-current="' + (view.page === "treino") + '">🎯 ' + u("treino") + '</button></div>' +
       '<span class="fm-spacer"></span>' +
       '<div class="fm-lang" role="group" aria-label="Língua / Langue"><button data-l="pt" aria-pressed="' + (L === 0) + '">PT</button><button data-l="fr" aria-pressed="' + (L === 1) + '">FR</button></div></div>';
   }
@@ -278,11 +288,79 @@
     wire();
   }
 
+  /* ---------- treino (entraînement libre, ne compte pas pour la validation) ---------- */
+  var TR = null;
+  function trData() { if (!S.treino) S.treino = { answered: 0, correct: 0, sessions: 0, miss: {}, last: null }; if (!S.treino.miss) S.treino.miss = {}; return S.treino; }
+  function pool() {
+    var out = [];
+    M().forEach(function (m) { (m.quiz || []).forEach(function (q, i) { out.push({ id: m.id + ":" + i, m: m.id, q: q, nova: false }); }); });
+    (BCF.treino || []).forEach(function (q, i) { out.push({ id: "x" + i, m: q.m, q: q, nova: true }); });
+    return out;
+  }
+  function startTr(mode, mid) {
+    var all = pool(), d = trData(), qs;
+    if (mode === "rapid") qs = shuffle(all.slice()).slice(0, 10);
+    else if (mode === "novas") qs = shuffle(all.filter(function (x) { return x.nova; })).slice(0, 15);
+    else if (mode === "falhas") qs = shuffle(all.filter(function (x) { return d.miss[x.id]; })).slice(0, 15);
+    else qs = shuffle(all.filter(function (x) { return x.m === mid; }));
+    if (!qs.length) return;
+    TR = { mode: mode, qs: qs, i: 0, ok: 0, picked: null };
+    render();
+  }
+  function renderTreino() {
+    var d = trData(), all = pool(), nNew = (BCF.treino || []).length, nMiss = Object.keys(d.miss).length;
+    var pct = d.answered ? Math.round(d.correct * 100 / d.answered) : 0;
+    var html = header();
+    if (!TR) {
+      html += '<section class="fm-hero fm-tr-hero" style="grid-template-columns:1fr"><div><div class="fm-eyebrow">🎯 ' + u("treino") + '</div><h1>' + u("trH") + '</h1><p>' + u("trP").replace("{n}", nNew) + '</p>' +
+        '<p class="fm-tr-stats">' + u("trStats").replace("{a}", d.answered || 0).replace("{p}", pct).replace("{m}", nMiss) + '</p></div></section>' +
+        '<div class="fm-tr-modes">' +
+        '<button class="fm-tr-mode" data-tr="rapid"><span>⚡</span><b>' + u("trRapid") + '</b><small>' + u("trRapidS") + '</small></button>' +
+        '<button class="fm-tr-mode" data-tr="novas"><span>✨</span><b>' + u("trNew") + '</b><small>' + u("trNewS").replace("{n}", nNew) + '</small></button>' +
+        '<button class="fm-tr-mode" data-tr="falhas"' + (nMiss ? '' : ' disabled') + '><span>🔁</span><b>' + u("trMiss") + (nMiss ? ' · ' + nMiss : '') + '</b><small>' + (nMiss ? u("trMissS") : u("trMissNone")) + '</small></button>' +
+        '<div class="fm-tr-mode fm-tr-mod"><span>📚</span><b>' + u("trMod") + '</b><select id="fm-tr-mod"><option value="">' + u("trModS") + '</option>' +
+        M().map(function (m) { var n = all.filter(function (x) { return x.m === m.id; }).length; return '<option value="' + m.id + '">' + esc(T(m.title)) + ' (' + n + ')</option>'; }).join("") + '</select></div></div>';
+      root.innerHTML = html; wire();
+      root.querySelectorAll("[data-tr]").forEach(function (b) { b.onclick = function () { startTr(b.dataset.tr); }; });
+      var sel = root.querySelector("#fm-tr-mod"); sel.onchange = function () { if (sel.value) startTr("mod", sel.value); };
+      return;
+    }
+    if (TR.i >= TR.qs.length) {
+      var p2 = Math.round(TR.ok * 100 / TR.qs.length);
+      html += '<section class="fm-tr-end"><div class="fm-tr-big">' + TR.ok + ' / ' + TR.qs.length + '</div><h2>' + u("trDone") + ' — ' + p2 + ' %</h2>' +
+        '<div class="fm-nav" style="justify-content:center"><button class="fm-btn ghost" id="fm-tr-modes">' + u("trBackModes") + '</button><button class="fm-btn gold" id="fm-tr-again">' + u("trAgain") + '</button></div></section>';
+      root.innerHTML = html; wire();
+      root.querySelector("#fm-tr-modes").onclick = function () { TR = null; render(); };
+      root.querySelector("#fm-tr-again").onclick = function () { var m = TR.mode, mid = TR.qs[0] && TR.qs[0].m; TR = null; if (m === "falhas" && !Object.keys(trData().miss).length) render(); else startTr(m, mid); };
+      return;
+    }
+    var it = TR.qs[TR.i], q = it.q, mod = M().find(function (m) { return m.id === it.m; });
+    html += '<div class="fm-tr-top"><button class="fm-btn ghost" id="fm-tr-modes">' + u("trBackModes") + '</button><div class="fm-tr-prog"><i style="width:' + Math.round(TR.i * 100 / TR.qs.length) + '%"></i></div><b>' + (TR.i + 1) + ' / ' + TR.qs.length + '</b></div>' +
+      '<section class="fm-tr-card"><div class="fm-tr-meta">' + (mod ? esc(T(mod.title)) : "") + (it.nova ? ' <span class="fm-tr-new">' + u("trNewTag") + '</span>' : '') + '</div>' +
+      '<div class="fm-q"><h4>' + T(q.q) + '</h4><div class="fm-opts">' + q.o.map(function (o, j) { return '<button class="fm-opt" data-o="' + j + '">' + T(o) + '</button>'; }).join("") + '</div><div class="fm-why" hidden></div></div>' +
+      '<div class="fm-nav" style="justify-content:flex-end"><button class="fm-btn gold" id="fm-tr-next" hidden>' + (TR.i + 1 < TR.qs.length ? u("trNext") : u("trEnd")) + '</button></div></section>';
+    root.innerHTML = html; wire();
+    root.querySelector("#fm-tr-modes").onclick = function () { TR = null; render(); };
+    root.querySelectorAll(".fm-tr-card .fm-opt").forEach(function (ob) {
+      ob.onclick = function () {
+        if (TR.picked !== null) return;
+        var j = +ob.dataset.o, ok = j === q.a; TR.picked = j;
+        root.querySelectorAll(".fm-tr-card .fm-opt").forEach(function (x) { x.disabled = true; if (+x.dataset.o === q.a) x.classList.add("right"); });
+        if (!ok) ob.classList.add("wrong");
+        var w = root.querySelector(".fm-tr-card .fm-why"); w.hidden = false; w.innerHTML = "<b>" + (ok ? u("right") : u("wrong")) + "</b> " + (q.w ? T(q.w) : "");
+        var dd = trData(); dd.answered++; if (ok) { dd.correct++; TR.ok++; delete dd.miss[it.id]; } else dd.miss[it.id] = 1;
+        dd.last = new Date().toISOString(); if (TR.i + 1 >= TR.qs.length) dd.sessions = (dd.sessions || 0) + 1;
+        save();
+        var nb = root.querySelector("#fm-tr-next"); nb.hidden = false; nb.focus();
+        nb.onclick = function () { TR.i++; TR.picked = null; render(); };
+      };
+    });
+  }
   /* ---------- router ---------- */
   function render() {
     if (!root) return;
-    if (view.page === "home") renderHome(); else if (view.page === "memo") renderMemo(); else renderMod();
-    root.querySelectorAll("[data-go]").forEach(function (b) { b.onclick = function () { view.page = b.dataset.go; render(); }; });
+    if (view.page === "home") renderHome(); else if (view.page === "memo") renderMemo(); else if (view.page === "treino") renderTreino(); else renderMod();
+    root.querySelectorAll("[data-go]").forEach(function (b) { b.onclick = function () { view.page = b.dataset.go; if (view.page === "treino") TR = null; render(); }; });
     root.querySelectorAll(".fm-lang button").forEach(function (b) { b.onclick = function () {
       if (window.BCI18N) { BCI18N.set(b.dataset.l, true); return; }
       setLang(b.dataset.l);
@@ -294,6 +372,8 @@
   function merge(a, b) {
     if (!b) return a;
     var out = { lang: b.lang || a.lang, seen: Object.assign({}, a.seen, b.seen), quiz: Object.assign({}, a.quiz), last: b.last || a.last };
+    var ta = a.treino || {}, tb = b.treino || {};
+    out.treino = (tb.answered || 0) > (ta.answered || 0) ? tb : ta;
     Object.keys(b.quiz || {}).forEach(function (k) {
       var x = a.quiz[k] || {}, y = b.quiz[k] || {};
       out.quiz[k] = { best: Math.max(x.best || 0, y.best || 0), of: y.of || x.of, passed: !!(x.passed || y.passed), at: y.at || x.at };

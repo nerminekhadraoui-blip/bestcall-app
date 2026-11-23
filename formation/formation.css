@@ -230,3 +230,28 @@
 .fm-faq details{background:var(--fm-surface);border:1px solid var(--fm-line);border-radius:var(--fm-r);padding:10px 14px}
 .fm-faq summary{cursor:pointer;font-weight:600}
 .fm-faq details p{margin:8px 0 0;color:var(--fm-soft);font-size:14px}
+
+/* ---- treino / entraînement ---- */
+.fm-tr-hero{background:linear-gradient(135deg,#1B2C54,#2B4580)}
+.fm-tr-stats{margin-top:12px;display:inline-block;background:rgb(255 255 255/.1);border:1px solid rgb(255 255 255/.18);border-radius:999px;padding:6px 14px;font-size:13px;color:#fff!important}
+.fm-tr-modes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:26px}
+.fm-tr-mode{text-align:left;display:flex;flex-direction:column;gap:6px;background:var(--fm-surface);border:1px solid var(--fm-line);border-radius:10px;padding:16px;color:var(--fm-ink);transition:transform .15s,box-shadow .15s}
+.fm-tr-mode:not(:disabled):not(.fm-tr-mod):hover{transform:translateY(-2px);box-shadow:0 8px 18px rgb(27 44 84/.1);border-color:var(--fm-navy)}
+.fm-tr-mode:disabled{opacity:.6;cursor:default}
+.fm-tr-mode span{font-size:24px}
+.fm-tr-mode b{font-family:"Manrope",sans-serif;font-size:15px}
+.fm-tr-mode small{color:var(--fm-muted);font-size:12.5px}
+.fm-tr-mode select{font:inherit;font-size:13px;border:1px solid var(--fm-line);border-radius:6px;padding:7px 8px;background:#fff;color:var(--fm-ink);margin-top:auto}
+.fm-tr-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.fm-tr-top .fm-btn{flex:none}
+.fm-tr-prog{flex:1;height:8px;background:var(--fm-sunk);border-radius:99px;overflow:hidden}
+.fm-tr-prog i{display:block;height:100%;background:var(--fm-gold)}
+.fm-tr-card{max-width:760px;margin:0 auto;background:var(--fm-surface);border:1px solid var(--fm-line);border-radius:12px;padding:22px 24px;--c:var(--fm-navy)}
+.fm-tr-meta{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--fm-muted);margin-bottom:8px}
+.fm-tr-new{background:var(--fm-gold-soft);color:#7A5A00;border-radius:99px;padding:2px 8px;margin-left:6px;letter-spacing:0;text-transform:none}
+.fm-tr-card .fm-btn{flex:none}
+.fm-tr-end{text-align:center;max-width:520px;margin:20px auto;background:var(--fm-surface);border:1px solid var(--fm-line);border-radius:12px;padding:30px}
+.fm-tr-big{font:800 46px/1 "Manrope",sans-serif;color:var(--fm-navy);margin-bottom:8px}
+.fm-tr-end .fm-btn{flex:none}
+@media (max-width:860px){.fm-tr-modes{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.fm-tr-modes{grid-template-columns:1fr}}
